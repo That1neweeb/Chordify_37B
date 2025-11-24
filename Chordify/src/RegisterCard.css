@@ -1,0 +1,25 @@
+body{
+    height: 80%;
+    width: 80%;
+    align-items: center;
+    justify-content: center;
+}
+.Register-form{
+    height: 600px;
+    width: 800px;
+    border: 1px solid hsl(240, 100%, 52%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.Register-form form{
+    display: flex;
+    flex-direction: column;
+}
+
+.Register-form img{
+    width: 40%;
+    height: 500px;
+}
