@@ -2,15 +2,16 @@ import './RegisterCard.css'
 function RegisterCard(){
     return(
         <>
-        <div className="Title">
-                <h1>
-                    Join Chordify
-                </h1>
-                <p>Sign up today and discover, learn, and play like never before.</p>
-        </div>
 
         <div className='Register-form'>
             <form>
+                <div className="Title">
+                    <h1>
+                        Join Chordify
+                    </h1>
+                    <p>Sign up today and discover, learn, and play like never before.</p>
+                </div>
+
                 <label htmlFor="email">Email</label>
                 <input type="email" name="email" id="email" />
                 <label htmlFor="email">Password</label>
