@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import LoginCard from "./LoginCard"
+import RegisterCard from "./RegisterCard"
+import Register from "./Register"
 function App() {
   return (
     // <h2>Hello</h2>
     <>
-    <LoginCard></LoginCard>
+
+    <Register></Register>
     </>
     
   )
