@@ -1,4 +1,4 @@
-import RegisterCard from "./RegisterCard"
+import RegisterCard from "../components/RegisterCard"
 import './Register.css'
 function Register() {
     return(
