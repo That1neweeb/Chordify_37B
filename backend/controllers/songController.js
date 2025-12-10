@@ -11,6 +11,17 @@ async function getRecommendedSongs(req,res) {
     }
 }
 
+async function getSonglyrics(req, res) {
+    try{
+        const lyrics = await Song.getLyrics(req.param.id);
+        res.json(lyrics);
+    }    
+    catch(err){
+        console.log("Database error:" +err);
+        res.status(500).send("Database error");
+    }
+}
 module.exports = {
-    getRecommendedSongs
+    getRecommendedSongs,
+    getSonglyrics
 }

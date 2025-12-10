@@ -19,7 +19,6 @@ function RegisterCard(){
                 <label htmlFor="c_password">Confirm password</label>
                 <input type="password" name="c_password" id="c_password" />
                 <button type="submit">Create account</button>
-                {/* <hr>or</hr>     */}
             </form>
             <img src="../src/assets/collage2.png" alt="login image"></img>
         </div>
@@ -27,4 +26,4 @@ function RegisterCard(){
     )
 }
 
-export default RegisterCard
+export default RegisterCard;

@@ -1,6 +1,5 @@
 body{
     background-color: hsl(182, 15%, 66%);
-    /* display: flex; */
 }
 header{
     display: flex;
@@ -21,8 +20,4 @@ header p{
 }
 h1{
     font-size: 40px;
-}
-
-p{
-
 }

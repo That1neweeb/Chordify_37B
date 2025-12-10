@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import RegisterCard from "./components/RegisterCard"
 import Register from "./pages/Register"
+import Home from './pages/Home'
 function App() {
   return (
-    // <h2>Hello</h2>
     <>
-
     <Register></Register>
+    {/* <Home></Home> */}
     </>
-    
   )
 }
 
