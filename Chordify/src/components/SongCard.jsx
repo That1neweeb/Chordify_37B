@@ -5,7 +5,7 @@ import chatbubble from "../assets/images/chat-bubble.png"
 
 
 
-function SongCard({cover_image, song_name, artist, }) {
+function SongCard({cover_image, song_name, artist, id }) {
     return(
         <div className="song-card bg-[#27231B] w-[350px] h-[500px] rounded-2xl flex flex-col items-center justify-around">
             <img src={cover_image} alt=""  className="rounded-2xl mt-6 w-60"/>
