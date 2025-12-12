@@ -41,4 +41,4 @@ function LoginCard() {
     )
 }
 
-export default LoginCard
+export default LoginCard;

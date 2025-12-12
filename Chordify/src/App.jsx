@@ -1,14 +1,13 @@
 import { useState } from 'react'
-import RegisterCard from "./components/RegisterCard"
-import Register from "./pages/Register"
-import Home from './pages/Home'
+// import LoginCard from './components/LoginCard';
+import Home from './pages/Home.jsx'
+
 function App() {
   return (
     <>
-    <Register></Register>
-    {/* <Home></Home> */}
+    <Home/>
     </>
-  )
+  );
 }
 
 export default App
