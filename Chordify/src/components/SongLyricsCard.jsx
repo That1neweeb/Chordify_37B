@@ -1,9 +1,0 @@
-
-function SongLyricsCard(){
-    return(
-
-        <>
-        
-        </>
-    )
-}
