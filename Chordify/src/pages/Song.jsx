@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-
-function Song() {
+import LyricsCard from "../components/SongLyricsCard.jsx";
+import SongSidebar from "../components/SongSideBar.jsx";
+function Song({songId}) {
 
      const [song, setSongs] = useState({});
     
     useEffect(() => {
         async function fetchSongs() {
             try {
-                const response = await fetch("https://localhost:5000/songs/songContent");
+                const response = await fetch(`https://localhost:5000/songs/songContent/${songId}`);
                 const data = await response.json();
                 setSongs(data);
             } catch(err) {
@@ -19,14 +20,21 @@ function Song() {
     }, []);
 
     return(
-        <>
-        <div class="w-full max-w-sm p-5 bg-white rounded-2xl shadow flex flex-col gap-3">
-            <h2 class="text-2xl font-bold text-gray-900">{song.title}2183</h2>
-            <p class="text-lg text-gray-700">{song.artist}</p>
-            <span class="text-base font-medium text-blue-600">Difficulty: {song.difficulty}</span>
+         <div className="min-h-screen bg-gray-100 px-4 py-8">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        {/* Main song card */}
+        <div className="lg:col-span-3">
+          <LyricsCard song={song} />
         </div>
 
-        </>
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <SongSidebar song={song} />
+        </div>
+
+        </div>
+        </div>
     )
 }
 
