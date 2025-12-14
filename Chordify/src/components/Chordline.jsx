@@ -13,7 +13,7 @@ export default function ChordLine({ lyrics, chords }) {
       <span
         key={`chord-${i}`}
         className="inline-flex flex-col items-center -mt-5"
-      >
+      ><br></br>
         <span className="text-xs font-semibold text-gray-700">
           {c.chord}
         </span>
