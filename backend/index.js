@@ -11,7 +11,7 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 
 //to fetch guitars
-const guitarRouter = require("./routes/guitars");
+const guitarRouter = require("./routes/guitar");
 app.use('/guitars', guitarRouter);
 
 //to fetch songs

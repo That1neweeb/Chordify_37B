@@ -1,5 +1,5 @@
 import GuitarCard from "./GuitarCard";
-
+import { useEffect, useState } from "react";
 
 function Suggested() {
 
