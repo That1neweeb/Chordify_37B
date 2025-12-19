@@ -1,4 +1,4 @@
-import BasicCard from "./BasicCard";
+import BasicCard from "./LearnBasicCard";
 import chordslibrary from "../assets/images/sliders.png";
 import tabexercise from "../assets/images/sheet-music.png";
 import strumming from "../assets/images/musical.png";
