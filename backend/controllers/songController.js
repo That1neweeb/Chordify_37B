@@ -11,6 +11,18 @@ async function getRecommendedSongs(req,res) {
     }
 }
 
+async function getSongContent(req, res) {
+    try {
+        const id = req.params.id;
+        const song = await Song.getSongContentById(id);
+        res.json(song);
+    } catch(err) {
+        console.log("Database error : " +err);
+        res.status(500).send("Database error");
+    }
+}
+
 module.exports = {
-    getRecommendedSongs
+    getRecommendedSongs,
+    getSongContent
 }
