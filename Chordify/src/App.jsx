@@ -1,9 +1,16 @@
-import { useState } from 'react'
-import RegisterCard from "./components/RegisterCard"
-import Register from "./pages/Register"
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Sale from "./pages/Sale";
+import Buy from "./pages/Buy";
+import Learn from "./pages/Learn";
+import Aboutus from "./pages/Aboutus";
+import {Routes, Route} from "react-router-dom"
+import RegistrationPage from "./pages/Register";
+import LoginPage from "./pages/Login";
+import VerificationPage from "./pages/VerificationPage";
 function App() {
   return (
-    // <h2>Hello</h2>
+ 
    <>
       <Navbar/>
      
