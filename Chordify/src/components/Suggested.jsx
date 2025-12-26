@@ -1,5 +1,5 @@
 import GuitarCard from "./GuitarCard";
-
+import { useEffect, useState } from "react";
 
 function Suggested() {
 
@@ -28,7 +28,7 @@ function Suggested() {
                 <GuitarCard
                     key={guitar.id}
                     id={guitar.id}
-                    image={`http://localhost:5000${guitar.image_url}`}
+                    image={`http://localhost:5000${guitar.image_url[0]}`}
                     guitarName={guitar.name}                            
                     price={guitar.price}
                     page= "landing"
