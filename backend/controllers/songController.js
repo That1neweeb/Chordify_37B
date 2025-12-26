@@ -1,10 +1,19 @@
 const Song = require('../models/songModel');
 
-async function getRecommendedSongs(req,res) {
+export const getRecommendedSongs = async (req,res) => {
     try {
-        const songs = await Song.getSongs();
-        res.json(songs);
-        
+        const songs = await Songs.findAll();
+        res.status(200).json({data: songs, message:"Songs successfully fetched"})
+    } catch(e) {
+        res.status(500).send(e)
+    }
+}
+
+async function getSongContent(req, res) {
+    try {
+        const id = req.params.id;
+        const song = await Song.getSongContentById(id);
+        res.json(song);
     } catch(err) {
         console.log("Database error : " +err);
         res.status(500).send("Database error");
@@ -12,5 +21,6 @@ async function getRecommendedSongs(req,res) {
 }
 
 module.exports = {
-    getRecommendedSongs
+    getRecommendedSongs,
+    getSongContent
 }
