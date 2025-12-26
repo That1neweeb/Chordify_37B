@@ -2,7 +2,7 @@
 function GuitarCard({guitarName, brand, rating, image, price, page, id}) {
     return(
 
-        <Link to={`/gyutar/${id}`}>
+        <Link to={`/guitar/${id}`}>
             <div className={page === "landing"? "bg-[#27231B] h-[420px] w-[260px] flex flex-col rounded-2xl" : "bg-[#27231B] h-[500px] w-[350px] flex flex-col rounded-2xl cursor-pointer"}>
 
                 {/* if the guitarcard is loadedin buying page it will have rating and model as well */}
