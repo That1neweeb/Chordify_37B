@@ -1,8 +1,8 @@
-import file from "../assets/images/file.png"
-import acoustic from "../assets/images/acoustic.png"
-import acoustic2 from "../assets/images/acoustic2.png"
-import electric from "../assets/images/electric.png"
-import electric2 from "../assets/images/electric2.png"
+// import file from "../assets/images/file.png"
+// import acoustic from "../assets/images/acoustic.png"
+// import acoustic2 from "../assets/images/acoustic2.png"
+// import electric from "../assets/images/electric.png"
+// import electric2 from "../assets/images/electric2.png"
 import { useRef } from "react"
 
 

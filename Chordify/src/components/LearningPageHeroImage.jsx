@@ -1,4 +1,4 @@
-import learningpage from "../assets/images/learningpage.png"
+// import learningpage from "../assets/images/learningpage.png"
 
 function LearningPageHeroImage() {
     return(
