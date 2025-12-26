@@ -1,12 +1,14 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
-//controller
-const songController = require('../controllers/songController')
+
+// Controller
+import { getRecommendedSongs } from '../controllers/songController.js';
 
 
-
-router.get("/recommended", songController.getRecommendedSongs);
+// Fetch recommended songs
+router.get("/recommended", getRecommendedSongs);
+router.get("/songContent",songController.getSongContent);
 
 module.exports = router;
 
