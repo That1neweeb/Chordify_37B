@@ -15,7 +15,7 @@ function Learn() {
 
     setLoading(true);
     try {
-      const response = await fetch(`http://localhost:5000/guitars/suggested?search=${search}`);
+      const response = await fetch(`http://localhost:5000/songs/searchSongs`);
       if (!response.ok) throw new Error("Failed to fetch");
       const result = await response.json();
       setData(result);
