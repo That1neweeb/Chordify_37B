@@ -1,6 +1,7 @@
 import heart from "../assets/images/heart.png"
 import addtoplaylist from "../assets/images/addtoplaylist.png"
 import chatbubble from "../assets/images/chat-bubble.png"
+import radiohead from "../assets/images/radiohead.jpeg"
 
 
 

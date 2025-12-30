@@ -3,6 +3,8 @@
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #181611;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #181611;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -28,9 +30,28 @@ a:hover {
 #root {
   width: 100%;
 }
+.song-card button:hover {
+  transform: none ;
+  border-color: transparent;
+  background-color: transparent ;
+
+}
+
+a {
+  font-weight: 500;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #F2A60D;
+}
+
+#root {
+  width: 100%;
+}
 body {
   margin: 0;
   display: flex;
+  /* place-items: center; */
   /* place-items: center; */
   min-width: 320px;
   min-height: 100vh;
