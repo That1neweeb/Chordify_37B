@@ -8,15 +8,16 @@ import {Routes, Route} from "react-router-dom"
 import RegistrationPage from "./pages/Register";
 import LoginPage from "./pages/Login";
 import VerificationPage from "./pages/VerificationPage";
+import ViewProfile from "./components/ViewProfile";
 function App() {
   return (
  
    <>
-      <Navbar/>
-     
+      {/* <Navbar/> */}
+     <ViewProfile></ViewProfile>
       <div className="w-full h-px bg-[#777063] mt-3"></div> 
 
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/Sell" element={<Sale/>}></Route>
         <Route path="/Buy" element={<Buy/>}></Route>
@@ -25,7 +26,7 @@ function App() {
         <Route path="/register" element={<RegistrationPage/>}></Route> 
         <Route path="/login" element={<LoginPage/>}></Route> 
         <Route path="/verify/:token" element={<VerificationPage />} />
-      </Routes>  
+      </Routes>   */}
 
     </>
     
