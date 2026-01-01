@@ -6,6 +6,7 @@ export default function LyricsCard({ song }) {
       {/* Header */}
       <h1 className="text-2xl font-bold">{song.title}</h1>
       <p className="text-gray-600 mb-4">{song.artist}</p>
+      <p className="text-gray-600 mb-4">{song.strummingPattern}</p>
 
       {/* Meta */}
       <div className="flex gap-4 text-sm text-gray-500 mb-6">
