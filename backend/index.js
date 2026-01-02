@@ -13,7 +13,7 @@ import { connection } from "./db.js";
 import express from "express";
 import cors from "cors";
 import productRoutes from './routes/productRoutes.js';
-import songRoutes from './routes/songRoutes.js';
+import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
 // import './models/association.js'
 

@@ -80,7 +80,7 @@ function Buy() {
 
             <div className="bg-[#393328] w-64 h-[800px] rounded-2xl ml-5">
                 <h1 className="text-2xl font-bold m-6">Filter </h1>
-                {/* FilterProducts component can be placed here later */}
+                {/* FilterProducts */}
                 <div className="m-6">
                     <h2 className="text-xl font-semibold mb-4">Brands</h2>
                     <ul className="space-y-2">

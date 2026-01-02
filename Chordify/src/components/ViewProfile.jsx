@@ -1,9 +1,27 @@
-import React, { useState } from 'react';
-import { Music, Award, ShoppingBag, Heart, MapPin, Mail, Phone, Calendar, Camera } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Mail,
+  Phone,
+  Calendar,
+  Camera,
+  MapPin
+} from "lucide-react";
 
-export default function GuitarProfile() {
-  const [activeTab, setActiveTab] = useState('collection');
-  const [avatarUrl, setAvatarUrl] = useState("https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=400&fit=crop");
+export default function ViewProfile() {
+  const navigate = useNavigate();
+  const [avatarUrl, setAvatarUrl] = useState(
+    "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=400&fit=crop"
+  );
+
+  const menuItems = [
+    { name: "Dashboard" },
+    { name: "Orders" },
+    { name: "Change Password" },
+    { name: "Password Reset", route: "/password-reset" },
+    { name: "Logout", danger: true, route: "/logout" },
+    { name: "Delete Account", danger: true }
+  ];
 
   const customer = {
     name: "Satyam Shrestha",
@@ -12,89 +30,93 @@ export default function GuitarProfile() {
     phone: "9800000000",
     location: "Kathmandu, Nepal",
     memberSince: "January 2026",
-    bio: "Collecting vintage guitars and performing live.",
-    stats: {
-      guitars: 8,
-      orders: 24,
-      reviews: 18,
-      wishlist: 12
-    }
+    bio: "Collecting vintage guitars and performing live."
   };
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarUrl(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setAvatarUrl(reader.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleMenuClick = (item) => {
+    if (item.route) {
+      navigate(item.route);
     }
   };
 
-
-
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 text-white p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-8 mb-8 border border-gray-700 shadow-2xl">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-            <div className="relative group">
-              <img 
-                src={avatarUrl} 
-                alt={customer.name}
-                className="w-32 h-32 rounded-full border-4 border-amber-500 shadow-lg object-cover"
+    <div className="min-h-screen bg-black flex">
+      {/* Sidebar */}
+      <div className="w-64 bg-gray-900 border-r border-gray-800 p-6">
+        <h2 className="text-2xl font-bold text-white mb-6">MY ACCOUNT</h2>
+        {menuItems.map((item, i) => (
+          <button
+            key={i}
+            onClick={() => handleMenuClick(item)}
+            className={`w-full text-left px-4 py-3 rounded-md mb-1 transition ${
+              item.danger
+                ? "text-red-400 hover:bg-red-900/20"
+                : "text-gray-400 hover:bg-gray-800 hover:text-white"
+            }`}
+          >
+            {item.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex justify-center items-center p-8">
+        <div className="bg-gray-900 border border-gray-700 rounded-3xl p-12 max-w-4xl w-full">
+          <div className="flex flex-col items-center text-center">
+            {/* Avatar */}
+            <div className="relative group mb-6">
+              <img
+                src={avatarUrl}
+                alt="avatar"
+                className="w-40 h-40 rounded-full border-4 border-amber-500 object-cover"
               />
-              <label 
-                htmlFor="avatar-upload" 
-                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+              <label
+                htmlFor="avatar"
+                className="absolute inset-0 flex items-center justify-center bg-black/70 rounded-full opacity-0 group-hover:opacity-100 cursor-pointer"
               >
-                <Camera className="w-8 h-8 text-white" />
+                <Camera className="text-white w-8 h-8" />
               </label>
               <input
-                id="avatar-upload"
+                id="avatar"
                 type="file"
+                hidden
                 accept="image/*"
                 onChange={handleAvatarChange}
-                className="hidden"
               />
             </div>
-            <div className="flex-1 text-center md:text-left">
-              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
-                {customer.name}
-              </h1>
-              <p className="text-gray-400 text-lg mb-3">{customer.username}</p>
-              <p className="text-gray-300 mb-4 max-w-2xl">{customer.bio}</p>
-              
-              <div className="flex flex-wrap gap-4 justify-center md:justify-start text-sm">
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-amber-500" />
-                  <span className="text-gray-400">{customer.email}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-amber-500" />
-                  <span className="text-gray-400">{customer.phone}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-amber-500" />
-                  <span className="text-gray-400">{customer.location}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-amber-500" />
-                  <span className="text-gray-400">Member since {customer.memberSince}</span>
-                </div>
-              </div>
+
+            <h1 className="text-4xl font-bold text-amber-400">{customer.name}</h1>
+            <p className="text-gray-400 mb-4">@{customer.username}</p>
+            <p className="text-gray-300 mb-8">{customer.bio}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
+              <Info icon={<Mail />} label="Email" value={customer.email} />
+              <Info icon={<Phone />} label="Phone" value={customer.phone} />
+              <Info icon={<MapPin />} label="Location" value={customer.location} />
+              <Info icon={<Calendar />} label="Member Since" value={customer.memberSince} />
             </div>
           </div>
-
-          
         </div>
+      </div>
+    </div>
+  );
+}
 
-        
-
-        
+function Info({ icon, label, value }) {
+  return (
+    <div className="flex items-center gap-3 bg-gray-800 p-4 rounded-xl border border-gray-700">
+      <div className="text-amber-500">{icon}</div>
+      <div>
+        <p className="text-xs text-gray-500 uppercase">{label}</p>
+        <p className="text-gray-200">{value}</p>
       </div>
     </div>
   );
