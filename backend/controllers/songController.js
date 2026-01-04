@@ -1,5 +1,4 @@
-import { Op } from "sequelize";
-const Song = require('../models/songModel');
+import { Songs } from "../models/songModel.js"
 
 
 export const getRecommendedSongs = async (req,res) => {
@@ -48,4 +47,5 @@ export const searchSongs = async (req, res) => {
     res.status(500).json({ message: "Song search failed" });
   }
 };
+
 

@@ -17,11 +17,6 @@ import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
 // import './models/association.js'
 
-
-
-
-
-
 const app = express();
 
 connection();

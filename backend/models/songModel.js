@@ -18,6 +18,10 @@ export const Songs = sequelize.define(
       type: DataTypes.STRING(100),
       allowNull: false
     },
+    strummingPattern: {
+      type: DataTypes.STRING(10),
+      allowNull: false
+    },
     difficulty: {
       type: DataTypes.STRING(10),
       allowNull: false,
