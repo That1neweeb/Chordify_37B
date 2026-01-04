@@ -63,7 +63,7 @@ function Buy() {
 
 
     //UI part
-    return(
+    return( 
     <div>
 
         {/* search area */}

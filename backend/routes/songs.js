@@ -9,7 +9,7 @@ import { getRecommendedSongs,getSongContent,searchSongs } from '../controllers/s
 // Fetch recommended songs
 router.get("/recommended", getRecommendedSongs);
 router.get("/songContent",getSongContent);
-router.get("/searchSong",searchSongs)
+router.get("/searchSong",searchSongs);
 
-module.exports = router;
+export default router;
 
