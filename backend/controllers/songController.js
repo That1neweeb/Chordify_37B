@@ -1,4 +1,4 @@
-const Song = require('../models/songModel');
+import { Songs } from "../models/songModel.js"
 
 export const getRecommendedSongs = async (req,res) => {
     try {
@@ -7,20 +7,4 @@ export const getRecommendedSongs = async (req,res) => {
     } catch(e) {
         res.status(500).send(e)
     }
-}
-
-async function getSongContent(req, res) {
-    try {
-        const id = req.params.id;
-        const song = await Song.getSongContentById(id);
-        res.json(song);
-    } catch(err) {
-        console.log("Database error : " +err);
-        res.status(500).send("Database error");
-    }
-}
-
-module.exports = {
-    getRecommendedSongs,
-    getSongContent
 }
