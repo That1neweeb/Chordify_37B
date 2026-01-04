@@ -14,7 +14,7 @@ function App() {
    <>
       <Navbar/>
      
-      <div className="w-full h-px bg-[#777063] mt-3"></div> 
+      <div className="w-full h-px bg-[#777061] mt-3"></div> 
 
       <Routes>
         <Route path="/" element={<Home/>}/>
