@@ -1,5 +1,5 @@
 import { Op } from "sequelize";
-const Song = require('../models/songModel');
+import {Songs} from "../models/songModel.js"
 
 
 export const getRecommendedSongs = async (req,res) => {
