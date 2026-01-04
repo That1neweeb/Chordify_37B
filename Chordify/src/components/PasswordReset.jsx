@@ -1,47 +1,25 @@
 import React, { useState } from "react";
-import { RefreshCw, X, AlertCircle, Mail } from "lucide-react";
+import { X, Mail } from "lucide-react";
 
-export default function PasswordReset() {
+export default function PasswordReset({ onClose }) {
   const [email, setEmail] = useState("");
 
   const handleReset = () => {
-    // Add your reset logic here
-    console.log("Reset profile for:", email);
-  };
-
-  const handleCancel = () => {
-    // Navigate back logic
-    console.log("Cancelled");
+    console.log("Reset password for:", email);
+    onClose();
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center">
-      <div className="fixed inset-0 bg-black/80"></div>
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="absolute inset-0 bg-black/80" onClick={onClose}></div>
 
-      <div className="relative bg-gray-900 border border-gray-700 rounded-3xl p-10 max-w-md w-full">
+      <div className="relative bg-gray-900 border border-gray-700 rounded-3xl p-10 max-w-md w-full z-10">
         <button
-          onClick={handleCancel}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white"
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
         >
           <X />
         </button>
-
-        <div className="flex justify-center mb-6">
-          <RefreshCw className="w-14 h-14 text-amber-500" />
-        </div>
-
-        <h2 className="text-3xl font-bold text-center text-amber-400 mb-4">
-          Reset Password
-        </h2>
-
-        <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
-          <div className="flex gap-3">
-            <AlertCircle className="text-amber-500 flex-shrink-0" />
-            <p className="text-gray-300 text-sm">
-              Enter your email address to reset your profile. All your data will be permanently deleted.
-            </p>
-          </div>
-        </div>
 
         <div className="mb-6">
           <label htmlFor="email" className="block text-gray-300 text-sm mb-2">
@@ -55,14 +33,14 @@ export default function PasswordReset() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full bg-gray-800 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500"
+              className="w-full bg-gray-800 border border-gray-700 rounded-xl py-3 pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 transition-colors"
             />
           </div>
         </div>
 
         <div className="flex gap-4">
           <button
-            onClick={handleCancel}
+            onClick={onClose}
             className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl transition-colors"
           >
             Cancel

@@ -1,19 +1,21 @@
 import React from "react";
-import { X, AlertCircle } from "lucide-react";
+import { X, AlertCircle, Trash2 } from "lucide-react";
 
-export default function Logout({ onClose }) {
-  const handleLogout = () => {
-    localStorage.removeItem("authToken");
-    sessionStorage.clear();
-    console.log("User logged out");
+export default function DeleteAccount({ onClose }) {
+  const handleDelete = () => {
+    // Add your delete logic here
+    console.log("Account deleted");
     onClose();
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/80" onClick={onClose}></div>
 
+      {/* Modal */}
       <div className="relative bg-gray-900 border border-gray-700 rounded-3xl p-10 max-w-md w-full z-10">
+        {/* X Button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
@@ -21,15 +23,17 @@ export default function Logout({ onClose }) {
           <X />
         </button>
 
+        {/* Warning Message */}
         <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
-          <div className="flex gap-3">
-            <AlertCircle className="text-amber-500 flex-shrink-0" />
+          <div className="flex gap-3 items-center">
+            <AlertCircle className="text-amber-500 w-6 h-6 flex-shrink-0" />
             <p className="text-gray-300 text-sm">
-              Are you sure you want to logout? You'll need to sign in again.
+              Are you sure you want to delete your account? This action is <strong>irreversible</strong>.
             </p>
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex gap-4">
           <button
             onClick={onClose}
@@ -38,10 +42,11 @@ export default function Logout({ onClose }) {
             Cancel
           </button>
           <button
-            onClick={handleLogout}
-            className="flex-1 bg-amber-500 hover:bg-amber-600 text-black py-3 rounded-xl font-semibold transition-colors"
+            onClick={handleDelete}
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
           >
-            Yes, Logout
+            <Trash2 className="w-5 h-5" />
+            Delete Account
           </button>
         </div>
       </div>
