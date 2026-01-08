@@ -1,12 +1,28 @@
-require('dotenv').config();
-const { Pool } = require('pg');
+import dotenv from "dotenv";
+import { Sequelize } from "sequelize";
 
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: 5432
-});
+dotenv.config()
 
-module.exports = pool;
+export const sequelize = new Sequelize(
+    "practice_db", //db name
+    "postgres", //db user
+    "postgres", //db password
+    {
+        host: "localhost",
+        dialect: "postgres"
+    }
+) 
+export const connection = async () => {
+    try {
+
+        //alter : true tries to match table with model
+        //force : true drop existing tables and create new one
+
+        await sequelize.sync()
+        console.log("Database connection successful");
+        
+    } catch(e) {
+        console.log("Database connection error : ", e);
+        
+    }
+};
