@@ -8,6 +8,8 @@ import {Routes, Route} from "react-router-dom"
 import RegistrationPage from "./pages/Register";
 import LoginPage from "./pages/Login";
 import VerificationPage from "./pages/VerificationPage";
+import UploadPage from "./pages/UploadPage";
+import PostsPage from "./pages/PostsPage";
 function App() {
   return (
  
@@ -25,6 +27,8 @@ function App() {
         <Route path="/register" element={<RegistrationPage/>}></Route> 
         <Route path="/login" element={<LoginPage/>}></Route> 
         <Route path="/verify/:token" element={<VerificationPage />} />
+        <Route path="/PostsPage/UploadPage" element={<UploadPage/>}/>
+        <Route path="/PostsPage" element={<PostsPage/>} />
       </Routes>  
 
     </>
