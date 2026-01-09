@@ -15,6 +15,9 @@ import cors from "cors";
 import productRoutes from './routes/productRoutes.js';
 import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
+import supportRoutes from './routes/supportRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
+
 // import './models/association.js'
 
 const app = express();
@@ -31,6 +34,8 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/products', productRoutes); //to fetch products
 app.use('/songs', songRoutes); //to fetch songs
 app.use('/auth', authRoutes); //to login, register, verify email
+app.use('/support', supportRoutes); //to send support messages
+app.use('/api', profileRoutes); //
 
 
 app.listen(5000);
