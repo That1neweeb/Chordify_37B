@@ -2,9 +2,16 @@ import { useState } from "react";
 import remove from "../assets/images/remove.png"
 
 
-function CartCard({image, productName, productBrand, price}) {
+function CartCard({id, image, productName, productBrand, price, quantity, onQuantityChange}) {
 
-    const [quantity, setQuantity] = useState(1);
+    const handleIncrease = () => {
+        onQuantityChange(id, quantity+1);
+    };
+
+    const handleDecrease = () => {
+    if (quantity > 1) onQuantityChange(id, quantity - 1);
+    };
+
     return(
         <div className="grid grid-cols-12 items-center py-6 border-b gap-[150px]">
             <div className="col-span-6 flex gap-14 w-full">
@@ -19,10 +26,10 @@ function CartCard({image, productName, productBrand, price}) {
             <div className=" col-span-3 flex gap-10">
                 <div className="flex border border-[#ABA6A6] items-center">
                     <button 
-                    onClick={()=> setQuantity(prev => Math.max(1, prev-1))}
+                    onClick={handleDecrease}
                     >-</button>
                     <h2>{quantity}</h2>
-                    <button onClick={()=> setQuantity(prev=> Math.max(prev+1))}>+</button>
+                    <button onClick={handleIncrease}>+</button>
                 </div>
                 <div className="bg-transparent">
                     <button className="bg-transparent border-none focus:border-none focus:outline-none hover:scale-105 transition-all duration-300"><img src={remove} alt="" className="size-6 object-cover object-fit"/></button>
