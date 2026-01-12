@@ -5,15 +5,20 @@ import { useEffect, useState } from "react";
 export default function PostsPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error,setError] = useState(null);
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const res = await fetch("http://localhost:5000/posts/getAllVideos");
         const data = await res.json();
-        setPosts(data);
+        setPosts(Array.isArray(data) ? data : []);
+
       } catch (err) {
+        // make sure the error is logged as well as the page doesnot crash when there is a fetching error
         console.error("Failed to fetch posts", err);
+        setError(err);
+
       } finally {
         setLoading(false);
       }
@@ -23,6 +28,7 @@ export default function PostsPage() {
   }, []);
 
   if (loading) return <p>Loading posts...</p>;
+  if (error) return <p>Error loading posts: {error.message}</p>;
 
   return (
     <div className="gap-4 m-8 flex flex-col items-center">

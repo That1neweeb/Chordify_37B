@@ -1,4 +1,4 @@
-import { Posts } from "../models/postModel";
+import { Posts } from "../models/postModel.js";
 // UPLOAD VIDEO
 export const addVideo = async (req, res) => {
     try {

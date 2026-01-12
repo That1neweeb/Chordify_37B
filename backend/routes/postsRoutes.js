@@ -1,7 +1,7 @@
 import express from 'express';
-import { upload } from '../utils/uploadConfig';
-import { addVideo, getAllvideos } from '../controllers/postController';
-import { verifyToken } from '../utils/jwt-util';
+import { upload } from '../utils/uploadConfig.js';
+import { addVideo, getAllvideos } from '../controllers/postController.js';
+import { verifyToken } from '../utils/jwt-util.js';
 
 const router = express.Router();
 

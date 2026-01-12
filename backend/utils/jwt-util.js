@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken'
-import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 dotenv.config();
 // Generate JWT Access token after user login 
 const generateAccessToken = (payload) => {
@@ -9,7 +9,6 @@ const generateAccessToken = (payload) => {
     };
     return jwt.sign(payload, process.env.secretkey, options);
   };
-  import jwt from "jsonwebtoken";
 
 //  Middleware to verify JWT and return user info
 export const verifyToken = (req, res, next) => {
