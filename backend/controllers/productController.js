@@ -188,3 +188,74 @@ export const fetchComments = async(req,res) => {
     return res.status(500).json({message: "Server error : ", error: e.message})
   }
 }
+
+
+export const giveRating = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+
+    const { rating_point } = req.body;
+    const product_id = req.params.id;
+
+    if (!product_id) return res.status(404).json({ message: "Product not found" });
+
+    if (!rating_point || rating_point < 1 || rating_point > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    }
+
+    const existingRating = await Rating.findOne({
+      where: { user_id: user.id, product_id }
+    });
+
+    if (existingRating) {
+      existingRating.rating_point = rating_point;
+      await existingRating.save();
+      return res.status(200).json({ message: "Rating updated", rating: existingRating });
+    }
+
+    console.log({ rating_point, product_id, user_id: user.user_id });
+
+
+    const rating = await Rating.create({
+      rating_point,
+      user_id: user.id,
+      product_id
+    });
+
+    return res.status(200).json({ message: "Rating added successfully", rating });
+
+  } catch (e) {
+    return res.status(500).json({ message: "Server error", error: e.message });
+  }
+};
+
+
+export const getProductRatings = async (req, res) => {
+  try {
+    const product_id = req.params.id;
+
+    const ratings = await Rating.findAll({
+      where: { product_id },
+      attributes: ["rating_point"]
+    });
+
+    if (ratings.length === 0) {
+      return res.status(200).json({ average: 0, totalRatings: 0 });
+    }
+
+    const total = ratings.reduce((sum, r) => sum + r.rating_point, 0);
+    const average = total / ratings.length;
+
+    return res.status(200).json({
+      average: parseFloat(average.toFixed(1)), 
+      totalRatings: ratings.length
+    });
+  } catch (e) {
+    console.error("Error fetching ratings:", e);
+    return res.status(500).json({ message: "Server error", error: e.message });
+  }
+};
+
