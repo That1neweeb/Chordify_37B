@@ -1,7 +1,26 @@
 import React from "react";
-import { Edit2, Trash2, Music } from "lucide-react";
+import { Music } from "lucide-react";
+import { approveGuitar, rejectGuitar } from "../api.js";
 
-export default function GuitarInventoryCard({ guitar }) {
+export default function GuitarInventoryCard({ guitar, refreshGuitars }) {
+  const handleApprove = (id) => {
+    approveGuitar(id)
+      .then(() => {
+        alert("Guitar approved!");
+        refreshGuitars(); // refresh parent list
+      })
+      .catch((err) => console.error(err));
+  };
+
+  const handleReject = (id) => {
+    rejectGuitar(id)
+      .then(() => {
+        alert("Guitar rejected!");
+        refreshGuitars(); // refresh parent list
+      })
+      .catch((err) => console.error(err));
+  };
+
   return (
     <div className="bg-zinc-700 rounded-lg p-4">
       <div className="flex items-start gap-4">
@@ -23,11 +42,17 @@ export default function GuitarInventoryCard({ guitar }) {
           <p className="font-semibold">{guitar.price}</p>
           <p className="text-sm text-gray-400">{guitar.sold}</p>
           <div className="flex gap-2 mt-2">
-            <button className="text-blue-400 hover:text-blue-300">
-              <Edit2 size={16} />
+            <button
+              className="bg-lime-500 text-black px-3 py-1 rounded font-bold"
+              onClick={() => handleApprove(guitar.id)}
+            >
+              Approve
             </button>
-            <button className="text-orange-500 hover:text-orange-400">
-              <Trash2 size={16} />
+            <button
+              className="bg-red-500 text-white px-3 py-1 rounded font-bold"
+              onClick={() => handleReject(guitar.id)}
+            >
+              Reject
             </button>
           </div>
         </div>
