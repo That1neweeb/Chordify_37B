@@ -3,6 +3,7 @@ import { Users } from '../models/userModel.js';
 import { passwordHash } from '../utils/hashPassword.js';
 import { generateToken, generateTokenExpiry } from '../utils/generateTokens.js';
 import { sendEmail } from '../utils/sendEmail.js';
+import { generateAccessToken } from '../utils/jwt-util.js';
 
 
 
@@ -124,9 +125,18 @@ export const login = async (req, res) => {
             return res.status(400).json({ message: "Invalid password" });
         }
 
+        
+        // generate token
+        const accessToken = generateAccessToken({
+        id: user.id,
+        email: user.email,
+        role: user.role
+        });
+
         return res.status(200).json({
             message: "Login successful",
-            user: { id: user.id, full_name: user.full_name, email: user.email }
+            user: { id: user.id, full_name: user.full_name, email: user.email },
+            accessToken: accessToken
         });
 
     } catch (err) {
