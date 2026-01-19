@@ -6,3 +6,4 @@ export const passwordHash = async (password) => {
     return hashed_password
 }
 
+
