@@ -1,10 +1,21 @@
 const express = require('express');
 const router = express.Router();
 
-//controller 
 const guitarController = require('../controllers/guitarController');
 
-router.get("/suggested", guitarController.getSuggestedGuitars);
-router.get("/buy", guitarController.getAllGuitars);
+// USER
+router.get('/approved', guitarController.getApprovedGuitars);
+router.get('/suggested', guitarController.getSuggestedGuitars);
+router.post('/',guitarController.addGuitar); //user submits new guitar
+
+// ADMIN
+router.get('/all', guitarController.getAllGuitars);
+
+router.put('/approve/:id', guitarController.approveGuitar);
+router.put('/reject/:id', guitarController.rejectGuitar);
+
+router.get('/rejected', guitarController.getRejectedGuitars);
+router.get('/pending', guitarController.getPendingGuitars); // fetch pending for admin
+
 
 module.exports = router;
