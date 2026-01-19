@@ -1,0 +1,8 @@
+node_modules/
+.vscode/
+
+package-lock.json
+Chordify/package-lock.json
+backend/package-lock.json
+
+.env
