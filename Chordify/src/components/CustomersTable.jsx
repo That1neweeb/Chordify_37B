@@ -1,13 +1,27 @@
-// src/components/CustomersTable.jsx
 import React from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 
 export default function CustomersTable({ customers }) {
+  const navigate = useNavigate();
+  const { setActiveMenu } = useOutletContext();
+
+  const handleApprove = (id) => console.log("Approve customer", id);
+  const handleReject = (id) => console.log("Reject customer", id);
+
   return (
     <div className="bg-zinc-800 rounded-lg p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold">Recent Customers</h3>
-        <button className="text-orange-500 hover:text-orange-400 text-sm">View All &gt;</button>
+        <button
+          className="text-orange-500 hover:text-orange-400 text-sm"
+          onClick={() => {
+            setActiveMenu("User Listing");
+            navigate("/users");
+          }}
+        >
+          View All &gt;
+        </button>
       </div>
       <div className="overflow-x-auto">
         <table className="w-full">
@@ -37,12 +51,18 @@ export default function CustomersTable({ customers }) {
                     {customer.status}
                   </span>
                 </td>
-                <td className="py-4 px-4 flex gap-3">
-                  <button className="text-blue-400 hover:text-blue-300">
-                    <Edit2 size={18} />
+                <td className="py-4 px-4 flex gap-2">
+                  <button
+                    className="bg-lime-500 text-black px-3 py-1 rounded font-bold"
+                    onClick={() => handleApprove(customer.id)}
+                  >
+                    Approve
                   </button>
-                  <button className="text-red-500 hover:text-red-400">
-                    <Trash2 size={18} />
+                  <button
+                    className="bg-red-500 text-white px-3 py-1 rounded font-bold"
+                    onClick={() => handleReject(customer.id)}
+                  >
+                    Reject
                   </button>
                 </td>
               </tr>
