@@ -17,7 +17,7 @@ import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postsRoutes.js';
 import chordsRoutes from './routes/chordsRoutes.js';
-import cartRoutes from './routes/cartRoutes.js';
+import cartRoutes from './routes/cartRoute.js';
 // import './models/association.js'
 
 const app = express();
