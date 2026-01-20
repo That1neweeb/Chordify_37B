@@ -13,6 +13,9 @@ import ViewProfile from "./components/ViewProfile";
 import PasswordReset from "./components/PasswordReset";
 import ChangePassword from "./components/ChangePassword";
 import Logout from "./components/Logout";
+import UploadPage from "./pages/UploadPage";
+import PostsPage from "./pages/PostsPage";
+import ChordLibrary from "./pages/ChordLibrary";
 function App() {
   return (
  
@@ -36,6 +39,9 @@ function App() {
         <Route path="/register" element={<RegistrationPage/>}></Route> 
         <Route path="/login" element={<LoginPage/>}></Route> 
         <Route path="/verify/:token" element={<VerificationPage />} />
+        <Route path="/PostsPage/UploadPage" element={<UploadPage/>}/>
+        <Route path="/PostsPage" element={<PostsPage/>} />
+        <Route path="/Chordslibrary" element={<ChordLibrary/>} />
       </Routes>  
 
     </>

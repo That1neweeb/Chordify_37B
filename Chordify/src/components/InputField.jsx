@@ -33,6 +33,7 @@ function InputField({isRegistration = true}) {
                         navigate('/login');
                  } else {
                          alert(data.message);
+                         localStorage.setItem("token", data.accessToken);
                         navigate('/');
                     }
             } else {

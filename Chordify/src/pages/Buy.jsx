@@ -56,7 +56,7 @@ function Buy() {
             const result = await res.json();
             setProducts(result);
         } catch(e) {
-            console.error("Search error:", err);
+            console.error("Search error:", e);
         }
     }
 

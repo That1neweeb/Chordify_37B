@@ -6,6 +6,10 @@ import { generateToken, generateTokenExpiry } from '../utils/generateTokens.js';
 import { sendEmail } from '../utils/sendEmail.js';
 import multer from 'multer';
 import path from 'path';
+import { generateAccessToken } from '../utils/jwt-util.js';
+
+
+
 
 
 const FRONTEND_BASE_URL = "http://localhost:5173";
@@ -36,8 +40,9 @@ export const registerUser = async (req, res) => {
         }
 
         //password length and contains upper lower special character and number validation 
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
         if (!passwordRegex.test(password)) {
+            console.log(password);
             return res.status(400).json({ 
                 message: "Password must be 8+ chars, include uppercase, lowercase, number & special char" 
             });
@@ -125,6 +130,19 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid password" });
     }
+        
+        // generate token
+        const accessToken = generateAccessToken({
+        id: user.id,
+        email: user.email,
+        role: user.role
+        });
+
+        return res.status(200).json({
+            message: "Login successful",
+            user: { id: user.id, full_name: user.full_name, email: user.email },
+            accessToken: accessToken
+        });
 
     // 🔹 Optional: migrate old passwords to hashed column
     if (!user.password_hash && user.password) {
