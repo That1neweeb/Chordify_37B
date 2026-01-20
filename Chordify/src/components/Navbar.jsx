@@ -11,6 +11,7 @@ import logout from "../assets/images/logout.png"
 import userok from "../assets/images/userok.png"
 import cart from "../assets/images/cart.png"
 import { Link, useLocation } from "react-router-dom";
+import Logout from "./Logout";
 import { useState } from "react"
 
 
@@ -18,6 +19,7 @@ function Navbar() {
     
         const[isOpen, setIsOpen] = useState(false);
         const[selectedItem, setSelectedItem] = useState("");
+        const[showLogout, setShowLogout] = useState(false); 
 
         const toggleArrowButton = () => {
             setIsOpen(prev => !prev)
@@ -66,10 +68,15 @@ function Navbar() {
                 </Link>
 
               
-                <Link to="Aboutus" className="text-white flex items-center gap-1">
-                   <img src={aboutus} alt="" className="size-4"/>
+                {/* <Link to="Aboutus" className="text-white flex items-center gap-1">
+                  
                     Contact us
+                </Link> */}
+                <Link to="/support" className="text-white flex items-center gap-1">
+                 <img src={aboutus} alt="" className="size-4"/>
+                Support
                 </Link>
+
             </div>
             
        
@@ -105,12 +112,13 @@ function Navbar() {
                                     <img src={cart} alt="" className="size-5"/>
                                 </ul>
                             </Link>
-                           
-                            <ul className="cursor-pointer hover:bg-[#3A3939] w-full h-10 flex items-center justify-around gap-4 rounded-xl p-2 mr-4 text-[22px]"
-                            >
-                                Logout
-                                <img src={logout} alt="" className="size-5"/>
-                            </ul>
+                           <ul
+                                    onClick={() => {setShowLogout(true); setIsOpen(false);}}
+                                    className="cursor-pointer hover:bg-[#3A3939] w-full h-10 flex items-center justify-around gap-4 rounded-xl p-2 mr-4 text-[22px]"
+                                >
+                                    Logout
+                                    <img src={logout} alt="" className="size-5"/>
+                                </ul>
                         </div>
                     )
                 }
@@ -123,6 +131,10 @@ function Navbar() {
 
             </div>
           
+            {/* Logout */}
+            {showLogout && (
+                <Logout onClose={() => setShowLogout(false)} />
+            )}
 
      </div>
     );

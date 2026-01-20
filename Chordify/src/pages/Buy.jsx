@@ -78,7 +78,48 @@ function Buy() {
         </div>
         <div className="flex justify-around mr-8 mt-20">
 
-            <div className="bg-[#393328] w-64 h-[800px] rounded-2xl ml-5"></div>
+            <div className="bg-[#393328] w-64 h-[800px] rounded-2xl ml-5">
+                <h1 className="text-2xl font-bold m-6">Filter </h1>
+                {/* FilterProducts */}
+                <div className="m-6">
+                    <h2 className="text-xl font-semibold mb-4">Brands</h2>
+                    <ul className="space-y-2">
+                        {["Fender", "Gibson", "Ibanez", "Yamaha", "Epiphone"].map((brand) => (
+                            <li key={brand}>
+                                <label className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity">
+                                    <input
+                                        type="radio"
+                                        name="brand"
+                                        className="w-4 h-4 accent-black cursor-pointer"
+                                    />
+                                    <span className="font-medium text-white text-base">
+                                        {brand}
+                                    </span>
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
+                    </div>
+                    <div className="m-6">
+                    <h2 className="text-xl font-semibold mb-4">Price Range</h2>
+                    <ul className="space-y-2">
+                        {["0 – 5,000", "5,000 – 10,000", "10,000 – 20,000", "20,000 – 30,000", "30,000 – 50,000"].map((price) => (
+                            <li key={price}>
+                                <label className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity">
+                                    <input
+                                        type="radio"    
+                                        name="price"
+                                        className="w-4 h-4 accent-black cursor-pointer"
+                                    />
+                                    <span className="font-medium text-white text-base">
+                                        {price}
+                                    </span>
+                                </label>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
 
             <div className="ml-12">
                 <h1 className="text-4xl font-bold">Products</h1>

@@ -1,3 +1,4 @@
+
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Sale from "./pages/Sale";
@@ -8,6 +9,10 @@ import {Routes, Route} from "react-router-dom"
 import RegistrationPage from "./pages/Register";
 import LoginPage from "./pages/Login";
 import VerificationPage from "./pages/VerificationPage";
+import ViewProfile from "./components/ViewProfile";
+import PasswordReset from "./components/PasswordReset";
+import ChangePassword from "./components/ChangePassword";
+import Logout from "./components/Logout";
 import UploadPage from "./pages/UploadPage";
 import PostsPage from "./pages/PostsPage";
 import ChordLibrary from "./pages/ChordLibrary";
@@ -16,9 +21,15 @@ function App() {
  
    <>
       <Navbar/>
-     
-      <div className="w-full h-px bg-[#777061] mt-3"></div> 
-
+     {/* <ViewProfile></ViewProfile> */}
+     {/* <Logout></Logout> */}
+      <div className="w-full h-px bg-[#777063] mt-3"></div> 
+      {/* <Routes>
+        <Route path="/" element={<ViewProfile />} />
+        <Route path="/logout" element={<Logout />} />
+        <Route path="/password-reset" element={<PasswordReset />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+      </Routes> */}
       <Routes>
         <Route path="/" element={<Home/>}/>
         <Route path="/Sell" element={<Sale/>}></Route>
