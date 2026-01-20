@@ -1,4 +1,4 @@
-import { Chords } from "../models/Chords";
+import { Chords } from "../models/Chords.js";
 export const getAllChords = async (req, res)=>{
     try{
         const chords = await Chords.findAll();
