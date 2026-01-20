@@ -3,26 +3,68 @@ import electric2 from "../assets/images/electric2.png"
 import acoustic from "../assets/images/acoustic.png"
 import CartTable from "../components/CartTable";
 import CartFooter from "../components/CartFooter";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function CartPage() {
-       const cartItems = [
-      {
-        id: 1,
-        name: "Dream Maker Semi Acoustic Guitar",
-        brand: "Yamaha",
-        price: 15000,
-        image: electric2,
-        quantity: 1,
-      },
-      {
-        id: 2,
-        name: "Dream Maker UK21 (combo)",
-        brand: "Enya",
-        price: 3500,
-        image: acoustic,
-        quantity: 1,
-      },
-    ];
+
+
+    const[cartItems, setCartItems] = useState([]);
+    const user_id = 13; //hard coded for now bc i havent set the authtoken
+    
+    //to fetch the cart items that the user has added 
+    useEffect(()=> {
+        const fetchCart = async() => {
+            try {
+                const res  = await axios.get(`http://localhost:5000/cart/items?user_id=${user_id}`);
+                setCartItems(res.data.cartItems);
+            } catch(e) {
+                console.log(e);
+            }
+        };
+
+        fetchCart();
+    }, []);
+
+    // to update the quantity of cartitems in the database / backend
+    const updateQuantity = async(cartItemId, newQty) => {
+        try {
+            await axios.patch(`http://localhost:5000/cart/item/${cartItemId}`, {
+                quantity : newQty
+            });
+
+            setCartItems(prev=> 
+                prev.map(item => item.id === cartItemId ? {...item, quantity: newQty} : item)
+            )
+        } catch(e) {
+            console.log("Error updating quantity : ", e);
+            
+        }
+    }
+
+    //to increase the quantity of item of cart
+    const increaseQty = (id) => {
+    setCartItems(prev =>
+        prev.map(item =>
+        item.id === id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+    );
+    };
+
+    //to decrease the quantity of item of cart
+    const decreaseQty = (id) => {
+    setCartItems(prev =>
+        prev.map(item =>
+        item.id === id && item.quantity > 1
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        )
+    );
+    };
+
+
 
 
     //total price calculation
@@ -39,10 +81,13 @@ function CartPage() {
                 {cartItems.map(item => (
                     <CartCard
                         key={item.id}
-                        image={item.image}
+                        id={item.id}
+                        image={`http://localhost:5000${item.image}`}
                         productBrand={item.brand}
                         productName={item.name}
                         price={item.price}
+                        quantity={item.quantity}
+                        onQuantityChange={updateQuantity}
                     />
                 ))}
             </div>
