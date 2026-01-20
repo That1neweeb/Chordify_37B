@@ -1,5 +1,4 @@
 import { Songs } from "../models/songModel.js"
-
 export const getRecommendedSongs = async (req,res) => {
     try {
         const songs = await Songs.findAll();
