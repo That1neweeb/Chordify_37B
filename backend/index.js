@@ -17,6 +17,7 @@ import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postsRoutes.js';
 import chordsRoutes from './routes/chordsRoutes.js';
+import cartRoutes from './routes/cartRoutes.js';
 // import './models/association.js'
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/songs', songRoutes); //to fetch songs
 app.use('/auth', authRoutes); //to login, register, verify email
 app.use("/posts",postRoutes ); // to upload and fetch posts
 app.use("/chords", chordsRoutes); // to fetch chords and add other features later on
+app.use('/cart', cartRoutes); //to add to cart, remove
 
 
 app.listen(5000);
