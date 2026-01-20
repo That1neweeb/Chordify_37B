@@ -12,5 +12,5 @@ export const Cart = sequelize.define("Cart", {
         type: DataTypes.INTEGER,
         allowNull:false
     }
-})
+});
 

@@ -10,6 +10,7 @@ import LoginPage from "./pages/Login";
 import VerificationPage from "./pages/VerificationPage";
 import UploadPage from "./pages/UploadPage";
 import PostsPage from "./pages/PostsPage";
+import ChordLibrary from "./pages/ChordLibrary";
 function App() {
   return (
  
@@ -29,6 +30,7 @@ function App() {
         <Route path="/verify/:token" element={<VerificationPage />} />
         <Route path="/PostsPage/UploadPage" element={<UploadPage/>}/>
         <Route path="/PostsPage" element={<PostsPage/>} />
+        <Route path="/Chordslibrary" element={<ChordLibrary/>} />
       </Routes>  
 
     </>
