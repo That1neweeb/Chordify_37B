@@ -70,7 +70,8 @@ export const registerUser = async (req, res) => {
         const verificationURL = `${FRONTEND_BASE_URL}/verify/${verification_token}`;
 
         //send email verification
-        await sendEmail(
+        try{
+            await sendEmail(
             newUser.email,
             "Verify your Chordify account",
             `
@@ -80,6 +81,12 @@ export const registerUser = async (req, res) => {
             <p>This link expires in 24 hours.</p>
             `
         );
+        }
+        catch(err){
+            console.log(err);
+
+        }
+        
 
         //send response after email is sent
         return res.status(201).json({

@@ -19,7 +19,7 @@ function VerificationPage() {
             hasVerified.current = true;
             try {
  
-                const res = await fetch(`http://localhost:5000/users/verify/${token}`);
+                const res = await fetch(`http://localhost:5000/auth/verify/${token}`);
                 const data = await res.json();
 
                 setMessage(data.message);

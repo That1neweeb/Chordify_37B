@@ -10,6 +10,7 @@ import uparrow from "../assets/images/arrow-up.png"
 import logout from "../assets/images/logout.png"
 import userok from "../assets/images/userok.png"
 import cart from "../assets/images/cart.png"
+import posts from "../assets/images/live-line.png"
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react"
 
@@ -48,6 +49,7 @@ function Navbar() {
              {/* nav links */}
             <div className="flex gap-12">
                 <Link to="PostsPage" className="text-white flex items-center gap-1">
+                <img src={posts} alt=""/>
                 Posts
                 </Link>
                 <Link to="Buy" className="text-white flex items-center gap-1">
