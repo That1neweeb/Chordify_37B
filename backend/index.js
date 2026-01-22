@@ -36,7 +36,7 @@ app.use('/products', productRoutes); //to fetch products
 app.use('/songs', songRoutes); //to fetch songs
 app.use('/auth', authRoutes); //to login, register, verify email
 app.use('/support', supportRoutes); //to send support messages
-app.use("/api", profileRoutes);// to profile
+
 
 
 app.listen(5000);

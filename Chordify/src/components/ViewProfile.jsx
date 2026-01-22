@@ -22,11 +22,18 @@ function ViewProfile() {
 
   const token = localStorage.getItem("token");
 
+  // Redirect to login if not logged in
+  useEffect(() => {
+    if (!token) {
+      window.location.href = "/login";
+    }
+  }, [token]);
+
   // Fetch user profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/profile", {
+        const res = await fetch("http://localhost:5000/auth/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -77,7 +84,7 @@ function ViewProfile() {
         formData.append("profile_image", user.profile_image);
       }
 
-      const res = await fetch("http://localhost:5000/api/profile/update", {
+      const res = await fetch("http://localhost:5000/auth/profile/update", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -91,7 +98,6 @@ function ViewProfile() {
         alert("Profile updated successfully!");
         setIsEditing(false);
 
-        // Update preview if backend returns new profile image
         if (data.user.profile_image) {
           setPreviewImage(`http://localhost:5000/images/${data.user.profile_image}`);
         }
@@ -101,6 +107,31 @@ function ViewProfile() {
     } catch (err) {
       console.error("Error updating profile:", err);
       alert("Error updating profile");
+    }
+  };
+
+  // Handle account deletion
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete your account?")) return;
+    try {
+      const res = await fetch("http://localhost:5000/auth/delete-acc", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        alert(data.message);
+        localStorage.removeItem("token");
+        window.location.href = "/login";
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete account");
     }
   };
 
@@ -226,7 +257,7 @@ function ViewProfile() {
                   Change Password
                 </button>
                 <button
-                  onClick={() => setShowDelete(true)}
+                  onClick={handleDelete}
                   className="w-full bg-[#3a3a3a] py-3 rounded-xl text-red-500"
                 >
                   Delete Account

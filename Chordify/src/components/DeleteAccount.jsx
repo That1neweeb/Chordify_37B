@@ -1,49 +1,77 @@
 import React from "react";
 import { X, AlertCircle, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export default function DeleteAccount({ onClose }) {
-  const handleDelete = () => {
-    // Add your delete logic here
-    console.log("Account deleted");
-    onClose();
+  const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        alert("You are not logged in");
+        return;
+      }
+
+      const res = await fetch("http://localhost:5000/auth/delete-acc", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        console.log(data.message);
+
+        // Remove token after delete
+        localStorage.removeItem("token");
+
+        onClose();
+        navigate("/login");
+      } else {
+        alert(data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/80" onClick={onClose}></div>
 
-      {/* Modal */}
-      <div className="relative bg-gray-900 border border-gray-700 rounded-3xl p-10 max-w-md w-full z-10">
-        {/* X Button */}
+      <div className="relative bg-[#1a1a1a] border border-[#8B6914] rounded-3xl p-10 max-w-md w-full z-10">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 text-gray-400 hover:text-[#D4AF37]"
         >
           <X />
         </button>
 
-        {/* Warning Message */}
-        <div className="bg-gray-800 p-4 rounded-xl border border-gray-700 mb-6">
+        <div className="bg-[#2a2520] p-4 rounded-xl border border-[#8B6914] mb-6">
           <div className="flex gap-3 items-center">
-            <AlertCircle className="text-amber-500 w-6 h-6 flex-shrink-0" />
+            <AlertCircle className="text-[#D4AF37] w-6 h-6" />
             <p className="text-gray-300 text-sm">
-              Are you sure you want to delete your account? This action is <strong>irreversible</strong>.
+              Are you sure? This action is{" "}
+              <strong className="text-[#D4AF37]">irreversible</strong>.
             </p>
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-xl transition-colors"
+            className="flex-1 bg-[#3a3a3a] text-white py-3 rounded-xl"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+            className="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2"
           >
             <Trash2 className="w-5 h-5" />
             Delete Account

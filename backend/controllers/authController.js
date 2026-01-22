@@ -388,19 +388,20 @@ export const upload = multer({ storage });
 // Delete current user account
 export const deleteAccount = async (req, res) => {
   try {
-    const userId = req.user.id; // assuming authMiddleware attaches user to req.user
+    const userId = req.user.id;
 
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    // ❌ Delete user permanently from DB
+    await Users.destroy({
+      where: { id: userId },
+    });
 
-    // Delete user
-    await Users.destroy({ where: { id: userId } });
-
-    // Optionally: clear cookie
-    res.clearCookie("token"); // assuming your JWT is stored in a cookie named 'token'
-
-    return res.status(200).json({ message: "Account deleted successfully" });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Something went wrong" });
+    return res.status(200).json({
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Failed to delete account",
+    });
   }
 };
