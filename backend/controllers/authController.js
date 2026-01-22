@@ -16,17 +16,18 @@ export const registerUser = async (req, res) => {
         const { full_name, email, password, c_password } = req.body;
 
         //fields validation
-        if(!full_name || full_name.trim() === "") return res.status(400).json({message: "Fullname is required"});
+        if (!fullname || fullname.trim() === "") return res.status(400).json({message:"Fullname is required"});
         
-        if(!email || email.trim() === "") return res.status(400).json({message: "Email is required"});
+        if (!email || email.trim() === "") return res.status(400).json({message:"Email is required"});
        
+        
         // email format validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: "Invalid email format" });
+        return res.status(400).json({ message: "Invalid email format" });
         }
 
-        if(!password || password.trim() === "") return res.status(400).json({message: "Password is required"});
+        if (!password || password.trim() === "") return res.status(400).json({message:"Password is required"});
         if(!c_password || c_password.trim() === "") return res.status(400).json({message: "Confirm Password is required"});
     
 
@@ -136,9 +137,9 @@ export const login = async (req, res) => {
         
         // generate token
         const accessToken = generateAccessToken({
-        id: user.id,
-        email: user.email,
-        role: user.role
+            id: user.id,
+            email: user.email,
+            role: user.role
         });
 
         return res.status(200).json({
@@ -146,6 +147,7 @@ export const login = async (req, res) => {
             user: { id: user.id, full_name: user.full_name, email: user.email },
             accessToken: accessToken
         });
+        
 
     } catch (err) {
         console.error("Login error:", err);

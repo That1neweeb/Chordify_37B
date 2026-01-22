@@ -9,8 +9,8 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import CommentModal from '../components/CommentModal'
-import { useApi } from '../hooks/useAPi'
 import StarRating from '../components/StarRating'
+import useApi from '../hooks/useAPI.js'
 
 function ProductDescriptionPage() {
     const { id } = useParams()
@@ -19,6 +19,11 @@ function ProductDescriptionPage() {
     const [loading, setLoading] = useState(true);
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     // const [totalRatings, setTotalRatings] = useState(0); 
+
+
+    const {callApi} = useApi();
+
+
     
     
     
@@ -74,7 +79,15 @@ function ProductDescriptionPage() {
         }
     }
 
-  
+    //add product to favourite
+    const addToFav = async () => {
+        try {
+            const res = await callApi("POST", `/favourites/${product.id}`, {});
+            console.log("Added to favourite:", res);
+        } catch (err) {
+            console.log("Error adding favourite:", err);
+        }
+    };
 
 
     return (
@@ -108,7 +121,7 @@ function ProductDescriptionPage() {
                         
                         <div className='flex gap-2 items-center'>
                         
-                            <button>
+                            <button onClick={()=> addToFav()}>
                                 <img src={favourite} alt="" className='w-8 object-fit'/>
                             </button>
 
