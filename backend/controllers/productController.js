@@ -60,7 +60,7 @@ export const getSuggestedProducts = async (req,res) => {
 
 export const addProduct = async (req, res) => {
     try {
-        const { name, brand, price, condition, rating, category, type, description } = req.body;
+        const { name, brand, price, condition, category, type, description } = req.body;
 
         if(category === 'guitar' && !type) {
             return res.status(400).json({message: "Guitar type is required"});
@@ -70,7 +70,18 @@ export const addProduct = async (req, res) => {
             return res.status(400).json({ message: "No images uploaded" });
         }
 
-        const image_urls = req.files.map(file => `/uploads/${file.filename}`);
+        const image_urls = req.files.map((file) => `/uploads/${file.filename}`);
+
+        //validations
+        if(!name || name.trim() === "") return res.status(400).json({message: "Product's name is required"});
+        if(!brand || brand.trim() === "") return res.status(400).json({message: "Brand is required"});
+        if(!condition || condition.trim() === "") return res.status(400).json({message: "Condition is required"});
+        if(!category || category.trim() === "") return res.status(400).json({message: "Category is required"});
+        if(category === 'guitar' && (!type || type.trim() === "")) {
+            return res.status(400).json({message: "Type is required"});
+        }
+        if(!description || description.trim() === "") return res.status(400).json({message: "Description is required"});
+        if(!price || isNaN(price)) return res.status(400).json({message: "Price must be a number"});
 
         // Create product
         const product = await Products.create({
@@ -78,7 +89,6 @@ export const addProduct = async (req, res) => {
             brand,
             price,
             condition,
-            rating,
             category,
             image_urls, 
             description
@@ -101,8 +111,6 @@ export const addProduct = async (req, res) => {
         console.error("Database error: " + err);
         res.status(500).json({ message: "Server error" });
     }
-
-
 }
 
 export const searchProduct = async (req,res) => {
