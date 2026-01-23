@@ -4,9 +4,9 @@ import { Sequelize } from "sequelize";
 dotenv.config()
 
 export const sequelize = new Sequelize(
-    "practice_db", //db name
+    "chordify_db", //db name
     "postgres", //db user
-    "postgres", //db password
+    "1234", //db password
     {
         host: "localhost",
         dialect: "postgres"
@@ -18,7 +18,7 @@ export const connection = async () => {
         //alter : true tries to match table with model
         //force : true drop existing tables and create new one
 
-        await sequelize.sync()
+        await sequelize.sync({ alter: true })
         console.log("Database connection successful");
         
     } catch(e) {
