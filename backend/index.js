@@ -36,6 +36,8 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/products', productRoutes); //to fetch products
 app.use('/songs', songRoutes); //to fetch songs
 app.use('/auth', authRoutes); //to login, register, verify email
+app.use('/support', supportRoutes); //to send support messages
+app.use("/api", profileRoutes);// to profile
 app.use("/posts",postRoutes ); // to upload and fetch posts
 app.use("/chords", chordsRoutes); // to fetch chords and add other features later on
 app.use('/cart', cartRoutes); //to add to cart, remove
@@ -44,4 +46,5 @@ app.use('/strumming',strummingPatternRoutes); // for strumming pattern exercises
 
 
 app.listen(5000);
+
 
