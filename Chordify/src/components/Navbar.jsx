@@ -11,7 +11,7 @@ import logout from "../assets/images/logout.png"
 import userok from "../assets/images/userok.png"
 import cart from "../assets/images/cart.png"
 import { Link, useLocation } from "react-router-dom";
-import { ThemeContext } from "./Light&DarkTheme"
+import { ThemeContext } from "./LightDarkTheme"
 import Logout from "./Logout";
 import { useState, useContext } from "react"
 
@@ -52,11 +52,11 @@ function Navbar() {
             
              {/* nav links */}
             <div className="flex gap-12">
-                <Link to="PostsPage" className="text-white flex items-center gap-1">
+                <Link to="PostsPage" className=" flex items-center gap-1">
                 Posts
                 </Link>
-                <Link to="Buy" className="text-white flex items-center gap-1">
-                    <img src={shoppingcart} alt="" className="size-4"/>
+                <Link to="Buy" className=" flex items-center gap-1">
+                    <img src={shoppingcart} alt="" className="size-4 icon"/>
                     Buy
                 </Link>
 

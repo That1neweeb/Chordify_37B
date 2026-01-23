@@ -110,33 +110,8 @@ function ViewProfile() {
     }
   };
 
-  // Handle account deletion
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete your account?")) return;
-    try {
-      const res = await fetch("http://localhost:5000/auth/delete-acc", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(data.message);
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        alert(data.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete account");
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
+    <div className="min-h-screen text-white">
       <div className="p-6 max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">My Profile</h1>
 
@@ -246,18 +221,18 @@ function ViewProfile() {
               <div className="mt-8 space-y-4">
                 <button
                   onClick={() => setShowReset(true)}
-                  className="w-full bg-[#3a3a3a] py-3 rounded-xl"
+                  className="w-full bg-[#3a3a3a] py-3 rounded-xl text-green-500"
                 >
                   Reset Password
                 </button>
                 <button
                   onClick={() => setShowChange(true)}
-                  className="w-full bg-[#3a3a3a] py-3 rounded-xl"
+                  className="w-full bg-[#3a3a3a] py-3 rounded-xl text-green-500"
                 >
                   Change Password
                 </button>
                 <button
-                  onClick={handleDelete}
+                  onClick={() => setShowDelete(true)}
                   className="w-full bg-[#3a3a3a] py-3 rounded-xl text-red-500"
                 >
                   Delete Account
