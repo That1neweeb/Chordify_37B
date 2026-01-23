@@ -3,7 +3,7 @@ import cross from "../assets/images/cross-button.png"
 import guitarplaying from "../assets/images/guitarplaying.png"
 import { useEffect, useState } from "react";
 import CommentCard from "./CommentCard";
-import { useApi } from "../hooks/useAPi";
+import { useApi } from "../hooks/useAPI.js";
 
 function CommentModal({ product_id, close}) {
 

@@ -2,18 +2,18 @@ import { Link } from "react-router-dom";
 import PostCard from "../components/PostCard";
 import countdownVideo from "../assets/vecteezy_seconds-countdown-timer-animation-4k-green-screen_47387056.mp4";
 import { useEffect, useState } from "react";
-import { apiRequest } from "../hooks/useAPI";
+import { useApi } from "../hooks/useAPI";
 export default function PostsPage() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,setError] = useState(null);
 
-  const {callApi} = apiRequest();
+  const {callApi} = useApi();
 
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const res = await callApi("GET","/posts/getAllVideos", {});
+        const res = await callApi("GET","/posts/getAllVideos");
         const data = await res.json();
         setPosts(Array.isArray(data) ? data : []);
 

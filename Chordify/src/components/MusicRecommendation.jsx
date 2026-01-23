@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import SongCard from "./SongCard";
+import useApi from "../hooks/useAPI";
 
 function MusicRecommendation() {
 
      const [songs, setSongs] = useState([]);
+     const{callApi, loading, error} = useApi();
     
     useEffect(() => {
         async function fetchSongs() {
             try {
-                const response = await fetch("https://localhost:5000/songs/recommended");
+                const response = await callApi("GET","/songs/recommended");
                 const data = await response.json();
                 setSongs(data);
             } catch(err) {
@@ -24,11 +26,7 @@ function MusicRecommendation() {
             <div className="mt-10">
                 {songs.map(song=> (
                     <SongCard
-                        key={song.id}
-                        id={song.id}
-                        cover_image={`http://localhost:5000${song.cover_image}`}
-                        song_name={song.title}
-                        artist={song.artist}
+                        song={song}
                     />
                 ))}
 

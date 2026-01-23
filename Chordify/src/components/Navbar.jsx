@@ -40,6 +40,9 @@ function Navbar() {
       <div className="flex gap-8 items-center">
         {isAuthenticated && (
           <>
+            <Link to="/posts" className="flex items-center gap-1 text-white">
+            <img src={posts} alt="" className="size-4"/> Posts
+            </Link>
             <Link to="/buy" className="flex items-center gap-1 text-white">
               <img src={shoppingcart} alt="" className="size-4" /> Buy
             </Link>

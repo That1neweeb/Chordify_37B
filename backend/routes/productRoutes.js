@@ -1,7 +1,8 @@
 import express from 'express';
 import { getSuggestedProducts, getAllProducts, addProduct, searchProduct, getProductById, addComment, fetchComments, giveRating, getProductRatings } from '../controllers/productController.js';
 import { isAuthenticated } from '../middleware/authMiddleware.js'
-import { upload } from '../middleware/multerConfig.js';
+// import { upload } from '../middleware/multerConfig.js';
+import { upload } from '../utils/uploadConfig.js';
 
 const router = express.Router();
 
