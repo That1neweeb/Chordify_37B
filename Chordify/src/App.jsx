@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AdminLayout from './layouts/AdminLayout'; // <-- import layout
-import AdminDashboard from './pages/AdminDashboard';
-import ProductListing from './pages/ProductListing';
-import UserListing from './pages/UserListing';
-import GuitarListing from './pages/GuitarListing';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import ProductListing from './pages/Admin/ProductListing';
+import UserListing from './pages/Admin/UserListing';
+import GuitarListing from './pages/Admin/GuitarListing';
 
 function App() {
   return (
