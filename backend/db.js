@@ -1,18 +1,27 @@
-//used pool for guitar part 
+// dbSequelize.js
+//used sequalize for product and user part
 require('dotenv').config();
-const { Pool } = require('pg');
+const { Sequelize } = require('sequelize');
 
-const pool = new Pool({
-    user: process.env.DB_USER,
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASSWORD,
+  {
     host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: 5432
-});
+    port: process.env.DB_PORT,
+    dialect: 'postgres',
+    logging: false,
+  }
+);
 
-pool.on('connect', () => {
-  console.log('Connected to PostgreSQL database (Guitar) successfully!');
-});
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log('Sequelize connected to DB successfully!');
+  } catch (err) {
+    console.error('Unable to connect to DB:', err);
+  }
+})();
 
-
-module.exports = pool;
+module.exports = sequelize;
