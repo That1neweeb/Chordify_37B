@@ -11,8 +11,9 @@ import logout from "../assets/images/logout.png"
 import userok from "../assets/images/userok.png"
 import cart from "../assets/images/cart.png"
 import { Link, useLocation } from "react-router-dom";
+import { ThemeContext } from "./Light&DarkTheme"
 import Logout from "./Logout";
-import { useState } from "react"
+import { useState, useContext } from "react"
 
 
 function Navbar() {
@@ -20,6 +21,8 @@ function Navbar() {
         const[isOpen, setIsOpen] = useState(false);
         const[selectedItem, setSelectedItem] = useState("");
         const[showLogout, setShowLogout] = useState(false); 
+        const { theme, toggleTheme } = useContext(ThemeContext);
+
 
         const toggleArrowButton = () => {
             setIsOpen(prev => !prev)
@@ -42,7 +45,7 @@ function Navbar() {
 
             <Link to="/" className="flex ml-4 gap-4 items-center">
                 <img src={logo} alt="Logo" className = "size-16"/>
-                <h1 className="text-white text-4xl">Chordify</h1>
+                <h1 className=" text-4xl">Chordify</h1>
             </Link>
 
 
@@ -57,13 +60,13 @@ function Navbar() {
                     Buy
                 </Link>
 
-                <Link to="Sell" className="text-white flex items-center gap-1">
-                    <img src={coins} alt="" className="size-4"/>
+                <Link to="Sell" className=" flex items-center gap-1">
+                    <img src={coins} alt="" className="size-4 icon"/>
                     Sell
                 </Link>
 
-                <Link to="Learn" className="text-white flex items-center gap-1">
-                   <img src={guitar} alt="" className="size-4"/>
+                <Link to="Learn" className=" flex items-center gap-1">
+                   <img src={guitar} alt="" className="size-4 icon"/>
                     Learn
                 </Link>
 
@@ -72,14 +75,21 @@ function Navbar() {
                   
                     Contact us
                 </Link> */}
-                <Link to="/support" className="text-white flex items-center gap-1">
-                 <img src={aboutus} alt="" className="size-4"/>
+                <Link to="/support" className=" flex items-center gap-1">
+                 <img src={aboutus} alt="" className="size-4 icon"/> 
                 Support
                 </Link>
 
+                
+
             </div>
-            
-       
+
+             <button onClick={toggleTheme} className="theme-toggle">
+                {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+                </button>
+
+
+
             <div className="mr-6 flex gap-4 mr-20 relative">
                 
                     <div className="bg-[#282828] rounded-xl h-12 flex items-center">
@@ -95,6 +105,7 @@ function Navbar() {
                 {
                     isOpen && (   
                         <div className="absolute mt-20 bg-[#282828] size-44 rounded-xl right-[1px] p-2 flex flex-col gap-4">
+                           <Link to="/profile">
                             <ul 
                                 onClick={()=>handleMenuSelect("profile")}
                                 className={`cursor-pointer hover:bg-[#3A3939] w-full h-10 flex items-center items-center justify-around gap-2 rounded-xl p-2 text-[22px] ${selectedItem === "profile" ? "bg-[#3A3939]" : "bg-transparent"}`}  
@@ -102,6 +113,7 @@ function Navbar() {
                                 Profile
                                 <img src={userok} alt="" className="size-5"/>
                             </ul>
+                            </Link>
 
                             <Link to="/cart">
                                 <ul 
