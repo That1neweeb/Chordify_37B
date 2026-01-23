@@ -50,4 +50,7 @@ CartItem.belongsTo(Products, {
 export {
   Products,
   GuitarDetails,
+  CartItem,
+  Cart,
+  Users
 };

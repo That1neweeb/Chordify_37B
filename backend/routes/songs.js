@@ -3,13 +3,12 @@ const router = express.Router();
 
 
 // Controller
-import { getRecommendedSongs,getSongContent,searchSongs } from '../controllers/songController.js';
+import { getRecommendedSongs } from '../controllers/songController.js';
 
 
 // Fetch recommended songs
 router.get("/recommended", getRecommendedSongs);
-router.get("/songContent",getSongContent);
-router.get("/searchSong",searchSongs)
+// router.get("/songContent",getSongContent);
+// router.get("/searchSong",searchSongs)
 
-module.exports = router;
-
+export default router;

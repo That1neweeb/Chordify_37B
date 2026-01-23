@@ -6,7 +6,7 @@ const router = express.Router();
 import { registerUser, login, verifyUser } from '../controllers/authController.js';
 
 // Routes
-router.post('/me', isAuthenticated, (req,res) => {
+router.get('/me', isAuthenticated, (req,res) => {
     res.status(200).json({
         user: req.user
     });

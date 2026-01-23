@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from 'url';
+import { createUploadsFolder } from "./utils/helper.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -30,7 +31,8 @@ connection();
 app.use(express.json());
 app.use(cors());
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+createUploadsFolder(); 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 //Routes :
