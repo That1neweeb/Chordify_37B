@@ -1,27 +1,30 @@
 import jwt from "jsonwebtoken";
-import { Users } from "../models/userModel.js";
 
-const JWT_SECRET = "your-secret-key-here-change-in-production";
+export const isAuthenticated = (req, res, next) => {
+    try {
 
-export const protect = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
+        //taking the token from header
+        const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "Not authorized, token missing" });
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            return res.status(401).json({ message: "Not authorized" });
+        }
+
+        //token extract
+        const token = authHeader.split(" ")[1];
+
+        //verifying the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        //attaching the user ino
+        req.user = {
+            id: decoded.id,
+            email: decoded.email,
+            role: decoded.role,
+        };
+
+        next();
+    } catch (err) {
+        return res.status(401).json({ message: "Invalid or expired token" });
     }
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, JWT_SECRET);
-
-    const user = await Users.findByPk(decoded.id);
-    if (!user) {
-      return res.status(401).json({ message: "User not found" });
-    }
-
-    req.user = user; // attach user to request
-    next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
-  }
 };

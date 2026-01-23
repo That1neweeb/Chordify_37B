@@ -12,7 +12,7 @@ const basiccards = [
 function LearnBasics() {
 
     return(
-        <div className="mt-32 ">
+        <div className="mt-32 pb-10">
             <h2 className="font-bold text-2xl">Learn Basics</h2>
             <div className="grid grid-cols-3 mt-10">
                 {basiccards.map((basiccard,index)=>
