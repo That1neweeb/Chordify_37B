@@ -1,6 +1,6 @@
 // models/productModel.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../dbSequalize');
+const sequelize = require('../db');
 
 const Product = sequelize.define('Product', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
