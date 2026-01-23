@@ -15,8 +15,11 @@ import cors from "cors";
 import productRoutes from './routes/productRoutes.js';
 import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
-import supportRoutes from './routes/supportRoutes.js';
-import profileRoutes from "./routes/authRoutes.js"; 
+import cartRoutes from './routes/cartRoute.js';
+// import './models/association.js'
+
+
+
 
 
 import postRoutes from './routes/postsRoutes.js';
