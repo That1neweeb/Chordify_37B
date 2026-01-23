@@ -52,8 +52,11 @@ function Navbar() {
             
              {/* nav links */}
             <div className="flex gap-12">
-                <Link to="Buy" className=" flex items-center gap-1">
-                    <img src={shoppingcart} alt="" className="size-4 icon"/>
+                <Link to="PostsPage" className="text-white flex items-center gap-1">
+                Posts
+                </Link>
+                <Link to="Buy" className="text-white flex items-center gap-1">
+                    <img src={shoppingcart} alt="" className="size-4"/>
                     Buy
                 </Link>
 
