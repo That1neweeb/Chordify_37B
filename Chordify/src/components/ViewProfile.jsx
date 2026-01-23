@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Camera, Edit3 } from "lucide-react";
 import PasswordReset from "./PasswordReset";
 import ChangePassword from "./ChangePassword";
 import DeleteAccount from "./DeleteAccount";
@@ -133,7 +132,6 @@ function ViewProfile() {
                 </div>
 
                 <label className="absolute bottom-0 right-0 bg-[#D4AF37] p-2 rounded-full cursor-pointer">
-                  <Camera className="w-5 h-5 text-black" />
                   <input
                     type="file"
                     accept="image/*"
@@ -152,7 +150,6 @@ function ViewProfile() {
                 onClick={() => setIsEditing(!isEditing)}
                 className="mt-6 w-full bg-[#D4AF37] text-black py-3 rounded-lg flex justify-center items-center gap-2"
               >
-                <Edit3 className="w-4 h-4" />
                 {isEditing ? "Cancel Edit" : "Edit Profile"}
               </button>
 

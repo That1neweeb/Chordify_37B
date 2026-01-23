@@ -35,12 +35,18 @@ function App() {
         <Route path="/password-reset" element={<PasswordReset />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/change-password" element={<ChangePassword />} />
+
         <Route path="/logout" element={<Logout />} />
+        
         <Route path="/postspage" element={<PostsPage />} />
         <Route path="/postspage/uploadpage" element={<UploadPage />} />
         <Route path="/chordslibrary" element={<ChordLibrary />} />
         <Route path="/profile" element={<ViewProfile />} />
+
+
         <Route path="/support" element={<CustomerSupport />} />
+
+
       </Routes>
     </>
   );

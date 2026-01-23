@@ -80,16 +80,11 @@ function Navbar() {
                 Support
                 </Link>
 
-                
-
             </div>
-
              <button onClick={toggleTheme} className="theme-toggle">
                 {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
                 </button>
-
-
-
+                
             <div className="mr-6 flex gap-4 mr-20 relative">
                 
                     <div className="bg-[#282828] rounded-xl h-12 flex items-center">

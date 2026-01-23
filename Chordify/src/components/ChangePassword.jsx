@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { X, Lock } from "lucide-react";
 
 export default function ChangePassword({ onClose }) {
   const [currentPassword, setCurrentPassword] = useState("");
