@@ -1,8 +1,8 @@
 // src/layouts/AdminLayout.jsx
 import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import AdminHeader from "../components/AdminHeader";
+import Sidebar from "../components/Adminpart/Sidebar";
+import AdminHeader from "../components/Adminpart/AdminHeader";
 
 export default function AdminLayout() {
   const [activeMenu, setActiveMenu] = useState("Dashboard");
