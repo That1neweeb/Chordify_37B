@@ -84,7 +84,7 @@ function Navbar() {
                     }`}
                   >
                     Profile
-                    <img src={userok} alt="" className="size-5" />
+                    <img src={userok} alt ="" className="size-5" />
                   </div>
                 </Link>
 

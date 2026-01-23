@@ -18,6 +18,8 @@ import authRoutes from './routes/authRoutes.js';
 import postRoutes from './routes/postsRoutes.js';
 import chordsRoutes from './routes/chordsRoutes.js';
 import cartRoutes from './routes/cartRoute.js';
+import strummingPatternRoutes from './routes/strummingpatternRoutes.js';
+import tabExerciseRoutes from './routes/tabExercisesRoute.js';
 // import './models/association.js'
 
 const app = express();
@@ -37,6 +39,8 @@ app.use('/auth', authRoutes); //to login, register, verify email
 app.use("/posts",postRoutes ); // to upload and fetch posts
 app.use("/chords", chordsRoutes); // to fetch chords and add other features later on
 app.use('/cart', cartRoutes); //to add to cart, remove
+app.use('/tabs',tabExerciseRoutes); //for tab exercises
+app.use('/strumming',strummingPatternRoutes); // for strumming pattern exercises
 
 
 app.listen(5000);

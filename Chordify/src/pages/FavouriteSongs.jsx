@@ -22,7 +22,7 @@ export default function FavouriteSongs(){
     });
 
     return(
-        <div className="flex wrap-flex justify-center item-center">
+        <div className="flex flex-wrap justify-center item-center">
             {songs.map(song =>{
                 <SongCard song={song}/>
             })

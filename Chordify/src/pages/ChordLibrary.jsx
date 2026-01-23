@@ -1,31 +1,32 @@
 import { useEffect,useState } from "react";
+import useApi from "../hooks/useAPI";
 
 export default function ChordLibrary(){
     const [chords, setChords] = useState([]);
+    const {callApi, error,loading} = useApi();
     useEffect(() =>{
         const fetchContent = async () =>{
             try{
-                const res = await fetch("http://localhost:5000/chords/getAllChords");
-                const data = await res.json();
-                if (Array.isArray(data)){
-                    setChords(data);
-                }
-                else if(data.length === 0){
-                    return(<p className="text-xl text-white">No Chords Available</p>);
-                }
-
+                const res = await callApi("GET","/chords/getAllChords");
+                const data = await res;
+                setChords(Array.isArray(data) ? data : []);
             }
             catch(e){
                 console.error(e);
-                return(<p className="text-xl text-red-500">Error loading Chords</p>);
             }
         }
         fetchContent();
     },[]);
+
+    if(chords.length === 0){
+        return <p className="text-Xl text-White"> No chords available</p>
+    }
 return(
     <div className="flex item-center justify-center gap-4 flex-wrap">
+        {loading && <p>Loading chords...</p>}
+        {error && <p className="text-red-500">Error: {error}</p>}
         {chords.map(chord =>(
-            <></>
+            <Chord chord={chord}/>
         )
         )}
     </div>

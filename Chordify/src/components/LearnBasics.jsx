@@ -1,13 +1,12 @@
 import BasicCard from "./LearnBasicCard";
 import chordslibrary from "../assets/images/sliders.png";
 import tabexercise from "../assets/images/sheet-music.png";
-import strumming from "../assets/images/musical.png";
-
+import strumming from "../assets/images/musical.png";   
 
 const basiccards = [
-    {icon : chordslibrary , title: "Chords Library", description : "Learn some basic chords"},
-    {icon : tabexercise, title: "Tab exercises", description : "Learn fingerstyle"},
-    {icon : strumming, title: "Essential Strumming Patterns", description : "Master common strumming patterns"}
+    {icon : chordslibrary , title: "Chords Library", description : "Learn some basic chords", type : "chords"},
+    {icon : tabexercise, title: "Tab exercises", description : "Learn fingerstyle", type : "exercise"},
+    {icon : strumming, title: "Essential Strumming Patterns", description : "Master common strumming patterns", type : "strumming"}
 ] 
 function LearnBasics() {
 
@@ -21,6 +20,7 @@ function LearnBasics() {
                         icon={basiccard.icon}
                         title={basiccard.title}
                         description={basiccard.description}
+                        type={basiccard.type}
                     />
                  )}  
             </div>

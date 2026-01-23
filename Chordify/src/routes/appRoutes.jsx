@@ -19,6 +19,7 @@ const ProductDescriptionPage = React.lazy(() => import("../pages/ProductDescript
 const LyricsPage = React.lazy(() => import("../pages/LyricsPage"));
 const VerificationPage = React.lazy(() => import("../pages/VerificationPage"));
 const PostsPage = React.lazy(() => import("../pages/PostsPage")); 
+const Chordslibrary = React.lazy(() => import("../pages/ChordLibrary"));
 
 import PrivateRoutes from "./PrivateRoutes";
 
@@ -29,6 +30,8 @@ export const AppRoutes = () => (
     <Route path="/aboutus" element={<Aboutus />} />
     <Route path="/login" element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
     <Route path="/register" element={<Suspense fallback={<Spinner />}><Register /></Suspense>} />
+    <Route path="/chords" element={<Suspense fallback={<Spinner/>}> <Chordslibrary /> </Suspense> } />
+    {/* <Route path="/exercise" element /> */}
 
     {/* Private routes */}
     <Route element={<PrivateRoutes />}>
