@@ -1,6 +1,6 @@
 // models/userModel.js
 const { DataTypes } = require('sequelize');
-const sequelize = require('../dbSequalize'); // your Sequelize DB connection
+const sequelize = require('../db'); 
 
 const User = sequelize.define('User', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
