@@ -20,6 +20,9 @@ import chordsRoutes from './routes/chordsRoutes.js';
 import cartRoutes from './routes/cartRoute.js';
 import strummingPatternRoutes from './routes/strummingpatternRoutes.js';
 import tabExerciseRoutes from './routes/tabExercisesRoute.js';
+import supportRoutes from './routes/supportRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
+
 // import './models/association.js'
 
 const app = express();
