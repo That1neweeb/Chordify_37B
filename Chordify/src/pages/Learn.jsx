@@ -51,13 +51,14 @@ function Learn() {
         {search === "" ? (
           // Default components when search is empty
           <>
-            <LearningPageHeroImage />
+           
             <MusicRecommendation />
-            <LearningSection />
+         
           </>
         ) : (
           // Show search results when search has value
           <>
+          
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">Error: {error}</p>}
             {data && data.length === 0 && <p>No results found.</p>}

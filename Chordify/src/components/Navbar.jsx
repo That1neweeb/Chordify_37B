@@ -9,7 +9,11 @@ import uparrow from "../assets/images/arrow-up.png";
 import logoutIcon from "../assets/images/logout.png";
 import userok from "../assets/images/userok.png";
 import cart from "../assets/images/cart.png";
+import list from "../assets/images/list.png";
+import love from "../assets/images/favouritered.png"
 
+
+import posts from "../assets/images/live-line.png"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -36,9 +40,12 @@ function Navbar() {
       </Link>
 
       {/* Center: Buy/Sell/Learn (only if logged in) */}
-      <div className="flex gap-8 items-center">
+      <div className="flex gap-8 items-center ml-[800px]">
         {isAuthenticated && (
           <>
+            <Link to="/posts" className="flex items-center gap-1 text-white">
+            <img src={posts} alt="" className="size-4"/> Posts
+            </Link>
             <Link to="/buy" className="flex items-center gap-1 text-white">
               <img src={shoppingcart} alt="" className="size-4" /> Buy
             </Link>
@@ -62,17 +69,17 @@ function Navbar() {
         {/* Auth Buttons or Profile Dropdown */}
         {isAuthenticated ? (
           <div className="relative">
-            <div className="bg-[#282828] rounded-xl h-12 flex items-center px-2">
-              <button className="size-16 hover:scale-105 transition-all">
+            <div className="rounded-xl flex items-center  bg-[#1A1A1A] ">
+              <button className="size-16 hover:scale-105 transition-all outline-none focus:outline-non  border-transparent hover:border-transparent focus:outline-none focus:ring-0 bg-transparent">
                 <img src={userimg} alt="User" />
               </button>
-              <button onClick={toggleDropdown} className="size-16">
+              <button onClick={toggleDropdown} className=" border-transparent hover:border-transparent focus:outline-none focus:ring-0 bg-transparent">
                 <img src={isOpen ? downarrow : uparrow} alt="Toggle" className="w-8" />
               </button>
             </div>
 
             {isOpen && (
-              <div className="absolute right-0 mt-2 w-44 bg-[#282828] rounded-xl p-2 flex flex-col gap-3">
+              <div className="absolute right-0 mt-2 w-44 bg-[#282828] rounded-xl p-2 flex flex-col gap-3 z-20">
                 <Link to="/profile" onClick={() => handleMenuSelect("profile")}>
                   <div
                     className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
@@ -80,7 +87,18 @@ function Navbar() {
                     }`}
                   >
                     Profile
-                    <img src={userok} alt="" className="size-5" />
+                    <img src={userok} alt ="" className="size-5" />
+                  </div>
+                </Link>
+
+                <Link to="/favourites" onClick={()=>handleMenuSelect("favourites")}>
+                  <div
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                      selectedItem === "favourites" ? "bg-[#3A3939]" : ""
+                    }`}
+                  >
+                    Favourites
+                    <img src={love} alt="" className="size-5"/>
                   </div>
                 </Link>
 
@@ -92,6 +110,17 @@ function Navbar() {
                   >
                     Cart
                     <img src={cart} alt="" className="size-5" />
+                  </div>
+                </Link>
+
+                <Link to="/mylistings" onClick={() => handleMenuSelect("mylistings")}>
+                  <div
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                      selectedItem === "mylistings" ? "bg-[#3A3939]" : ""
+                    }`}
+                  >
+                    My Listings
+                    <img src={list} alt="" className="size-5" />
                   </div>
                 </Link>
 

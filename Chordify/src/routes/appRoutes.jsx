@@ -16,8 +16,12 @@ const Sale = React.lazy(() => import("../pages/Sale"));
 const Learn = React.lazy(() => import("../pages/Learn"));
 const CartPage = React.lazy(() => import("../pages/CartPage"));
 const ProductDescriptionPage = React.lazy(() => import("../pages/ProductDescriptionPage"));
-const Song = React.lazy(() => import("../pages/Song"));
-const VerificationPage = React.lazy(() => import("../pages/VerificationPage"));
+const LyricsPage = React.lazy(() => import("../pages/LyricsPage"));
+const MyListingPage = React.lazy(()=> import("../pages/MyListingPage"));
+const EditProductPage = React.lazy(()=> import("../pages/EditProductPage"));
+const FavouritePage = React.lazy(()=> import("../pages/FavouritePage"));
+const PostsPage = React.lazy(() => import("../pages/PostsPage")); 
+const Chordslibrary = React.lazy(() => import("../pages/ChordLibrary"));
 
 import PrivateRoutes from "./PrivateRoutes";
 
@@ -28,6 +32,8 @@ export const AppRoutes = () => (
     <Route path="/aboutus" element={<Aboutus />} />
     <Route path="/login" element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
     <Route path="/register" element={<Suspense fallback={<Spinner />}><Register /></Suspense>} />
+    <Route path="/chords" element={<Suspense fallback={<Spinner/>}> <Chordslibrary /> </Suspense> } />
+    {/* <Route path="/exercise" element /> */}
 
     {/* Private routes */}
     <Route element={<PrivateRoutes />}>
@@ -36,9 +42,13 @@ export const AppRoutes = () => (
         <Route path="/sell" element={<Sale />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/product-description" element={<ProductDescriptionPage />} />
-        <Route path="/song" element={<Song />} />
-        <Route path="/verification" element={<VerificationPage />} />
+        <Route path="products/:id" element={<ProductDescriptionPage />} />
+        <Route path="/lyrics/:id" element={<LyricsPage />} />
+        <Route path="/mylistings" element={<MyListingPage />} />
+        <Route path="/products/edit/:id" element={<EditProductPage />} />
+        <Route path="/favourites" element={<FavouritePage/>}></Route>
+
+        <Route path="/posts" element={<PostsPage/>}/>
       </Route>
     </Route>
 
