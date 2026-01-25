@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from 'url';
+import { createUploadsFolder } from "./utils/helper.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -16,6 +17,7 @@ import productRoutes from './routes/productRoutes.js';
 import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
 import cartRoutes from './routes/cartRoute.js';
+import favouriteRoutes from './routes/favouriteRoute.js';
 // import './models/association.js'
 
 
@@ -24,9 +26,6 @@ import cartRoutes from './routes/cartRoute.js';
 
 import postRoutes from './routes/postsRoutes.js';
 import chordsRoutes from './routes/chordsRoutes.js';
-import cartRoutes from './routes/cartRoute.js';
-// import './models/association.js'
-
 const app = express();
 
 connection();
@@ -34,7 +33,8 @@ connection();
 app.use(express.json());
 app.use(cors());
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+createUploadsFolder(); 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 //Routes :
@@ -46,6 +46,8 @@ app.use("/api", profileRoutes);// to profile
 app.use("/posts",postRoutes ); // to upload and fetch posts
 app.use("/chords", chordsRoutes); // to fetch chords and add other features later on
 app.use('/cart', cartRoutes); //to add to cart, remove
+app.use('/favourites', favouriteRoutes); 
+
 
 
 app.listen(5000);

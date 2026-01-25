@@ -1,11 +1,12 @@
-
-import { Products } from '../models/productModel.js';
-import { Users } from '../models/userModel.js';
-import { GuitarDetails } from '../models/guitarDetailsModel.js';
+import { Products } from '../models/association.js';
+import { Users } from '../models/association.js';
+import { GuitarDetails } from '../models/association.js';
 import { Op } from 'sequelize';
-import { Comment } from '../models/commentModel.js'
+import { Comment } from '../models/association.js'
 import jwt from "jsonwebtoken";
-import { error } from 'console';
+import { error, log } from 'console';
+import fs from "fs";
+
 
 //to get all the products
 export const getAllProducts = async (req,res) => {
@@ -58,60 +59,108 @@ export const getSuggestedProducts = async (req,res) => {
     }
 }
 
+//helper function if the db error or any other error occurs it will delete the uploaded 
+
+const deleteUploadedFiles = (files) => {
+  if (!files || files.length === 0) return;
+
+  files.forEach(file => {
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        console.error("Failed to delete file:", file.path);
+      }
+    });
+  });
+};
+
 export const addProduct = async (req, res) => {
-    try {
-        const { name, brand, price, condition, category, type, description } = req.body;
+  try {
+      console.log("REQ.BODY:", req.body);
+      console.log("REQ.FILES:", req.files);
 
-        if(category === 'guitar' && !type) {
-            return res.status(400).json({message: "Guitar type is required"});
-        }
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
 
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ message: "No images uploaded" });
-        }
+    const user = jwt.verify(token, process.env.secretkey);
+    console.log(user);
+    
 
-        const image_urls = req.files.map((file) => `/uploads/${file.filename}`);
+    const { name, brand, price, condition, category, type, description } = req.body;
 
-        //validations
-        if(!name || name.trim() === "") return res.status(400).json({message: "Product's name is required"});
-        if(!brand || brand.trim() === "") return res.status(400).json({message: "Brand is required"});
-        if(!condition || condition.trim() === "") return res.status(400).json({message: "Condition is required"});
-        if(!category || category.trim() === "") return res.status(400).json({message: "Category is required"});
-        if(category === 'guitar' && (!type || type.trim() === "")) {
-            return res.status(400).json({message: "Type is required"});
-        }
-        if(!description || description.trim() === "") return res.status(400).json({message: "Description is required"});
-        if(!price || isNaN(price)) return res.status(400).json({message: "Price must be a number"});
-
-        // Create product
-        const product = await Products.create({
-            name,
-            brand,
-            price,
-            condition,
-            category,
-            image_urls, 
-            description
-        });
-
-        // If category is guitar, create guitar details
-        if (category === 'guitar') {
-            await GuitarDetails.create({
-                product_id: product.id,
-                type
-            });
-        }
-
-        res.status(201).json({
-            message: "Product added successfully",
-            product
-        });
-
-    } catch (err) {
-        console.error("Database error: " + err);
-        res.status(500).json({ message: "Server error" });
+    // Validate images
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No images uploaded" });
     }
-}
+
+    // Validations
+    if (!name || name.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Product name is required" });
+    }
+
+    if (!brand || brand.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Brand is required" });
+    }
+
+    if (!condition || condition.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Condition is required" });
+    }
+
+    if (!category || category.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Category is required" });
+    }
+
+    if (category === "guitar" && (!type || type.trim() === "")) {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Guitar type is required" });
+    }
+
+    if (!description || description.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Description is required" });
+    }
+
+    if (!price || isNaN(price)) {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Price must be a number" });
+    }
+
+    const image_urls = req.files.map(file => `/uploads/${file.filename}`);
+
+    // Create product
+    const product = await Products.create({
+      name,
+      brand,
+      price,
+      condition,
+      category,
+      image_urls,
+      description,
+      user_id: user.id
+    });
+
+    // Guitar-specific details
+    if (category === "guitar") {
+      await GuitarDetails.create({
+        product_id: product.id,
+        type
+      });
+    }
+
+    res.status(201).json({
+      message: "Product added successfully",
+      product
+    });
+
+  } catch (err) {
+    console.error("Add product error:", err);
+    deleteUploadedFiles(req.files);
+    res.status(500).json({ message: "Server error" });
+  }
+};
 
 export const searchProduct = async (req,res) => {
     try {
@@ -203,38 +252,40 @@ export const giveRating = async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.status(401).json({ message: "No token provided" });
 
+    
+    
     const user = jwt.verify(token, process.env.JWT_SECRET);
-
+    
     const { rating_point } = req.body;
     const product_id = req.params.id;
-
+    
     if (!product_id) return res.status(404).json({ message: "Product not found" });
-
+    
     if (!rating_point || rating_point < 1 || rating_point > 5) {
       return res.status(400).json({ message: "Rating must be between 1 and 5" });
     }
-
+    
     const existingRating = await Rating.findOne({
       where: { user_id: user.id, product_id }
     });
-
+    
     if (existingRating) {
       existingRating.rating_point = rating_point;
       await existingRating.save();
       return res.status(200).json({ message: "Rating updated", rating: existingRating });
     }
-
+    
     console.log({ rating_point, product_id, user_id: user.user_id });
-
-
+    
+    
     const rating = await Rating.create({
       rating_point,
       user_id: user.id,
       product_id
     });
-
+    
     return res.status(200).json({ message: "Rating added successfully", rating });
-
+    
   } catch (e) {
     return res.status(500).json({ message: "Server error", error: e.message });
   }
@@ -244,19 +295,19 @@ export const giveRating = async (req, res) => {
 export const getProductRatings = async (req, res) => {
   try {
     const product_id = req.params.id;
-
+    
     const ratings = await Rating.findAll({
       where: { product_id },
       attributes: ["rating_point"]
     });
-
+    
     if (ratings.length === 0) {
       return res.status(200).json({ average: 0, totalRatings: 0 });
     }
-
+    
     const total = ratings.reduce((sum, r) => sum + r.rating_point, 0);
     const average = total / ratings.length;
-
+    
     return res.status(200).json({
       average: parseFloat(average.toFixed(1)), 
       totalRatings: ratings.length
@@ -264,6 +315,79 @@ export const getProductRatings = async (req, res) => {
   } catch (e) {
     console.error("Error fetching ratings:", e);
     return res.status(500).json({ message: "Server error", error: e.message });
+  }
+};
+
+
+export const getMyProductListings = async (req, res) => {
+    try {
+      
+        // comes from isAuthenticated middleware
+        const user_id = req.user.id;
+
+
+
+        const products = await Products.findAll({
+            where: { user_id }
+        });
+
+        if (!products || products.length === 0) {
+            return res.status(200).json({ message: "No products found", data: [] });
+        }
+
+        return res.status(200).json({
+            message: "Successfully fetched your listings",
+            data: products
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user_id = req.user.id;
+
+    // Destructure fields from form data
+    const { name, brand, price, description } = req.body;
+
+    // Find the product and make sure it's owned by this user
+    const product = await Products.findOne({ where: { id, user_id } });
+    if (!product) return res.status(404).json({ message: "Product not found or not yours" });
+
+    // Handle uploaded images if any
+    let images = product.images; // existing images
+    if (req.files && req.files.length > 0) {
+      images = req.files.map(file => `/uploads/${file.filename}`); // update with new files
+    }
+
+    // Update product
+    await product.update({ name, brand, price, description, images });
+
+    return res.status(200).json({ message: "Product updated successfully", data: product });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+export const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user_id = req.user.id;
+
+    const product = await Products.findOne({ where: { id, user_id } });
+    if (!product) return res.status(404).json({ message: "Product not found or not yours" });
+
+    await product.destroy();
+    return res.status(200).json({ message: "Product deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
   }
 };
 

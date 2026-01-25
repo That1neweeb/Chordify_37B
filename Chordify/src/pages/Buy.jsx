@@ -15,8 +15,8 @@ function Buy() {
     // Fetch all products
     const fetchProducts = async () => {
         try {
-            const data = await callApi("GET", "/products/buy");
-            setProducts(data);
+            const req = await callApi("GET", "/products/buy", {});
+            setProducts(req.data);
         } catch (err) {
             console.error("Fetch products error:", err.message);
         }
@@ -59,7 +59,7 @@ function Buy() {
     }, []);
 
     return (
-        <div>
+        <div className="pb-10">
             {/* Search area */}
             <div className="flex items-center m-10 gap-2 bg-[#393328] border border-[#374151] rounded-xl hover:border-[#393328]">
                 <img src={search} alt="" className="size-6 ml-4" />

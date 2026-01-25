@@ -3,8 +3,10 @@ import jwt from "jsonwebtoken";
 export const isAuthenticated = (req, res, next) => {
     try {
 
+        
         //taking the token from header
         const authHeader = req.headers.authorization;
+  
 
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({ message: "Not authorized" });
@@ -14,7 +16,7 @@ export const isAuthenticated = (req, res, next) => {
         const token = authHeader.split(" ")[1];
 
         //verifying the token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.secretkey);
 
         //attaching the user ino
         req.user = {

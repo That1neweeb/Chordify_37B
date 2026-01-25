@@ -1,7 +1,7 @@
 import z from "zod";
 
 export const registerSchema = z.object({
-    fullname: z
+    full_name: z
     .string()
     .nonempty({message: "Fullname cannot be empty"})
     .min(3, {message: "Name must be atleast 3 characters"})
@@ -21,6 +21,11 @@ export const registerSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/,
       "Must include upper, lower, number & special character"
     ),
+    
+    c_password: z
+    .string()
+    .nonempty({ message: "Confirm password cannot be empty" }),
+
 
 }).refine((data) => data.password === data.c_password, {
   message: "Passwords do not match",

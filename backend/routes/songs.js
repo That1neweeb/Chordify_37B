@@ -3,7 +3,7 @@ const router = express.Router();
 
 
 // Controller
-import { getRecommendedSongs,getSongContent,searchSongs } from '../controllers/songController.js';
+import { getRecommendedSongs } from '../controllers/songController.js';
 
 
 // Fetch recommended songs

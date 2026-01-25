@@ -17,7 +17,9 @@ const Learn = React.lazy(() => import("../pages/Learn"));
 const CartPage = React.lazy(() => import("../pages/CartPage"));
 const ProductDescriptionPage = React.lazy(() => import("../pages/ProductDescriptionPage"));
 const Song = React.lazy(() => import("../pages/Song"));
-const VerificationPage = React.lazy(() => import("../pages/VerificationPage"));
+const MyListingPage = React.lazy(()=> import("../pages/MyListingPage"));
+const EditProductPage = React.lazy(()=> import("../pages/EditProductPage"));
+const FavouritePage = React.lazy(()=> import("../pages/FavouritePage"));
 
 import PrivateRoutes from "./PrivateRoutes";
 
@@ -36,9 +38,12 @@ export const AppRoutes = () => (
         <Route path="/sell" element={<Sale />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/product-description" element={<ProductDescriptionPage />} />
+        <Route path="products/:id" element={<ProductDescriptionPage />} />
         <Route path="/song" element={<Song />} />
-        <Route path="/verification" element={<VerificationPage />} />
+        <Route path="/mylistings" element={<MyListingPage />} />
+        <Route path="/products/edit/:id" element={<EditProductPage />} />
+        <Route path="/favourites" element={<FavouritePage/>}></Route>
+
       </Route>
     </Route>
 

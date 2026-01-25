@@ -3,7 +3,7 @@ import guitarplayingimg from "../assets/images/guitarplaying.png"
 function HeroImage() {
     return(
 
-        <div className="relative w-[74rem] h-[600px] p-10">
+        <div className="relative w-[74rem] h-[600px] p-10 px-20">
 
             {/* Background Image */}
             <div className="absolute h-[600px] w-[74rem] bg-center bg-cover bg-no-repeat mt-10"

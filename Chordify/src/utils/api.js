@@ -3,9 +3,10 @@ import axios from "axios";
 const BASE_URL = "http://localhost:5000";
 
 export const apiRequest = async (method, endpoint, options = {}) => {
+  if (!options) options = {}; // fallback in case null is passed
   console.log(options);
   const { data, params, headers } = options;
-  const token = localStorage.getItem("token"); // optional: add auth token
+  const token = localStorage.getItem("token"); 
 
   console.log(data);
   
@@ -17,9 +18,10 @@ export const apiRequest = async (method, endpoint, options = {}) => {
       data,
       params,
       headers: {
-        "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...headers,
+        ...(data instanceof FormData ? {} : {"Content-Type": "application/json"})
+
       },
     });
 

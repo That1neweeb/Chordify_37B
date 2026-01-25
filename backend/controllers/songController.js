@@ -1,4 +1,4 @@
-import { Songs } from "../models/songModel.js"
+import { Songs } from "../models/association.js"
 export const getRecommendedSongs = async (req,res) => {
     try {
         const songs = await Songs.findAll();
