@@ -4,9 +4,9 @@ import { Sequelize } from "sequelize";
 dotenv.config()
 
 export const sequelize = new Sequelize(
-    "chordify_db", //db name
+    "Chordify", //db name
     "postgres", //db user
-    "1234", //db password
+    "root", //db password
     {
         host: "localhost",
         dialect: "postgres"
