@@ -17,6 +17,7 @@ import productRoutes from './routes/productRoutes.js';
 import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
 import cartRoutes from './routes/cartRoute.js';
+import favouriteRoutes from './routes/favouriteRoute.js';
 // import './models/association.js'
 
 
@@ -40,6 +41,8 @@ app.use('/products', productRoutes); //to fetch products
 app.use('/songs', songRoutes); //to fetch songs
 app.use('/auth', authRoutes); //to login, register, verify email
 app.use('/cart', cartRoutes); //to add to cart, remove
+app.use('/favourites', favouriteRoutes); 
+
 
 
 app.listen(5000);

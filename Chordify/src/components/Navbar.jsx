@@ -10,6 +10,8 @@ import logoutIcon from "../assets/images/logout.png";
 import userok from "../assets/images/userok.png";
 import cart from "../assets/images/cart.png";
 import list from "../assets/images/list.png";
+import love from "../assets/images/favouritered.png"
+
 
 import { Link } from "react-router-dom";
 import { useState } from "react";
@@ -82,6 +84,17 @@ function Navbar() {
                   >
                     Profile
                     <img src={userok} alt="" className="size-5" />
+                  </div>
+                </Link>
+
+                <Link to="/favourites" onClick={()=>handleMenuSelect("favourites")}>
+                  <div
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                      selectedItem === "favourites" ? "bg-[#3A3939]" : ""
+                    }`}
+                  >
+                    Favourites
+                    <img src={love} alt="" className="size-5"/>
                   </div>
                 </Link>
 

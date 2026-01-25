@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { Users } from '../models/userModel.js';
+import { Users } from '../models/association.js';
 import { passwordHash } from '../utils/hashPassword.js';
 import { generateToken, generateTokenExpiry } from '../utils/generateTokens.js';
 import { sendEmail } from '../utils/sendEmail.js';

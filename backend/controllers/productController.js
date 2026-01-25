@@ -2,7 +2,7 @@ import { Products } from '../models/association.js';
 import { Users } from '../models/association.js';
 import { GuitarDetails } from '../models/association.js';
 import { Op } from 'sequelize';
-import { Comment } from '../models/commentModel.js'
+import { Comment } from '../models/association.js'
 import jwt from "jsonwebtoken";
 import { error, log } from 'console';
 import fs from "fs";
