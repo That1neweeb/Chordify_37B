@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import useApi from "../hooks/useAPI";
 import ChordLine from "./Chordline";
 
 export default function LyricsCard({ song }) {
@@ -12,27 +14,28 @@ export default function LyricsCard({ song }) {
       <div className="flex gap-4 text-sm text-gray-500 mb-6">
         <span>Difficulty: {song.difficulty}</span>
       </div>
+      
+        {/* Lyrics */}
+        <div className="space-y-6">
+          {song.content.sections.map((section, sIdx) => (
+            <div key={sIdx}>
+              <p className="uppercase text-xs tracking-widest text-gray-400 mb-2">
+                {section.type}
+              </p>
 
-      {/* Lyrics */}
-      <div className="space-y-6">
-        {song.content.sections.map((section, sIdx) => (
-          <div key={sIdx}>
-            <p className="uppercase text-xs tracking-widest text-gray-400 mb-2">
-              {section.type}
-            </p>
-
-            <div className="space-y-3">
-              {section.lines.map((line, idx) => (
-                <ChordLine
-                  key={idx}
-                  lyrics={line.lyrics}
-                  chords={line.chords}
-                />
-              ))}
+              <div className="space-y-3">
+                {section.lines.map((line, idx) => (
+                  <ChordLine
+                    key={idx}
+                    lyrics={line.lyrics}
+                    chords={line.chords}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+      
   );
 }

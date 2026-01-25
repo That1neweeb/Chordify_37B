@@ -18,7 +18,7 @@ export const isAuthenticated = (req, res, next) => {
         //verifying the token
         const decoded = jwt.verify(token, process.env.secretkey);
 
-        //attaching the user ino
+        //attaching the user info
         req.user = {
             id: decoded.id,
             email: decoded.email,

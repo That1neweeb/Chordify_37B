@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import SongCard from "./SongCard";
 import useApi from "../hooks/useAPI";
+import useApi from "../hooks/useAPI";
 
 function MusicRecommendation() {
 
@@ -34,11 +35,7 @@ function MusicRecommendation() {
             <div className="mt-10">
                 {songs.map(song=> (
                     <SongCard
-                        key={song.id}
-                        id={song.id}
-                        cover_image={`http://localhost:5000${song.cover_image}`}
-                        song_name={song.title}
-                        artist={song.artist}
+                        song={song}
                     />
                 ))}
 

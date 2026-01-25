@@ -75,7 +75,8 @@ export const registerUser = async (req, res) => {
         const verificationURL = `${BACKEND_BASE_URL}/auth/verify/${verification_token}`;
 
         //send email verification
-        await sendEmail(
+        try{
+            await sendEmail(
             newUser.email,
             "Verify your Chordify account",
             `
@@ -85,6 +86,12 @@ export const registerUser = async (req, res) => {
             <p>This link expires in 24 hours.</p>
             `
         );
+        }
+        catch(err){
+            console.log(err);
+
+        }
+        
 
         //send response after email is sent
         return res.status(201).json({
@@ -213,7 +220,7 @@ export const changePassword = async (req, res) => {
 
     // password strength validation (same as register)
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
 
     if (!passwordRegex.test(newPassword)) {
       return res.status(400).json({

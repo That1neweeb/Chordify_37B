@@ -13,6 +13,7 @@ import list from "../assets/images/list.png";
 import love from "../assets/images/favouritered.png"
 
 
+import posts from "../assets/images/live-line.png"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
@@ -42,6 +43,9 @@ function Navbar() {
       <div className="flex gap-8 items-center ml-[800px]">
         {isAuthenticated && (
           <>
+            <Link to="/posts" className="flex items-center gap-1 text-white">
+            <img src={posts} alt="" className="size-4"/> Posts
+            </Link>
             <Link to="/buy" className="flex items-center gap-1 text-white">
               <img src={shoppingcart} alt="" className="size-4" /> Buy
             </Link>
@@ -83,7 +87,7 @@ function Navbar() {
                     }`}
                   >
                     Profile
-                    <img src={userok} alt="" className="size-5" />
+                    <img src={userok} alt ="" className="size-5" />
                   </div>
                 </Link>
 
