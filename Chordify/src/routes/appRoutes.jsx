@@ -17,7 +17,9 @@ const Learn = React.lazy(() => import("../pages/Learn"));
 const CartPage = React.lazy(() => import("../pages/CartPage"));
 const ProductDescriptionPage = React.lazy(() => import("../pages/ProductDescriptionPage"));
 const LyricsPage = React.lazy(() => import("../pages/LyricsPage"));
-const VerificationPage = React.lazy(() => import("../pages/VerificationPage"));
+const MyListingPage = React.lazy(()=> import("../pages/MyListingPage"));
+const EditProductPage = React.lazy(()=> import("../pages/EditProductPage"));
+const FavouritePage = React.lazy(()=> import("../pages/FavouritePage"));
 const PostsPage = React.lazy(() => import("../pages/PostsPage")); 
 const Chordslibrary = React.lazy(() => import("../pages/ChordLibrary"));
 
@@ -40,9 +42,12 @@ export const AppRoutes = () => (
         <Route path="/sell" element={<Sale />} />
         <Route path="/learn" element={<Learn />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/product-description" element={<ProductDescriptionPage />} />
+        <Route path="products/:id" element={<ProductDescriptionPage />} />
         <Route path="/lyrics/:id" element={<LyricsPage />} />
-        <Route path="/verification" element={<VerificationPage />} />
+        <Route path="/mylistings" element={<MyListingPage />} />
+        <Route path="/products/edit/:id" element={<EditProductPage />} />
+        <Route path="/favourites" element={<FavouritePage/>}></Route>
+
         <Route path="/posts" element={<PostsPage/>}/>
       </Route>
     </Route>

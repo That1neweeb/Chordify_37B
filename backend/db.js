@@ -18,7 +18,7 @@ export const connection = async () => {
         //alter : true tries to match table with model
         //force : true drop existing tables and create new one
 
-        await sequelize.sync({ alter: true })
+        await sequelize.sync()
         console.log("Database connection successful");
         
     } catch(e) {

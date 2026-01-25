@@ -1,6 +1,5 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { Users } from '../models/userModel.js';
+import bcrypt from 'bcrypt'
+import { Users } from '../models/association.js';
 import { passwordHash } from '../utils/hashPassword.js';
 import { generateToken, generateTokenExpiry } from '../utils/generateTokens.js';
 import { sendEmail } from '../utils/sendEmail.js';
@@ -12,15 +11,16 @@ import { generateAccessToken } from '../utils/jwt-util.js';
 
 
 
-const FRONTEND_BASE_URL = "http://localhost:5173";
-const JWT_SECRET = "your-secret-key-here-change-in-production";
+const FRONTEND_BASE_URL = "http://localhost:5173"; 
+const BACKEND_BASE_URL = "http://localhost:5000"; 
+
 
 export const registerUser = async (req, res) => {
     try {
         const { full_name, email, password, c_password } = req.body;
 
         //fields validation
-        if (!fullname || fullname.trim() === "") return res.status(400).json({message:"Fullname is required"});
+        if (!full_name || full_name.trim() === "") return res.status(400).json({message:"Fullname is required"});
         
         if (!email || email.trim() === "") return res.status(400).json({message:"Email is required"});
        
@@ -72,7 +72,7 @@ export const registerUser = async (req, res) => {
         );
     
         
-        const verificationURL = `${FRONTEND_BASE_URL}/verify/${verification_token}`;
+        const verificationURL = `${BACKEND_BASE_URL}/auth/verify/${verification_token}`;
 
         //send email verification
         try{
@@ -107,8 +107,10 @@ export const registerUser = async (req, res) => {
 
 // Login user
 export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+    try {
+        console.log("Login request body:", req.body);
+
+        const { email, password } = req.body;
 
     if (!email || !email.trim()) {
       return res.status(400).json({ message: "Email is required" });
@@ -152,36 +154,11 @@ export const login = async (req, res) => {
             accessToken: accessToken
         });
         
-
-    // 🔹 Optional: migrate old passwords to hashed column
-    if (!user.password_hash && user.password) {
-      const hashed = await passwordHash(password);
-      await user.update({ password_hash: hashed, password: null });
+    } catch (err) {
+        console.error("Login error:", err, err.stack);
+        return res.status(500).json({ message: "Server error" });
     }
-
-    const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
-      JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    return res.status(200).json({
-      message: "Login successful",
-      token,
-      user: {
-        id: user.id,
-        full_name: user.full_name,
-        email: user.email,
-        role: user.role,
-      },
-    });
-
-  } catch (err) {
-    console.error("Login error:", err);
-    return res.status(500).json({ message: "Server error" });
-  }
-};
-
+}
 
 // Verify user email
 export const verifyUser = async (req, res) => {
@@ -199,7 +176,10 @@ export const verifyUser = async (req, res) => {
         }
 
         if (user.is_verified) {
-            return res.status(200).json({ message: "Email already verified! You can now login." });
+            return res.status(200).json({ 
+                message: "Email already verified! You can now login.",
+                redirectTo: `${FRONTEND_BASE_URL}/login`
+            });
         }
 
         if (new Date() > new Date(user.token_expires)) {
@@ -209,7 +189,9 @@ export const verifyUser = async (req, res) => {
         // Update user as verified
         await user.update({ is_verified: true, verification_token: null, token_expires: null });
 
-        return res.status(200).json({ message: "Email verified successfully" });
+        // Send JSON with redirect URL
+        return res.redirect(`${FRONTEND_BASE_URL}/login?verified=true`);
+
 
     } catch (err) {
         console.error("Error in verify email controller:", err);

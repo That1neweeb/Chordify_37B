@@ -1,5 +1,5 @@
 import { where } from "sequelize";
-import { Songs } from "../models/songModel.js"
+import { Songs } from "../models/association.js";
 import { Users } from "../models/userModel.js";
 export const getRecommendedSongs = async (req,res) => {
     try {

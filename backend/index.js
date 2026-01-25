@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from 'url';
+import { createUploadsFolder } from "./utils/helper.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,6 +16,14 @@ import cors from "cors";
 import productRoutes from './routes/productRoutes.js';
 import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
+import cartRoutes from './routes/cartRoute.js';
+import favouriteRoutes from './routes/favouriteRoute.js';
+// import './models/association.js'
+
+
+
+
+
 import postRoutes from './routes/postsRoutes.js';
 import chordsRoutes from './routes/chordsRoutes.js';
 import cartRoutes from './routes/cartRoute.js';
@@ -32,7 +41,8 @@ connection();
 app.use(express.json());
 app.use(cors());
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+createUploadsFolder(); 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 //Routes :
@@ -46,6 +56,8 @@ app.use("/chords", chordsRoutes); // to fetch chords and add other features late
 app.use('/cart', cartRoutes); //to add to cart, remove
 app.use('/tabs',tabExerciseRoutes); //for tab exercises
 app.use('/strumming',strummingPatternRoutes); // for strumming pattern exercises
+app.use('/favourites', favouriteRoutes); 
+
 
 
 app.listen(5000);
