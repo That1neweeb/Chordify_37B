@@ -145,7 +145,7 @@ export const login = async (req, res) => {
         const accessToken = generateAccessToken({
             id: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
         });
 
         return res.status(200).json({

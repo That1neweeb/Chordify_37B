@@ -1,28 +1,31 @@
 import VideoUpload from "../components/VideoUpload";
 import { useState } from "react";
 import useApi from "../hooks/useAPI"; // <-- import your hook correctly
+import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 export default function UploadPage() {
   const [video_URL, setVideo] = useState();
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
-
-  const { loading, error, callApi } = useApi(); // <-- use hook at the top level
+  const { loading, error, callApi } = useApi(); // at the top level
+  const navigate = useNavigate(); 
 
   // handling submit
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("video_URL", video_URL);
     formData.append("title", title);
-    formData.append("desc", desc);
-
+    formData.append("description", desc);
     try {
-      const res = await callApi("POST", "/posts/uploadVideo", formData);
+      const res = await callApi("POST", "/posts/uploadVideo", {data : formData});
       console.log("Video uploaded:", res.data);
-      window.alert("Video uploaded successfully!");
+      toast.success("Video uploaded successfully");
+      navigate("/posts");
+
     } catch (e) {
       console.error("Error uploading video:", e.response?.data || e.message);
-      window.alert("Error uploading video");
+      window.alert("Error uploading video");  
     }
   };
 

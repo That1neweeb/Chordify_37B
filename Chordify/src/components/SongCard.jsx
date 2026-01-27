@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import heart from "../assets/images/heart.png";
 import addtoplaylist from "../assets/images/addtoplaylist.png";
 import chatbubble from "../assets/images/chat-bubble.png";
-import useApi from "../hooks/useAPI";
+import useApi from "../hooks/useAP";
 
 function SongCard({ song }) {
 

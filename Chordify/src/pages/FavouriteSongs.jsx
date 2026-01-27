@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import SongCard from "../components/SongCard";
-import useApi from "../hooks/useAPI";
+import {useApi} from "../hooks/useAPI";
 
 export default function FavouriteSongs(){
     const[songs,setSongs] = useState();
