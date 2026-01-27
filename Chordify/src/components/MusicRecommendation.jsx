@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import SongCard from "./SongCard";
 import useApi from "../hooks/useAPI";
-import useApi from "../hooks/useAPI";
 
 function MusicRecommendation() {
 

@@ -5,8 +5,8 @@ export const getAllExercises = async (req, res) => {
     const exercises = await TabExercise.findAll({
       order: [["id", "ASC"]]
     });
-
-    return res.status(200).json(exercises);
+    console.log(exercises)  
+    return res.status(200).send({data : exercises, message:"Fetched all the exercises"});
   } catch (error) {
     console.error("Error fetching strumming patterns:", error);
     return res.status(500).json({

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useApi } from "../hooks/useAPi";
+import { useApi } from "../hooks/useAPI";
 
 const StarRating = ({ product_id }) => {
   const [selectedRating, setSelectedRating] = useState(0);
