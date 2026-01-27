@@ -11,7 +11,7 @@ function MyListingPage() {
         try {
             const mylistings = await callApi("GET", "/products/mylistings", {});
             console.log(mylistings);
-            console.log(mylistings);
+        
             
             setMyListings(mylistings.data);
         } catch (error) {
@@ -47,6 +47,9 @@ function MyListingPage() {
                         image={`http://localhost:5000${product.image_urls[0]}`}
                         price={product.price} 
                         page="mylistings"
+                         onDelete={(deletedId) => {
+                            setMyListings(prev => prev.filter(p => p.id !== deletedId));
+                        }}
                     />
                 ))}
             </div>

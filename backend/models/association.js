@@ -1,114 +1,167 @@
 import { Products } from "./productModel.js";
 import { GuitarDetails } from "./guitarDetailsModel.js";
-import { Users } from "./userModel.js"
+import { Users } from "./userModel.js";
 import { Cart } from "./cartModel.js";
 import { CartItem } from "./cartItemModel.js";
 import { Comment } from "./commentModel.js";
 import { Songs } from "./songModel.js";
 import { Favourite } from "./favouriteModel.js";
 import { Rating } from "./ratingModel.js";
+import { Order } from "./orderModel.js";
+import { OrderItem } from "./orderItem.js";
 
-//Product and GuitarDetails relationship
+
+// Product and GuitarDetails relationship
 Products.hasOne(GuitarDetails, {
-    foreignKey: 'product_id',
-    as: 'guitarDetails',
-    onDelete: 'CASCADE'
-})
-
-GuitarDetails.belongsTo(Products, {
-    foreignKey: 'product_id'
-})
-
-
-//Users and cart relationship
-Users.hasOne(Cart, {
-  foreignKey: 'user_id',
-  as: 'cart',
-  onDelete:'CASCADE'
-})
-
-Cart.belongsTo(Users, {
-  foreignKey: 'user_id'
+  foreignKey: "product_id",
+  as: "guitarDetails",
+  onDelete: "CASCADE",
 });
 
-//Cart and CartItem relationship
-CartItem.belongsTo(Cart, {
-  foreignKey: 'cart_id'
-})
+GuitarDetails.belongsTo(Products, {
+  foreignKey: "product_id",
+});
 
+//User and Cart relationship
+Users.hasOne(Cart, {
+  foreignKey: "user_id",
+  as: "cart",
+  onDelete: "CASCADE",
+});
+
+Cart.belongsTo(Users, {
+  foreignKey: "user_id",
+});
+
+// Cart and CartItem relationship
 Cart.hasMany(CartItem, {
-  foreignKey: 'cart_id'
-})
+  foreignKey: "cart_id",
+  onDelete: "CASCADE",
+});
+
+CartItem.belongsTo(Cart, {
+  foreignKey: "cart_id",
+});
 
 // Product and CartItem relationship
 Products.hasMany(CartItem, {
-  foreignKey: 'product_id'
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
 });
 
 CartItem.belongsTo(Products, {
-  foreignKey: 'product_id'
+  foreignKey: "product_id",
 });
-
 
 // User and Comment relationship
-Comment.belongsTo(Users, {
-  foreignKey: 'user_id'
+Users.hasMany(Comment, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
 });
 
-Users.hasMany(Comment, {
-  foreignKey:"user_id"
+Comment.belongsTo(Users, {
+  foreignKey: "user_id",
+});
+
+// Product and Comment relationship
+Products.hasMany(Comment, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+});
+
+Comment.belongsTo(Products, {
+  foreignKey: "product_id",
 });
 
 // User and Rating relationship
-Rating.belongsTo(Users, { 
-  foreignKey: "user_id" 
+
+Users.hasMany(Rating, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
 });
 
-Users.hasMany(Rating, { 
-  foreignKey: "user_id" 
+Rating.belongsTo(Users, {
+  foreignKey: "user_id",
 });
 
 // Product and Rating relationship
-Rating.belongsTo(Products, { 
-  foreignKey: "product_id" 
+
+Products.hasMany(Rating, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
 });
 
-Products.hasMany(Rating, { 
-  foreignKey: "product_id" 
-});
-
-
-// User and Favourites relationship
-Users.belongsToMany(Products, { 
-    through: Favourite, 
-    foreignKey: "user_id", 
-    otherKey: "product_id" 
-});
-
-Users.hasMany(Favourite, { 
-  foreignKey: "user_id" 
-});
-
-Favourite.belongsTo(Users, { 
-  foreignKey: "user_id" 
-});
-
-// Products and Favourites relationship
-Products.belongsToMany(Users, { 
-    through: Favourite, 
-    foreignKey: "product_id", 
-    otherKey: "user_id" 
-});
-
-Products.hasMany(Favourite, { 
-  foreignKey: "product_id" 
-});
-
-Favourite.belongsTo(Products, { 
-  foreignKey: "product_id" 
+Rating.belongsTo(Products, {
+  foreignKey: "product_id",
 });
 
 
+// Products and User relationship through favourite
+
+Users.belongsToMany(Products, {
+  through: Favourite,
+  foreignKey: "user_id",
+  otherKey: "product_id",
+});
+
+
+Users.hasMany(Favourite, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+
+
+Favourite.belongsTo(Users, {
+  foreignKey: "user_id",
+});
+
+Products.belongsToMany(Users, {
+  through: Favourite,
+  foreignKey: "product_id",
+  otherKey: "user_id",
+});
+
+// Product and Favourite relationship
+Products.hasMany(Favourite, {
+  foreignKey: "product_id",
+  onDelete: "CASCADE",
+});
+
+Favourite.belongsTo(Products, {
+  foreignKey: "product_id",
+});
+
+// User and Order relationship
+Users.hasMany(Order, {
+  foreignKey: "user_id",
+  onDelete: "CASCADE",
+});
+
+Order.belongsTo(Users, {
+  foreignKey: "user_id",
+});
+
+
+// Order and OrderItem relationship
+
+Order.hasMany(OrderItem, {
+  foreignKey: "order_id",
+  onDelete: "CASCADE",
+});
+
+OrderItem.belongsTo(Order, {
+  foreignKey: "order_id",
+});
+
+// Product and OrderItem relationship
+
+Products.hasMany(OrderItem, {
+  foreignKey: "product_id",
+});
+
+OrderItem.belongsTo(Products, {
+  foreignKey: "product_id",
+});
 
 
 export {
@@ -120,5 +173,7 @@ export {
   Comment,
   Songs,
   Favourite,
-  Rating
+  Rating,
+  Order,
+  OrderItem,
 };

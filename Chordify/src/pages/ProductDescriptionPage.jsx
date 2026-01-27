@@ -1,12 +1,13 @@
 import addtocart from '../assets/images/add-to-cart.png'
 import favourite from '../assets/images/favourite.png'
 import chatbubble from '../assets/images/chat-bubble.png'
+import buy from '../assets/images/buy.png'
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import CommentModal from '../components/CommentModal'
 import StarRating from '../components/StarRating'
 import useApi from '../hooks/useAPI.js'
+import { useNavigate } from "react-router-dom";
 
 function ProductDescriptionPage() {
     const { id } = useParams()
@@ -15,6 +16,7 @@ function ProductDescriptionPage() {
     const [averageRating, setAverageRating] = useState(0)
     const [loading, setLoading] = useState(true)
     const [isCommentOpen, setIsCommentOpen] = useState(false)
+    const navigate = useNavigate();
 
     const { callApi } = useApi()
 
@@ -22,12 +24,11 @@ function ProductDescriptionPage() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/products/${id}`)                
-                setProduct(res.data.data)
-                console.log(res.data);
-                
+                const res = await callApi("GET", `/products/${id}`)
+                setProduct(res.data)
+                console.log(res.data)
             } catch (e) {
-                console.error('Error fetching product: ', e)
+                console.error('Error fetching product: ', e.message)
             } finally {
                 setLoading(false)
             }
@@ -45,15 +46,11 @@ function ProductDescriptionPage() {
     // Add to cart
     const addToCart = async () => {
         try {
-            const { data } = await axios.post(`http://localhost:5000/cart/add`, {
-                user_id: 13, // TEMP until auth is added
-                product_id: product.id,
-                quantity: 1,
-            })
-            console.log('Add to cart response:', data)
+            const res = await callApi("POST", "/cart/add", { data: { product_id: product.id } })
+            console.log('Add to cart response:', res)
             alert('Added to cart')
         } catch (err) {
-            console.error('Add to cart error:', err.response?.data || err)
+            console.error('Add to cart error:', err.message)
             alert('Failed to add to cart')
         }
     }
@@ -61,10 +58,10 @@ function ProductDescriptionPage() {
     // Add to favourite
     const addToFav = async () => {
         try {
-            const res = await callApi('POST', `/favourites/${product.id}`, {})
+            const res = await callApi('POST', `/favourites/${product.id}`)
             console.log('Added to favourite:', res)
         } catch (err) {
-            console.log('Error adding favourite:', err)
+            console.log('Error adding favourite:', err.message)
         }
     }
 
@@ -85,29 +82,29 @@ function ProductDescriptionPage() {
         setMainImage(`http://localhost:5000${product.image_urls[newIndex]}`)
     }
 
+       // for the buy now option : 
+    const handleBuyNow = () => {
+        navigate("/checkout", { state: { order: [{ ...product, quantity: 1 }] } });
+    };
+
     if (loading) return <p>Loading ...</p>
     if (!product) return <p>Product not found</p>
 
     return (
         <div className="flex flex-col mt-10 ml-10 p-10 gap-10">
             <div className="flex gap-4">
-                {/* Big image with hover arrows */}
                 <div className="relative group">
                     <img
                         src={mainImage}
                         alt=""
                         className="object-center object-cover h-[900px] w-[800px]"
                     />
-
-                    {/* Left arrow */}
                     <button
                         className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => changeImage('prev')}
                     >
                         &#8592;
                     </button>
-
-                    {/* Right arrow */}
                     <button
                         className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => changeImage('next')}
@@ -116,7 +113,6 @@ function ProductDescriptionPage() {
                     </button>
                 </div>
 
-                {/* Product info */}
                 <div>
                     <h3 className="text-[#ABA6A6]">{product.brand}</h3>
                     <div className="flex flex-col gap-2">
@@ -131,7 +127,6 @@ function ProductDescriptionPage() {
                 </div>
             </div>
 
-            {/*  preview images  */}
             <div className="flex items-center gap-14 h-60">
                 <div className="flex gap-14">
                     {product.image_urls.map((img, idx) => (
@@ -151,20 +146,30 @@ function ProductDescriptionPage() {
                             <img src={favourite} alt="" className="w-8" />
                         </button>
 
-                        <button
-                            className="w-[600px] h-10 flex justify-center items-center bg-[#F2A60D] text-black text-sm gap-6"
-                            onClick={addToCart}
-                        >
-                            <img src={addtocart} alt="" className="w-5" />
-                            Add to Cart
-                        </button>
 
+                        <div className="flex flex-col ml-6 gap-2">
+                            <button
+                                className="w-[600px] h-10 flex justify-center items-center bg-[#F2A60D] text-black text-sm gap-6"
+                                onClick={addToCart}
+                            >
+                                <img src={addtocart} alt="" className="w-5" />
+                                Add to Cart
+                            </button>
+                            <button
+                                className="w-[600px] h-10 flex justify-center items-center bg-[#393328] text-sm gap-1"
+                                onClick={handleBuyNow}
+                            >
+                                <img src={buy} alt="" className="w-5 mr-6" />
+                                Buy now
+                            </button>
+                        </div>
                         <button onClick={() => setIsCommentOpen(true)}>
                             <img src={chatbubble} alt="" className="w-8" />
                         </button>
                     </div>
 
-                    <div className="flex mt-10 ml-6 gap-10">
+
+                    <div className="flex mt-1 ml-6 gap-10">
                         <h3>Rate this product : </h3>
                         <StarRating product_id={product.id} />
                     </div>

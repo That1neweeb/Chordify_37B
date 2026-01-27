@@ -1,10 +1,7 @@
-import { Products } from '../models/association.js';
-import { Users } from '../models/association.js';
-import { GuitarDetails } from '../models/association.js';
+import { Products, Rating, Users, GuitarDetails, Comment } from '../models/association.js';
 import { Op } from 'sequelize';
-import { Comment } from '../models/association.js'
 import jwt from "jsonwebtoken";
-import { error, log } from 'console';
+import { error } from 'console';
 import fs from "fs";
 
 
@@ -375,19 +372,44 @@ export const updateProduct = async (req, res) => {
 
 
 
+// Helper to delete uploaded images from disk
+const deleteProductImages = (imageUrls) => {
+  if (!imageUrls || !Array.isArray(imageUrls)) return;
+
+  imageUrls.forEach((url) => {
+    const filePath = `./backend${url}`; // adjust if needed
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Failed to delete image:", filePath, err);
+      });
+    }
+  });
+};
+
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const user_id = req.user.id;
 
+    // Find product owned by user
     const product = await Products.findOne({ where: { id, user_id } });
-    if (!product) return res.status(404).json({ message: "Product not found or not yours" });
+    if (!product)
+      return res.status(404).json({ message: "Product not found or not yours" });
 
+    // Delete dependent rows first
+    await Rating.destroy({ where: { product_id: id } });
+    await Comment.destroy({ where: { product_id: id } });
+    await GuitarDetails.destroy({ where: { product_id: id } });
+
+    // Delete uploaded images from disk
+    deleteProductImages(product.image_urls);
+
+    // Delete product
     await product.destroy();
+
     return res.status(200).json({ message: "Product deleted successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("Delete product error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
-
