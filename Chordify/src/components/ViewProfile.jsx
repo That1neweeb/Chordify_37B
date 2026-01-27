@@ -20,31 +20,24 @@ function ViewProfile() {
     email: "",
     role: "",
     bio: "",
-    profile_image: null, // can be File OR URL
+    profile_image: null,
   });
 
-  /* 🔐 Redirect if not logged in */
   useEffect(() => {
     if (!token) window.location.href = "/login";
   }, [token]);
 
-  /* 📥 Fetch Profile */
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await fetch("http://localhost:5000/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!res.ok) {
           toast.error("Failed to fetch profile");
           return;
         }
-
         const data = await res.json();
-
         setUser({
           full_name: data.user.full_name || "",
           email: data.user.email || "",
@@ -52,55 +45,43 @@ function ViewProfile() {
           bio: data.user.bio || "",
           profile_image: data.user.profile_image || null,
         });
-
-        if (data.user.profile_image) {
-          setPreviewImage(data.user.profile_image);
-        }
+        if (data.user.profile_image) setPreviewImage(data.user.profile_image);
       } catch (err) {
         console.error("Fetch profile error:", err);
         toast.error("Error fetching profile");
       }
     };
-
     fetchProfile();
   }, [token]);
 
-  /* ✏️ Handle text inputs */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  /* 🖼️ Handle image selection */
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setUser((prev) => ({ ...prev, profile_image: file }));
     setPreviewImage(URL.createObjectURL(file));
   };
 
-  /* 💾 Save profile */
   const handleSave = async () => {
     try {
       const formData = new FormData();
       formData.append("full_name", user.full_name);
       formData.append("bio", user.bio);
-
       if (user.profile_image instanceof File) {
         formData.append("profile_image", user.profile_image);
       }
 
       const res = await fetch("http://localhost:5000/auth/profile/update", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         toast.error(data.message || "Profile update failed");
         return;
@@ -108,10 +89,7 @@ function ViewProfile() {
 
       toast.success("Profile updated successfully!");
       setIsEditing(false);
-
-      if (data.user?.profile_image) {
-        setPreviewImage(data.user.profile_image);
-      }
+      if (data.user?.profile_image) setPreviewImage(data.user.profile_image);
     } catch (err) {
       console.error("Update profile error:", err);
       toast.error("Something went wrong");
@@ -119,16 +97,18 @@ function ViewProfile() {
   };
 
   return (
-    <div className="min-h-screen text-white">
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-color)", color: "var(--text-color)" }}>
       <ToastContainer />
       <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">My Profile</h1>
+        <h1 className="text-3xl font-bold mb-6" style={{ color: "var(--link-hover)" }}>
+          My Profile
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* LEFT */}
-          <div className="bg-[#2a2520] border border-[#8B6914] rounded-3xl p-6 flex flex-col items-center">
+          <div className="rounded-3xl p-6 flex flex-col items-center" style={{ backgroundColor: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
             <div className="relative">
-              <div className="w-32 h-32 rounded-full overflow-hidden bg-[#3a3a3a] flex items-center justify-center text-4xl font-bold">
+              <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center text-4xl font-bold" style={{ backgroundColor: "var(--hover-bg)", color: "var(--text-color)" }}>
                 {previewImage ? (
                   <img
                     src={previewImage}
@@ -141,25 +121,21 @@ function ViewProfile() {
               </div>
 
               {isEditing && (
-                <label className="absolute bottom-1 right-1 bg-[#D4AF37] p-2 rounded-full cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
-                  />
+                <label className="absolute bottom-1 right-1 p-2 rounded-full cursor-pointer" style={{ backgroundColor: "var(--link-hover)" }}>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
                 </label>
               )}
             </div>
 
-            <h2 className="mt-4 text-2xl font-bold text-[#D4AF37]">
+            <h2 className="mt-4 text-2xl font-bold" style={{ color: "var(--link-hover)" }}>
               {user.full_name}
             </h2>
-            <p className="text-gray-400">{user.role}</p>
+            <p style={{ color: "var(--text-color)" }}>{user.role}</p>
 
             <button
               onClick={() => setIsEditing(!isEditing)}
-              className="mt-6 w-full bg-[#D4AF37] text-black py-3 rounded-lg"
+              className="mt-6 w-full py-3 rounded-lg"
+              style={{ backgroundColor: "var(--button-bg)", color: "var(--text-color)" }}
             >
               {isEditing ? "Cancel" : "Edit Profile"}
             </button>
@@ -167,7 +143,8 @@ function ViewProfile() {
             {isEditing && (
               <button
                 onClick={handleSave}
-                className="mt-2 w-full bg-[#B8941E] text-black py-3 rounded-lg"
+                className="mt-2 w-full py-3 rounded-lg"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--text-color)" }}
               >
                 Save Changes
               </button>
@@ -175,40 +152,43 @@ function ViewProfile() {
           </div>
 
           {/* RIGHT */}
-          <div className="lg:col-span-2 bg-[#2a2520] border border-[#8B6914] rounded-3xl p-6">
-            <h3 className="text-xl font-bold text-[#D4AF37] mb-6">
+          <div className="lg:col-span-2 rounded-3xl p-6" style={{ backgroundColor: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
+            <h3 className="text-xl font-bold mb-6" style={{ color: "var(--link-hover)" }}>
               Personal Information
             </h3>
 
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-gray-300">Full Name</label>
+                <label className="text-sm" style={{ color: "var(--text-color)" }}>Full Name</label>
                 <input
                   name="full_name"
                   value={user.full_name}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className="w-full bg-[#1a1a1a] border border-[#8B6914] rounded-xl px-4 py-2"
+                  className="w-full rounded-xl px-4 py-2"
+                  style={{ backgroundColor: "var(--bg-color)", border: "1px solid var(--border-color)", color: "var(--text-color)" }}
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-300">Bio</label>
+                <label className="text-sm" style={{ color: "var(--text-color)" }}>Bio</label>
                 <textarea
                   name="bio"
                   value={user.bio}
                   onChange={handleChange}
                   readOnly={!isEditing}
-                  className="w-full bg-[#1a1a1a] border border-[#8B6914] rounded-xl px-4 py-2"
+                  className="w-full rounded-xl px-4 py-2"
+                  style={{ backgroundColor: "var(--bg-color)", border: "1px solid var(--border-color)", color: "var(--text-color)" }}
                 />
               </div>
 
               <div>
-                <label className="text-sm text-gray-300">Email</label>
+                <label className="text-sm" style={{ color: "var(--text-color)" }}>Email</label>
                 <input
                   value={user.email}
                   readOnly
-                  className="w-full bg-[#1a1a1a] border border-[#8B6914] rounded-xl px-4 py-2"
+                  className="w-full rounded-xl px-4 py-2"
+                  style={{ backgroundColor: "var(--bg-color)", border: "1px solid var(--border-color)", color: "var(--text-color)" }}
                 />
               </div>
             </div>
@@ -216,21 +196,24 @@ function ViewProfile() {
             <div className="mt-8 space-y-3">
               <button
                 onClick={() => setShowReset(true)}
-                className="w-full bg-[#3a3a3a] py-3 rounded-xl text-green-500"
+                className="w-full py-3 rounded-xl"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--success-color)" }}
               >
                 Reset Password
               </button>
 
               <button
                 onClick={() => setShowChange(true)}
-                className="w-full bg-[#3a3a3a] py-3 rounded-xl text-green-500"
+                className="w-full py-3 rounded-xl"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--success-color)" }}
               >
                 Change Password
               </button>
 
               <button
                 onClick={() => setShowDelete(true)}
-                className="w-full bg-[#3a3a3a] py-3 rounded-xl text-red-500"
+                className="w-full py-3 rounded-xl"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--error-color)" }}
               >
                 Delete Account
               </button>

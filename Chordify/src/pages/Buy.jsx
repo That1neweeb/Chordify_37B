@@ -17,7 +17,6 @@ function Buy() {
     maxPrice: "",
   });
 
-  // Use useRef for debounce to persist timeout across renders
   const debounceRef = useRef(null);
 
   // Fetch all products
@@ -30,88 +29,103 @@ function Buy() {
     }
   };
 
-  // Fetch products by search query
+  // Fetch products by search
   const fetchSearchResults = async (query) => {
     if (!query) {
-      fetchProducts(); // If search is empty, fetch all
+      fetchProducts();
       return;
     }
 
     try {
-      const data = await callApi("GET", `/products/search`, {
+      const res = await callApi("GET", "/products/search", {
         params: { search: query },
       });
-      setProducts(data);
+      setProducts(res);
     } catch (err) {
       console.error("Search error:", err.message);
     }
   };
 
-  // Fetch products by filters
+  // Apply filters
   const applyFilters = async () => {
     try {
       const query = new URLSearchParams(filters).toString();
-      const data = await callApi("GET", `/products/filter?${query}`);
-      setProducts(data.data);
+      const res = await callApi("GET", `/products/filter?${query}`);
+      setProducts(res.data);
     } catch (err) {
       console.error("Filter error:", err.message);
     }
   };
 
-  // Search input change with debounce
+  // Debounced search
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    // Clear previous timeout
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    // Set new timeout
     debounceRef.current = setTimeout(() => {
       fetchSearchResults(value);
     }, 500);
   };
 
-  // Fetch products on component mount
   useEffect(() => {
     fetchProducts();
   }, []);
 
   return (
     <div className="pb-10">
-      {/* Search area */}
-      <div className="flex items-center m-10 gap-2 bg-[#393328] border border-[#374151] rounded-xl hover:border-[#393328]">
-        <img src={searchIcon} alt="" className="size-6 ml-4" />
+      {/* Search Bar */}
+      <div
+        className="flex items-center m-10 gap-2 rounded-xl border"
+        style={{
+          backgroundColor: "var(--card-bg)",
+          borderColor: "var(--border-color)",
+        }}
+      >
+        <img src={searchIcon} alt="search" className="size-6 ml-4 icon" />
         <input
           type="text"
-          placeholder="Search product by name ...."
+          placeholder="Search product by name..."
           value={searchTerm}
           onChange={handleSearchChange}
-          className="w-full m-2 h-10 focus:outline-none bg-[#393328] text-white"
+          className="w-full m-2 h-10 bg-transparent focus:outline-none"
+          style={{ color: "var(--text-color)" }}
         />
       </div>
 
       <div className="flex justify-around mr-8 mt-20">
-        {/* Sidebar filters */}
-        <div className="bg-[#393328] w-64 h-[800px] rounded-2xl ml-5 p-4">
-          <h2 className="text-xl font-bold mb-4 text-white">Filters</h2>
+        {/* Filters Sidebar */}
+        <div
+          className="w-64 h-[800px] rounded-2xl ml-5 p-4 border"
+          style={{
+            backgroundColor: "var(--card-bg)",
+            borderColor: "var(--border-color)",
+          }}
+        >
+          <h2 className="text-xl font-bold mb-4">Filters</h2>
 
-          {/* Category filter */}
-          <label className="block mb-2 text-white">Category</label>
+          {/* Category */}
+          <label className="block mb-2">Category</label>
           <select
-            className="w-full mb-4 p-2 rounded bg-[#4F3D18] text-white"
             value={filters.category}
             onChange={(e) =>
               setFilters({ ...filters, category: e.target.value })
             }
+            className="w-full mb-4 p-2 rounded border"
+            style={{
+              backgroundColor: "var(--button-bg)",
+              color: "var(--text-color)",
+              borderColor: "var(--border-color)",
+            }}
           >
             <option value="">All</option>
             <option value="guitar">Guitar</option>
             <option value="accessories">Accessories</option>
           </select>
 
-          {/* Brand filter */}
-          <label className="block mb-2 text-white">Brand</label>
+          {/* Brand */}
+          <label className="block mb-2">Brand</label>
           <input
             type="text"
             placeholder="Brand name"
@@ -119,25 +133,35 @@ function Buy() {
             onChange={(e) =>
               setFilters({ ...filters, brand: e.target.value })
             }
-            className="w-full mb-4 p-2 rounded bg-[#4F3D18] text-white"
+            className="w-full mb-4 p-2 rounded border"
+            style={{
+              backgroundColor: "var(--button-bg)",
+              color: "var(--text-color)",
+              borderColor: "var(--border-color)",
+            }}
           />
 
-          {/* Condition filter */}
-          <label className="block mb-2 text-white">Condition</label>
+          {/* Condition */}
+          <label className="block mb-2">Condition</label>
           <select
             value={filters.condition}
             onChange={(e) =>
               setFilters({ ...filters, condition: e.target.value })
             }
-            className="w-full mb-4 p-2 rounded bg-[#4F3D18] text-white"
+            className="w-full mb-4 p-2 rounded border"
+            style={{
+              backgroundColor: "var(--button-bg)",
+              color: "var(--text-color)",
+              borderColor: "var(--border-color)",
+            }}
           >
             <option value="">All</option>
             <option value="new">New</option>
             <option value="used">Used</option>
           </select>
 
-          {/* Price range */}
-          <label className="block mb-2 text-white">Price Range</label>
+          {/* Price */}
+          <label className="block mb-2">Price Range</label>
           <div className="flex gap-2 mb-4">
             <input
               type="number"
@@ -146,7 +170,12 @@ function Buy() {
               onChange={(e) =>
                 setFilters({ ...filters, minPrice: e.target.value })
               }
-              className="w-1/2 p-2 rounded bg-[#4F3D18] text-white"
+              className="w-1/2 p-2 rounded border"
+              style={{
+                backgroundColor: "var(--button-bg)",
+                color: "var(--text-color)",
+                borderColor: "var(--border-color)",
+              }}
             />
             <input
               type="number"
@@ -155,22 +184,33 @@ function Buy() {
               onChange={(e) =>
                 setFilters({ ...filters, maxPrice: e.target.value })
               }
-              className="w-1/2 p-2 rounded bg-[#4F3D18] text-white"
+              className="w-1/2 p-2 rounded border"
+              style={{
+                backgroundColor: "var(--button-bg)",
+                color: "var(--text-color)",
+                borderColor: "var(--border-color)",
+              }}
             />
           </div>
 
           <button
             onClick={applyFilters}
-            className="w-full bg-[#4F3D18] text-[#F2A60D] py-2 rounded"
+            className="w-full py-2 rounded font-semibold"
+            style={{
+              color: "var(--link-hover)",
+              borderColor: "var(--link-hover)",
+              backgroundColor: "transparent",
+            }}
           >
             Apply Filters
           </button>
         </div>
 
-        {/* Product grid */}
+        {/* Products */}
         <div className="ml-12 flex-1">
-          <h1 className="text-4xl font-bold text-white">Products</h1>
-          <div className="grid grid-cols-3 gap-y-20 gap-x-20 mt-4">
+          <h1 className="text-4xl font-bold mb-6">Products</h1>
+
+          <div className="grid grid-cols-3 gap-x-20 gap-y-20">
             {products.map((product) => (
               <GuitarCard
                 key={product.id}

@@ -62,7 +62,7 @@ function Navbar() {
       </div>
       
       <button onClick={toggleTheme} className="theme-toggle">
-        {theme === "light" ? "🌙 Dark Mode" : "☀️ Light Mode"}
+        {theme === "light" ? "🌙 " : "☀️ "}
         </button>
 
         {/* Auth Buttons or Profile Dropdown */}
@@ -81,7 +81,7 @@ function Navbar() {
               <div className="absolute right-0 mt-2 w-44 bg-[#282828] rounded-xl p-2 flex flex-col gap-3 z-20">
                 <Link to="/profile" onClick={() => handleMenuSelect("profile")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "profile" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -92,7 +92,7 @@ function Navbar() {
 
                 <Link to="/favourites" onClick={()=>handleMenuSelect("favourites")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "favourites" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -103,7 +103,7 @@ function Navbar() {
 
                 <Link to="/cart" onClick={() => handleMenuSelect("cart")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "cart" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -114,7 +114,7 @@ function Navbar() {
 
                 <Link to="/mylistings" onClick={() => handleMenuSelect("mylistings")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "mylistings" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -125,7 +125,7 @@ function Navbar() {
 
                 <div
                   onClick={logout}
-                  className="flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] cursor-pointer"
+                  className="flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] cursor-pointer text-white"
                 >
                   Logout
                   <img src={logoutIcon} alt="" className="size-5" />
@@ -142,7 +142,7 @@ function Navbar() {
             </Link>
 
             <Link to="/register">
-              <button className="bg-[#393328] hover:scale-105 transition-all duration-300 px-6 py-1.5 rounded">
+              <button className="bg-[#393328] hover:scale-105 transition-all duration-300 px-6 py-1.5 rounded text-white ">
                 Sign up
               </button>
             </Link>

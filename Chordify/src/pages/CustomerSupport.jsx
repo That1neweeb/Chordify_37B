@@ -59,24 +59,36 @@ export default function CustomerSupport() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-12 p-10 bg-[#1a1a1a] border border-[#8B6914] rounded-3xl flex flex-col md:flex-row gap-16">
-      
+    <div
+      className="max-w-6xl mx-auto mt-12 p-10 rounded-3xl flex flex-col md:flex-row gap-16 border"
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: "var(--border-color)",
+        color: "var(--text-color)"
+      }}
+    >
       {/* Left side: Contact info */}
-      <div className="md:w-1/2 flex flex-col justify-center text-gray-300 space-y-6">
-        <h2 className="text-3xl font-bold text-[#D4AF37] mb-2">Contact Us</h2>
-        <p className="text-gray-400">
+      <div className="md:w-1/2 flex flex-col justify-center space-y-6">
+        <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--link-hover)" }}>
+          Contact Us
+        </h2>
+        <p style={{ color: "var(--text-color)" }}>
           If you have questions, feedback, or need assistance, reach out to us using the form. 
           We are here to help!
         </p>
 
         <div className="space-y-4">
           <div>
-            <span className="block font-semibold text-gray-300">Email:</span>
-            <span className="text-white">chordify21@gmail.com</span>
+            <span className="block font-semibold" style={{ color: "var(--text-color)" }}>
+              Email:
+            </span>
+            <span style={{ color: "var(--text-color)" }}>chordify21@gmail.com</span>
           </div>
           <div>
-            <span className="block font-semibold text-gray-300">Phone:</span>
-            <span className="text-white">9800000000</span>
+            <span className="block font-semibold" style={{ color: "var(--text-color)" }}>
+              Phone:
+            </span>
+            <span style={{ color: "var(--text-color)" }}>9800000000</span>
           </div>
         </div>
       </div>
@@ -84,54 +96,80 @@ export default function CustomerSupport() {
       {/* Right side: Form */}
       <div className="md:w-1/2">
         <form onSubmit={handleSubmit} className="space-y-5">
-          
           {/* Full Name */}
           <div>
-            <label className="block text-gray-300 text-sm mb-2">Full Name</label>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Full Name
+            </label>
             <input
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Enter your full name"
-              className="w-full bg-[#2a2520] border border-[#8B6914] rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37]"
+              className="w-full rounded-xl py-3 px-4 focus:outline-none"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
             />
           </div>
 
           {/* Email (read-only) */}
           <div>
-            <label className="block text-gray-300 text-sm mb-2">Email</label>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Email
+            </label>
             <input
               type="email"
               value={emailInput}
               readOnly
-              className="w-full bg-[#2a2520] border border-[#8B6914] rounded-xl py-3 px-4 text-gray-400 cursor-not-allowed placeholder-gray-500 focus:outline-none"
+              className="w-full rounded-xl py-3 px-4 cursor-not-allowed"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
             />
           </div>
 
           {/* Phone */}
           <div>
-            <label className="block text-gray-300 text-sm mb-2">Phone </label>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Phone
+            </label>
             <input
               type="text"
               value={phone}
               onChange={(e) => {
-                // Only numbers, max 10 digits
                 const val = e.target.value.replace(/\D/g, "");
                 setPhone(val.slice(0, 10));
               }}
               placeholder="Enter your phone number"
-              className="w-full bg-[#2a2520] border border-[#8B6914] rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none focus:border-[#D4AF37]"
+              className="w-full rounded-xl py-3 px-4 focus:outline-none"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
             />
           </div>
 
           {/* Message */}
           <div>
-            <label className="block text-gray-300 text-sm mb-2">Message</label>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Message
+            </label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Write your message..."
-              className="w-full bg-[#2a2520] border border-[#8B6914] rounded-xl py-3 px-4 text-white placeholder-gray-500 focus:outline-none resize-none h-32"
+              className="w-full rounded-xl py-3 px-4 resize-none h-32 focus:outline-none"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
             />
           </div>
 
@@ -139,7 +177,11 @@ export default function CustomerSupport() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#D4AF37] text-black font-semibold rounded-xl disabled:opacity-50"
+            className="w-full py-3 rounded-xl font-semibold disabled:opacity-50"
+            style={{
+              backgroundColor: "var(--link-hover)",
+              color: "var(--text-color)"
+            }}
           >
             {loading ? "Sending..." : "Send Message"}
           </button>
