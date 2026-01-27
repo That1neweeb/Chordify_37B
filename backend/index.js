@@ -40,7 +40,7 @@ app.use(cors());
 
 createUploadsFolder(); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/images', express.static(path.join(__dirname,'images')));
 
 //Routes :
 app.use('/products', productRoutes); //to fetch products

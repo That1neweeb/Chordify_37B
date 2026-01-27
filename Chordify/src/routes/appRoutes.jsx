@@ -24,7 +24,8 @@ const PostsPage = React.lazy(() => import("../pages/PostsPage"));
 const Chordslibrary = React.lazy(() => import("../pages/ChordLibrary"));
 const UploadPage = React.lazy(() => import("../pages/UploadPage"));
 const MyUploads = React.lazy(() => import("../pages/MyUploads"));
-
+const TabExercisesPage = React.lazy(() => import("../pages/TabExercisesPage"));
+const StrummingPatternPage = React.lazy(() => import("../pages/StrummingPatternPage"));
 
 import PrivateRoutes from "./PrivateRoutes";
 
@@ -36,7 +37,8 @@ export const AppRoutes = () => (
     <Route path="/login" element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
     <Route path="/register" element={<Suspense fallback={<Spinner />}><Register /></Suspense>} />
     <Route path="/chords" element={<Suspense fallback={<Spinner/>}> <Chordslibrary /> </Suspense> } />
-    {/* <Route path="/exercise" element /> */}
+    <Route path="/strumming" element={<Suspense fallback={<Spinner/>}> <StrummingPatternPage /> </Suspense> }/>
+    <Route path="/exercise" element={<Suspense fallback={<Spinner/>}> <TabExercisesPage /> </Suspense> } />
 
     {/* Private routes */}
     <Route element={<PrivateRoutes />}>

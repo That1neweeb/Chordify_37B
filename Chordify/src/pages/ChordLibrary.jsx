@@ -1,6 +1,6 @@
 import { useEffect,useState } from "react";
 import useApi from "../hooks/useAPI";
-
+import Chord from "../components/Chord";
 export default function ChordLibrary(){
     const [chords, setChords] = useState([]);
     const {callApi, error,loading} = useApi();
@@ -8,8 +8,7 @@ export default function ChordLibrary(){
         const fetchContent = async () =>{
             try{
                 const res = await callApi("GET","/chords/getAllChords");
-                const data = await res;
-                setChords(Array.isArray(data) ? data : []);
+                setChords(Array.isArray(res?.data) ? res.data : []);
             }
             catch(e){
                 console.error(e);
@@ -26,7 +25,7 @@ return(
         {loading && <p>Loading chords...</p>}
         {error && <p className="text-red-500">Error: {error}</p>}
         {chords.map(chord =>(
-            <Chord chord={chord}/>
+            <Chord key={chord.id} chord={chord}/>
         )
         )}
     </div>

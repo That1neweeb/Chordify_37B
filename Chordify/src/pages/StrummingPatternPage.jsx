@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import useApi from "../hooks/useAPI";
 import CommonCard from "../components/CommonCard";
 
@@ -10,9 +10,8 @@ export default function StrummingPatternPage(){
       useEffect(() => {
     const fetchPatterns = async () => {
       try {
-        const res = await callApi("GET", "/strumming/getAllPattern");
-        const data = await res;
-        setPatterns(Array.isArray(data) ? data : []);
+        const res = await callApi("GET", "/strumming/getAllPatterns"); 
+        setPatterns(Array.isArray(res?.data) ? res.data : []);
       } catch (err) {
         console.error("Failed to load strumming patterns", err);
       }
@@ -30,10 +29,10 @@ if (patterns.length === 0) {
 }
     
     return(
-        <div className="flex flex-wrap justify-center items-center ">
+        <div className="flex flex-wrap justify-center items-center m-4">
             {
                 patterns.map(pattern =>
-                    <CommonCard img={pattern.image_URL} title={pattern.title} />
+                    <CommonCard img={`http://localhost:5000${pattern.image_URL[0]}`} title={pattern.title} />
                 )
             }
 

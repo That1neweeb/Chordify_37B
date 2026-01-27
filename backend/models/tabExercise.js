@@ -18,4 +18,4 @@ export const TabExercise = sequelize.define("TabExercise",{
         allowNull:false
     }
 
-})
+});
