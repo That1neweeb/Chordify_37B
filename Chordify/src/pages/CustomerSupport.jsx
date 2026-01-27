@@ -1,127 +1,190 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function CustomerSupport() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    message: ""
-  });
+  const { user, isAuthenticated } = useAuth();
+  const [fullName, setFullName] = useState(user?.full_name || "");
+  const [emailInput] = useState(user?.email || "");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isAuthenticated) {
+      toast.error("You must be logged in to send a message");
+      return;
+    }
+
+    if (!fullName || !message) {
+      toast.error("Full Name and Message are required");
+      return;
+    }
+
+    if (phone && phone.length !== 10) {
+      toast.error("Phone number must be exactly 10 digits");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:5000/support", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ fullName, email: emailInput, phone, message }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Failed to send message");
+        return;
+      }
+
+      toast.success("Message sent successfully!");
+      setMessage("");
+      setPhone("");
+    } catch (err) {
+      console.error(err);
+      toast.error("Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const res = await fetch("http://localhost:5000/support", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
-    const data = await res.json();
-    if (data.success) {
-      alert("Message sent successfully!");
-      setFormData({ fullName: "", email: "", phone: "", message: "" });
-    } else {
-      alert("Failed to send message. Try again.");
-    }
-  } catch (err) {
-    console.error(err);
-    alert("Error sending message.");
-  }
-};
-
-
   return (
-    <div className="min-h-screen bg-[#1e1b16] text-white flex flex-col items-center justify-start p-6">
-      
-      {/* HEADER */}
-      <h1 className="text-4xl md:text-5xl font-extrabold mb-12 mt-6 text-center text-[#FF9500]">
-        Chordify Support
-      </h1>
+    <div
+      className="max-w-6xl mx-auto mt-12 p-10 rounded-3xl flex flex-col md:flex-row gap-16 border"
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: "var(--border-color)",
+        color: "var(--text-color)"
+      }}
+    >
+      {/* Left side: Contact info */}
+      <div className="md:w-1/2 flex flex-col justify-center space-y-6">
+        <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--link-hover)" }}>
+          Contact Us
+        </h2>
+        <p style={{ color: "var(--text-color)" }}>
+          If you have questions, feedback, or need assistance, reach out to us using the form. 
+          We are here to help!
+        </p>
 
-      <div className="w-full max-w-[1200px] grid grid-cols-1 md:grid-cols-2 gap-10">
-
-        {/* LEFT INFO SECTION */}
-        <div className="flex flex-col justify-center px-4">
-          <h2 className="text-3xl font-bold mb-4 text-white">How can we help?</h2>
-          <p className="text-gray-300 mb-8">
-            Get in touch with our sales and support teams for demos, onboarding help, or any product-related questions.
-          </p>
-
-          <div className="flex items-center gap-6 text-gray-400 text-sm">
-            <div>
-              <div className="font-semibold text-[#FF9500] mb-1">Email us</div>
-              <div>support@chordify.com</div>
-            </div>
-            <div className="w-px h-8 bg-gray-700"></div>
-            <div>
-              <div className="font-semibold text-[#FF9500] mb-1">Call us</div>
-              <div>9800000000</div>
-            </div>
+        <div className="space-y-4">
+          <div>
+            <span className="block font-semibold" style={{ color: "var(--text-color)" }}>
+              Email:
+            </span>
+            <span style={{ color: "var(--text-color)" }}>chordify21@gmail.com</span>
+          </div>
+          <div>
+            <span className="block font-semibold" style={{ color: "var(--text-color)" }}>
+              Phone:
+            </span>
+            <span style={{ color: "var(--text-color)" }}>9800000000</span>
           </div>
         </div>
+      </div>
 
-        {/* RIGHT FORM SECTION */}
-        <form
-          onSubmit={handleSubmit}
-          className="bg-[#393328] border border-[#374151] rounded-2xl p-8 md:p-12 shadow-lg flex flex-col gap-6"
-        >
-          <h2 className="text-2xl font-bold mb-6 text-[#FF9500]">Contact our sales team</h2>
+      {/* Right side: Form */}
+      <div className="md:w-1/2">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="Enter your full name"
+              className="w-full rounded-xl py-3 px-4 focus:outline-none"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
+            />
+          </div>
 
-          {/* Full Name Input */}
-          <input
-            name="fullName"
-            value={formData.fullName}
-            onChange={handleChange}
-            placeholder="Full Name"
-            className="bg-[#4b4433] text-white px-4 py-3 rounded-lg border border-[#374151] focus:border-[#FF9500] focus:ring-1 focus:ring-[#FF9500] outline-none w-full transition"
-          />
+          {/* Email (read-only) */}
+          <div>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Email
+            </label>
+            <input
+              type="email"
+              value={emailInput}
+              readOnly
+              className="w-full rounded-xl py-3 px-4 cursor-not-allowed"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
+            />
+          </div>
 
-          <input
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Email"
-            className="bg-[#4b4433] text-white px-4 py-3 rounded-lg border border-[#374151] focus:border-[#FF9500] focus:ring-1 focus:ring-[#FF9500] outline-none w-full transition"
-          />
+          {/* Phone */}
+          <div>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Phone
+            </label>
+            <input
+              type="text"
+              value={phone}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "");
+                setPhone(val.slice(0, 10));
+              }}
+              placeholder="Enter your phone number"
+              className="w-full rounded-xl py-3 px-4 focus:outline-none"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
+            />
+          </div>
 
-          <input
-            name="phone"
-            type="tel"
-            value={formData.phone}
-            onChange={handleChange}
-            placeholder="Phone"
-            className="bg-[#4b4433] text-white px-4 py-3 rounded-lg border border-[#374151] focus:border-[#FF9500] focus:ring-1 focus:ring-[#FF9500] outline-none w-full transition"
-          />
+          {/* Message */}
+          <div>
+            <label className="block text-sm mb-2" style={{ color: "var(--text-color)" }}>
+              Message
+            </label>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="Write your message..."
+              className="w-full rounded-xl py-3 px-4 resize-none h-32 focus:outline-none"
+              style={{
+                backgroundColor: "var(--bg-color)",
+                border: `1px solid var(--border-color)`,
+                color: "var(--text-color)"
+              }}
+            />
+          </div>
 
-          <textarea
-            name="message"
-            value={formData.message}
-            onChange={handleChange}
-            placeholder="Describe your project, timeline, and specific needs..."
-            rows="4"
-            className="bg-[#4b4433] text-white px-4 py-3 rounded-lg border border-[#374151] focus:border-[#FF9500] focus:ring-1 focus:ring-[#FF9500] outline-none w-full resize-none transition min-h-[120px]"
-          />
-
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-br from-[#FF9500] to-orange-600 text-white py-4 rounded-lg font-semibold text-lg shadow-md hover:from-orange-400 hover:to-orange-500 transition-transform transform hover:-translate-y-1 active:scale-95"
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-semibold disabled:opacity-50"
+            style={{
+              backgroundColor: "var(--link-hover)",
+              color: "var(--text-color)"
+            }}
           >
-            Send Message
+            {loading ? "Sending..." : "Send Message"}
           </button>
-
-          <p className="text-gray-400 text-xs text-center mt-2 leading-relaxed">
-            By submitting this form, you agree to our{" "}
-            <a href="#" className="text-[#FF9500]">Privacy Policy</a> and{" "}
-            <a href="#" className="text-[#FF9500]">Terms of Service</a>.
-          </p>
         </form>
       </div>
     </div>

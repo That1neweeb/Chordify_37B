@@ -23,20 +23,34 @@ function PhotoUpload({ images, setImages, errors }) {
   // cleanup object URLs
   useEffect(() => {
     return () => {
-      images.forEach(file => URL.revokeObjectURL(file.preview));
+      images.forEach((file) => URL.revokeObjectURL(file.preview));
     };
   }, [images]);
 
   return (
-    <div className="bg-[#27231B] border-4 border-[#393328] rounded-2xl mt-4 w-[90%] flex flex-col px-5">
-      <h2 className="font-bold text-xl text-white mt-4">Upload Photos</h2>
-      <h6 className="text-[#ABA6A6] mt-4">
+    <div
+      className="border-4 rounded-2xl mt-4 w-[90%] flex flex-col px-5"
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderColor: "var(--border-color)",
+        color: "var(--text-color)",
+      }}
+    >
+      <h2 className="font-bold text-xl mt-4">Upload Photos</h2>
+      <h6 className="mt-4 opacity-70">
         Upload up to 4 high quality photos
       </h6>
 
-      <div className="bg-[#181611] w-[98%] h-[300px] mt-4 flex flex-col items-center justify-center border border-dashed border-[#ABA6A6] rounded-xl">
+      <div
+        className="w-[98%] h-[300px] mt-4 flex flex-col items-center justify-center border border-dashed rounded-xl"
+        style={{
+          backgroundColor: "var(--bg-color)",
+          borderColor: "var(--border-color)",
+          color: "var(--text-color)",
+        }}
+      >
         <img src={file} alt="upload" className="size-20" />
-        <h3 className="text-[#ABA6A6] mt-4">
+        <h3 className="mt-4 opacity-70">
           Drag and Drop your photos here or
         </h3>
       </div>
@@ -53,9 +67,14 @@ function PhotoUpload({ images, setImages, errors }) {
         <button
           type="button"
           onClick={handleBrowseClick}
-          className="bg-[#4F3D18] rounded-3xl w-40 self-center mt-10"
+          className="rounded-3xl w-40 self-center mt-10 border font-medium"
+          style={{
+            backgroundColor: "var(--button-bg)",
+            color: "var(--link-hover)",
+            borderColor: "var(--link-hover)",
+          }}
         >
-          <h6 className="text-[#F2A60D]">Browse Files</h6>
+          Browse Files
         </button>
       </div>
 

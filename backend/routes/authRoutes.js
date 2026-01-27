@@ -4,7 +4,7 @@ const router = express.Router();
 
 // Controller
 import { registerUser, login, verifyUser,changePassword,sendResetPasswordEmail, 
-    resetPasswordFromEmail, updateProfile, upload, getProfile, deleteAccount} from '../controllers/authController.js';
+    resetPasswordFromEmail, updateProfile, upload, getProfile, deleteAccount, logout} from '../controllers/authController.js';
 // Routes
 router.get('/me', isAuthenticated, (req,res) => {
     res.status(200).json({
@@ -21,12 +21,13 @@ router.put("/change-password", isAuthenticated, changePassword);
 router.post("/reset-password-email", sendResetPasswordEmail);
 // Reset password using token from email
 router.post("/reset-password/:token", resetPasswordFromEmail);
-router.post("/profile/update", isAuthenticated, upload.single("profile_image"), updateProfile);
 router.get("/profile", isAuthenticated, getProfile);
 router.delete("/delete-acc", isAuthenticated, deleteAccount);
 router.post("/profile/update", isAuthenticated, upload.single("profile_image"), updateProfile);
 router.get("/profile", isAuthenticated, getProfile);
 router.delete("/delete-acc", isAuthenticated, deleteAccount);
+router.post("/logout", isAuthenticated, logout); // add this line
+
 
 
 export default router;

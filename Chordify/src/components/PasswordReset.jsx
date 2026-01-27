@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { X, Mail } from "lucide-react";
 
 export default function PasswordReset({ onClose }) {
   const [email, setEmail] = useState("");

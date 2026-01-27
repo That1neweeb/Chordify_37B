@@ -16,12 +16,12 @@ function HeroImage() {
             {/* Content */}
             <div className="relative z-10 flex flex-col justify-center items-center h-full px-10">
                 <h1 className="text-white font-bold text-7xl">Buy, Learn, Play</h1>
-                <p className="mt-2">Everything in one place</p>
+                <p className="mt-2 text-white">Everything in one place</p>
 
                 <div className="flex gap-14 mt-10">
-                    <button className="bg-[#F2A60D] text-black hover:bg-yellow-500 hover:scale-105 transition-all duration-300">Buy a Guitar</button>
-                    <button className="bg-[#393328] hover:scale-105 transition-all duration-300">Sell your Guitar</button>
-                    <button className="bg-[#393328] hover:scale-105 transition-all duration-300">Find lesson</button>
+                    <button className="text-white bg-[#F2A60D] text-black hover:bg-yellow-500 hover:scale-105 transition-all duration-300">Buy a Guitar</button>
+                    <button className="text-white bg-[#393328] hover:scale-105 transition-all duration-300">Sell your Guitar</button>
+                    <button className="text-white bg-[#393328] hover:scale-105 transition-all duration-300">Find lesson</button>
                 </div>
             </div>
        </div>
