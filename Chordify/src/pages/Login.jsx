@@ -1,7 +1,7 @@
 import InputField from "../components/InputField"
 import registrationImage from '../assets/images/collage2.png';
 import chordifylogo from '../assets/images/chordifylogo.png'
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 
@@ -27,6 +27,12 @@ function Login(){
                         {message && <p className="text-green-600 font-medium mb-2">{message}</p>}
 
                     <InputField isRegistration={false}/>
+
+                    <h3 className="text-black">Don't have an account ? 
+                        <Link to="/register">
+                            <span className="text-[#235EFF] cursor-pointer "> Sign up</span>
+                        </Link> 
+                    </h3>
                 </div>
                 
                 <img className="w-[500px] h-[900px] relative left-[60px]" src={registrationImage} alt="registration" />

@@ -20,8 +20,16 @@ const Song = React.lazy(() => import("../pages/Song"));
 const MyListingPage = React.lazy(()=> import("../pages/MyListingPage"));
 const EditProductPage = React.lazy(()=> import("../pages/EditProductPage"));
 const FavouritePage = React.lazy(()=> import("../pages/FavouritePage"));
+const CustomerSupport = React.lazy(()=> import("../pages/CustomerSupport"));
+const ViewProfile = React.lazy(()=> import("../components/ViewProfile"));
+const PostPage = React.lazy(()=> import("../pages/PostsPage"));
+const CheckoutPage = React.lazy(()=> import("../pages/CheckoutPage"));
+const OrderSuccessPage = React.lazy(()=> import("../pages/OrderSuccessPage"));
+const OrderPage = React.lazy(()=> import("../pages/OrderPage"));
+
 
 import PrivateRoutes from "./PrivateRoutes";
+
 
 export const AppRoutes = () => (
   <Routes>
@@ -30,6 +38,7 @@ export const AppRoutes = () => (
     <Route path="/aboutus" element={<Aboutus />} />
     <Route path="/login" element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
     <Route path="/register" element={<Suspense fallback={<Spinner />}><Register /></Suspense>} />
+    <Route path="/support" element={<Suspense fallback={<Spinner />}><CustomerSupport /></Suspense>} />
 
     {/* Private routes */}
     <Route element={<PrivateRoutes />}>
@@ -43,6 +52,11 @@ export const AppRoutes = () => (
         <Route path="/mylistings" element={<MyListingPage />} />
         <Route path="/products/edit/:id" element={<EditProductPage />} />
         <Route path="/favourites" element={<FavouritePage/>}></Route>
+        <Route path="/profile" element={<ViewProfile/>}></Route>
+        <Route path="/posts" element={<PostPage/>}></Route>
+        <Route path="/checkout" element={<CheckoutPage/>}></Route>
+        <Route path="/orders" element={<OrderPage/>}></Route>
+        <Route path="/order-success" element={<OrderSuccessPage/>}></Route>
 
       </Route>
     </Route>
