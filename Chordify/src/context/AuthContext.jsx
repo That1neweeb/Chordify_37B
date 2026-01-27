@@ -13,16 +13,22 @@ export const AuthProvider = ({children}) => {
     const { callApi } = useApi();
 
     // logout
-    const logout = async() => {
-        try {
-            await callApi("POST", "/auth/logout", {});
-            toast.success("Logged out");
-        } catch(err) {
-            console.error("Logout failed : ", err);
-        } finally {
-            setUser(null);
-        }
+   const logout = async () => {
+    try {
+        await callApi("POST", "/auth/logout", {});
+        toast.success("Logged out");
+    } catch(err) {
+        console.error("Logout failed : ", err);
+    } finally {
+        // Remove token from localStorage/sessionStorage
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+
+        // Clear React state
+        setUser(null);
     }
+};
+
 
     //restoring session on refresh
     useEffect(()=> {

@@ -391,3 +391,34 @@ export const deleteProduct = async (req, res) => {
   }
 };
 
+export const filterProducts = async (req, res) => {
+  try {
+    const { category, brand, condition, minPrice, maxPrice, minRating, maxRating } = req.query;
+
+    const filter = {};
+
+    if (category) filter.category = category;
+    if (brand) filter.brand = brand;
+    if (condition) filter.condition = condition;
+    if (minPrice || maxPrice) filter.price = {};
+    if (minPrice) filter.price[Op.gte] = Number(minPrice);
+    if (maxPrice) filter.price[Op.lte] = Number(maxPrice);
+    if (minRating || maxRating) filter.rating = {};
+    if (minRating) filter.rating[Op.gte] = Number(minRating);
+    if (maxRating) filter.rating[Op.lte] = Number(maxRating);
+
+    const products = await Products.findAll({
+      where: filter,
+      include: {
+        model: GuitarDetails,
+        as: 'guitarDetails',
+        attributes: ['type']
+      }
+    });
+
+    res.status(200).json({ data: products, message: "Filtered products fetched successfully" });
+  } catch (e) {
+    console.error("Filter products error:", e);
+    res.status(500).json({ message: "Server error" });
+  }
+};

@@ -55,16 +55,11 @@ function Navbar() {
             <Link to="/learn" className="flex items-center gap-1 text-white">
               <img src={guitar} alt="" className="size-4" /> Learn
             </Link>
+             <Link to="/support" className="flex items-center gap-1 text-white">
+          <img src={aboutus} alt="" className="size-4" /> Contact Us</Link>
           </>
         )}
       </div>
-
-      {/* Right: Contact Us + Auth */}
-      <div className="flex items-center gap-14">
-
-        <Link to="/aboutus" className="flex items-center gap-1 text-white">
-          <img src={aboutus} alt="" className="size-4" /> Contact Us
-        </Link>
 
         {/* Auth Buttons or Profile Dropdown */}
         {isAuthenticated ? (
@@ -149,7 +144,7 @@ function Navbar() {
             </Link>
           </div>
         )}
-      </div>
+      
     </div>
   );
 }

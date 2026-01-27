@@ -253,23 +253,43 @@ export const getProfile = async (req, res) => {
 
 // Update user profile
 export const updateProfile = async (req, res) => {
-  try {
-    const user = req.user;
-    const { phone, dob } = req.body;
+    try {
+        const user = await Users.findByPk(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Handle profile image upload
-    if (req.file) {
-      user.profile_image = req.file.filename;
+        const { full_name, bio } = req.body;
+
+        if (full_name) user.full_name = full_name;
+        if (bio !== undefined) user.bio = bio;
+
+        await user.save();
+
+        // Build profile image URL (if uploaded)
+        let profileImageUrl = null;
+        if (req.file) {
+            profileImageUrl = `http://localhost:5000/uploads/${req.file.filename}`;
+        } else if (user.profile_image) {
+            profileImageUrl = `http://localhost:5000/uploads/${user.profile_image}`;
+        }
+
+        return res.status(200).json({
+            message: "Profile updated successfully",
+            user: {
+                full_name: user.full_name,
+                email: user.email,
+                role: user.role,
+                bio: user.bio,
+                profile_image: profileImageUrl
+            }
+        });
+    } catch (err) {
+        console.error("Update profile error:", err);
+        return res.status(500).json({ message: "Server error" });
     }
-
-    await user.update({ phone, dob });
-
-    return res.status(200).json({ message: "Profile updated", user });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Server error" });
-  }
 };
+
+
+
 
 // Send reset password email
 export const sendResetPasswordEmail = async (req, res) => {
@@ -399,7 +419,7 @@ export const deleteAccount = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // ❌ Delete user permanently from DB
+    //  Delete user permanently from DB
     await Users.destroy({
       where: { id: userId },
     });
@@ -414,3 +434,14 @@ export const deleteAccount = async (req, res) => {
     });
   }
 };
+
+export const logout = (req, res) => {
+    try {
+
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong!" });
+    }
+};
+
