@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import GuitarCard from "../components/GuitarCard";
-import { useApi } from "../hooks/useAPi";
+import { useApi } from "../hooks/useAPI";
 
 function FavouritePage() {
     const[favourites, setFavourites] = useState([]);
