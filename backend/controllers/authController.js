@@ -407,3 +407,11 @@ export const deleteAccount = async (req, res) => {
     });
   }
 };
+
+export const logout = (req, res) => {
+    try {
+        return res.status(200).json({ message: "Logged out successfully" });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
+    }
+};

@@ -23,11 +23,17 @@ function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
 
+
+
+
   const toggleDropdown = () => setIsOpen((prev) => !prev);
   const handleMenuSelect = (item) => {
     setSelectedItem(item);
     setIsOpen(false);
   };
+
+ 
+
 
   return (
     <div className="flex items-center justify-between w-full mt-5 px-6">
@@ -42,6 +48,9 @@ function Navbar() {
       <div className="flex gap-8 items-center ml-[800px]">
         {isAuthenticated && (
           <>
+           <Link to="/posts" className="flex items-center gap-1 text-white">
+              <img src={shoppingcart} alt="" className="size-4" /> Posts
+            </Link>
             <Link to="/buy" className="flex items-center gap-1 text-white">
               <img src={shoppingcart} alt="" className="size-4" /> Buy
             </Link>
@@ -58,7 +67,7 @@ function Navbar() {
       {/* Right: Contact Us + Auth */}
       <div className="flex items-center gap-14">
 
-        <Link to="/aboutus" className="flex items-center gap-1 text-white">
+        <Link to="/support" className="flex items-center gap-1 text-white">
           <img src={aboutus} alt="" className="size-4" /> Contact Us
         </Link>
 
@@ -116,6 +125,18 @@ function Navbar() {
                     }`}
                   >
                     My Listings
+                    <img src={list} alt="" className="size-5" />
+                  </div>
+                </Link>
+
+                
+                <Link to="/orders" onClick={() => handleMenuSelect("myorders")}>
+                  <div
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                      selectedItem === "myorders" ? "bg-[#3A3939]" : ""
+                    }`}
+                  >
+                    My Orders
                     <img src={list} alt="" className="size-5" />
                   </div>
                 </Link>

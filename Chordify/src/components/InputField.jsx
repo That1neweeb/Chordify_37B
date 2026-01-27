@@ -1,7 +1,7 @@
 import google from '../assets/images/google.png';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApi } from "../hooks/useAPI.js"; 
 import { toast } from 'react-toastify';
 import { registerSchema, loginSchema } from "../schema/register.schema";
@@ -94,19 +94,13 @@ function InputField({ isRegistration = true }) {
 
             {isRegistration && (
                 <>
-                    <div className="flex items-center my-5 mr-20">
-                        <div className="flex-grow border-t border-gray-300"></div>
-                        <span className="mx-3 text-gray-500">or</span>
-                        <div className="flex-grow border-t border-gray-300"></div>
+                    <div className="items-center my-5 mr-20 justify-center flex flex-col">
+                        <h3 className="text-black">Already have an account ? 
+                            <Link to="/login">
+                                <span className="text-[#235EFF] cursor-pointer "> Sign in </span>
+                            </Link> 
+                        </h3>          
                     </div>
-
-                    <button
-                        disabled={loading}
-                        className="flex items-center justify-center w-[400px] h-[50px] gap-2 border border-black rounded-md bg-[#E0E0E0] text-black mt-1"
-                    >
-                        <img src={google} alt="Google" className="h-4" />
-                        Sign up with Google
-                    </button>
                 </>
             )}
 

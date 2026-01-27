@@ -4,7 +4,8 @@ const router = express.Router();
 
 // Controller
 import { registerUser, login, verifyUser,changePassword,sendResetPasswordEmail, 
-    resetPasswordFromEmail, updateProfile, upload, getProfile, deleteAccount} from '../controllers/authController.js';
+    resetPasswordFromEmail, updateProfile, upload, getProfile, deleteAccount,
+    logout} from '../controllers/authController.js';
 // Routes
 router.get('/me', isAuthenticated, (req,res) => {
     res.status(200).json({
@@ -13,6 +14,7 @@ router.get('/me', isAuthenticated, (req,res) => {
 });
 router.post('/register', registerUser);
 router.post('/login', login);
+router.post('/logout', logout);
 router.get('/verify/:token', verifyUser);
 router.put("/change-password", isAuthenticated, changePassword);
 // Request reset password email
