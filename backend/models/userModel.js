@@ -50,9 +50,12 @@ export const Users = sequelize.define(
       allowNull: true
     },
     bio: {
-  type: DataTypes.TEXT,
-  allowNull: true
-}
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    profile_image: {
+      type: DataTypes.STRING(500), // Store the filename
+      allowNull: true
+    }
   }
-  
 );
