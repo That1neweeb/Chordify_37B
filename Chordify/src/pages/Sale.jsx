@@ -1,98 +1,131 @@
-import PhotoUpload from "../components/PhotoUpload";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { productSchema } from "../schema/product.schema.js";
 import ProductDetail from "../components/ProductDetail";
 import DescriptionAndPrice from "../components/DescriptionAndPrice";
-import { useState } from "react";
-import axios from "axios";
-
+import PhotoUpload from "../components/PhotoUpload";
+import { useApi } from "../hooks/useAPI";
+import { toast } from "react-toastify";
 
 function Sale() {
+  const { loading, callApi } = useApi();
 
-const [images, setImages] = useState([]);
-const [name, setName] = useState("");
-const [brand, setBrand] = useState("");
-const [price, setPrice] = useState("");
-const [condition, setCondition] = useState("");
-const [type, setType] = useState("");
-const [category, setCategory] = useState("guitar");
-
-//handling submit
-const handleSubmit = async() => {
-    const formData = new FormData();
-
-    formData.append("name", name);
-    formData.append("brand", brand);
-    formData.append("price", price );
-    formData.append("condition", condition );
-    formData.append("category", category);
-
-    if(category==="guitar") formData.append("type", type);
-
-    images.forEach(file => formData.append("images", file));
-
-    try {
-        const res = await axios.post("http://localhost:5000/products/add", formData, {
-            headers:{"Content-Type" : "multipart/form-data"}
-        });
-        console.log("Product added : ", res.data);
-        
-    } catch(e) {
-        console.error("Error adding product:", e.response?.data || e.message);
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: "",
+      brand: "",
+      condition: "new",
+      type: "electric",
+      category: "guitar",
+      description: "",
+      price: "",
+      image_files: []
     }
+  });
 
-}
+  const images = watch("image_files");
 
-    return(
-        <div className="h-full">
-            <h1 className="font-bold text-3xl text-white mt-14 ml-20">Sell your Product</h1>
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
 
-            <div className="flex ml-16 mt-10 bg-[#393328] w-[400px] h-[60px] items-center justify-center rounded-3xl">
-                <button className={
-                    `rounded-3xl w-40 focus:outline-none ${
-                        category == "guitar" ? "bg-[#4F3D18]" : "bg-[#393328]"
-                    }` 
-                    }
-                    onClick={() => setCategory("guitar")}
-                    >
-                    <h6 className={
-                    `text-center  ${
-                        category == "guitar" ? "text-[#F2A60D]" : ""
-                    }`}
-                    >Sell guitar</h6>
-                </button>
-                <button className={
-                    `rounded-3xl w-40 focus:outline-none ${
-                        category == "accessories" ? "bg-[#4F3D18]" :  "bg-[#393328]" 
-                    }`
-                    }
-                    onClick={()=> setCategory("accessories")}
-                    >
-                    <h6 className={
-                    `text-center ${
-                        category == "accessories" ? "text-[#F2A60D]" : ""
-                    }`}>Sell accessories</h6>
+      Object.entries(data).forEach(([key, value]) => {
+        if (key === "image_files") {
+          value.forEach(file => formData.append("image_files", file));
+        } else {
+          formData.append(key, value);
+        }
+      });
+
+      await callApi("POST", "/products/add", { data: formData });
+      toast.success("Product added successfully!");
+        reset({
+            name: "",
+            brand: "",
+            condition: "new",
+            type: "electric",
+            category: "guitar",
+            description: "",
+            price: "",
+            image_files: []
+        });
+    } catch (e) {
+      console.error("Error adding product:", e.response?.data || e.message);
+      toast.error("Failed to add product");
+    }
+  };
+
+  return (
+    <div className="h-full">
+      <h1 className="font-bold text-3xl text-white mt-14 ml-20">Sell your Product</h1>
+
+      <div className="flex ml-16 mt-10 bg-[#393328] w-[400px] h-[60px] items-center justify-center rounded-3xl">
+        <button
+          type="button"
+          onClick={() => setValue("category", "guitar")}
+          className={`rounded-3xl w-40 ${watch("category") === "guitar" ? "bg-[#4F3D18]" : "bg-[#393328]"}`}
+        >
+          <h6 className={watch("category") === "guitar" ? "text-[#F2A60D]" : ""}>Sell guitar</h6>
+        </button>
+        <button
+          type="button"
+          onClick={() => setValue("category", "accessories")}
+          className={`rounded-3xl w-40 ${watch("category") === "accessories" ? "bg-[#4F3D18]" : "bg-[#393328]"}`}
+        >
+          <h6 className={watch("category") === "accessories" ? "text-[#F2A60D]" : ""}>Sell accessories</h6>
+        </button>
+      </div>
+
+      <div className="flex flex-col items-center mt-14">
+            <PhotoUpload
+                images={images}
+                setImages={(files) => setValue("image_files", files)}
+                errors={errors}
+            />
+
+            <ProductDetail
+                category={watch("category")}
+                name={watch("name")}
+                brand={watch("brand")}
+                condition={watch("condition")}
+                type={watch("type")}
+                setName={(val) => setValue("name", val)}
+                setBrand={(val) => setValue("brand", val)}
+                setCondition={(val) => setValue("condition", val)}
+                setType={(val) => setValue("type", val)}
+                errors={errors}
+            />
 
 
-                </button>
-            </div>
+            <DescriptionAndPrice
+                description={watch("description")}
+                price={watch("price")}
+                setDescription={(val) => setValue("description", val)}
+                setPrice={(val) => setValue("price", val)}
+                errors={errors}
+            />
+
+
+
        
-            <div className="flex flex-col items-center mt-14">
-                <PhotoUpload images={images} setImages={setImages}/>  
-                <ProductDetail 
-                    category={category} 
-                    setName={setName} 
-                    setPrice={setPrice} 
-                    setBrand={setBrand} 
-                    setType={setType}
-                    setCondition={setCondition}
-                />
-                <DescriptionAndPrice/>
-                <button
-                onClick={handleSubmit}
-                className="bg-[#4F3D18] text-[#F2A60D] px-6 py-2 rounded-2xl mt-10"
-                >submit listing</button>
-            </div>
 
-        </div>
-    );
+        <button
+          onClick={handleSubmit(onSubmit)}
+          className="bg-[#4F3D18] text-[#F2A60D] px-6 py-2 rounded-2xl mt-10"
+        >
+          {loading ? "Submitting..." : "Submit Listing"}
+        </button>
+      </div>
+    </div>
+  );
 }
+
 export default Sale;

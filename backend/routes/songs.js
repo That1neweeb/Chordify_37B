@@ -3,13 +3,16 @@ const router = express.Router();
 
 
 // Controller
-import { getRecommendedSongs,getSongContent,searchSongs } from '../controllers/songController.js';
+import { getMyFavourites, getRecommendedSongs,getSongContent,searchSongs, setFavourite } from '../controllers/songController.js';
+import { isAuthenticated } from '../middleware/authMiddleware.js';
 
 
 // Fetch recommended songs
 router.get("/recommended", getRecommendedSongs);
-router.get("/songContent",getSongContent);
-router.get("/searchSong",searchSongs)
+router.get("/songContent/:id",getSongContent);
+router.get("/searchSong",searchSongs);
+router.post("/:id/addFavourite",isAuthenticated,setFavourite);
+router.get("/getFavourites",isAuthenticated,getMyFavourites);
 
-module.exports = router;
+export default router;  
 
