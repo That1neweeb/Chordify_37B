@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import SongCard from "./SongCard";
 import useApi from "../hooks/useAPI";
 
-function MusicRecommendation() {
+function LoadSongs() {
 
      const [songs, setSongs] = useState([]);
      const {loading, error, callApi} = useApi();
 
-    
+    // Fetching from the backend
     
     useEffect(() => {
         async function fetchSongs() {
@@ -31,9 +31,12 @@ function MusicRecommendation() {
     return(
         <div className="mt-40 ml-36">
             <h2 className="font-bold text-2xl">Songs for you</h2>
-            <div className="mt-10">
+
+            {/* loading songcards */}
+            <div className="mt-10 flex flex-wrap gap-4">
                 {songs.map(song=> (
                     <SongCard
+                    key={song.id}
                         song={song}
                     />
                 ))}
@@ -43,4 +46,4 @@ function MusicRecommendation() {
     );
 }
 
-export default MusicRecommendation;
+export default LoadSongs;

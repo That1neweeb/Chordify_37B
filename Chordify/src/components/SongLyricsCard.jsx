@@ -17,21 +17,19 @@ export default function LyricsCard({ song }) {
       
         {/* Lyrics */}
         <div className="space-y-6">
-          {song.content.sections.map((section, sIdx) => (
+
+          {song?.content?.sections?.map((section, sIdx) => (
             <div key={sIdx}>
               <p className="uppercase text-xs tracking-widest text-gray-400 mb-2">
                 {section.type}
               </p>
 
               <div className="space-y-3">
-                {section.lines.map((line, idx) => (
-                  <ChordLine
-                    key={idx}
-                    lyrics={line.lyrics}
-                    chords={line.chords}
-                  />
-                ))}
+                  {section?.lines?.map((line, idx) => (
+                    <ChordLine key={idx} content={line.content} />
+                  ))}
               </div>
+
             </div>
           ))}
         </div>

@@ -1,74 +1,95 @@
-import { useState, useEffect } from "react";
-import LearningPageHeroImage from "../components/LearningPageHeroImage";
-import MusicRecommendation from "../components/MusicRecommendation";
+import { useState, useRef } from "react";
+import LoadSongs from "../components/LoadSong";
 import LearningSection from "../components/LearningSection";
-
+import useApi from "../hooks/useAPI";
+import SongCard from "../components/SongCard";
+import { Link } from "react-router-dom";
 function Learn() {
-  const [data, setData] = useState(null); // fetched data
+  const [data, setData] = useState([]); // fetched songs
   const [search, setSearch] = useState(""); // search input
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const debounceRef = useRef(null);
+  const { callApi } = useApi();
+
   // Fetch data from backend
-  const fetchData = async () => {
-    if (!search) return; // Do not fetch if search is empty
+  const fetchData = async (searchTerm) => {
+    if (!searchTerm.trim()) {
+      setData([]);
+      return;
+    }
 
     setLoading(true);
+    setError(null);
     try {
-      const response = await fetch(`http://localhost:5000/songs/searchSongs`);
-      if (!response.ok) throw new Error("Failed to fetch");
-      const result = await response.json();
-      setData(result);
-      setError(null);
+      const res = await callApi(
+        "GET",
+        "/songs/searchSong", //  route
+        { params: { search: searchTerm } }
+      );
+
+      console.log("API Response:", res); // debug log
+
+      setData(res.data || []); 
     } catch (err) {
-      setError(err.message);
-      setData(null);
+      console.error("Fetch error:", err);
+      setError(err.message || "Something went wrong");
+      setData([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch whenever search changes
-  useEffect(() => {
-    fetchData();
-  }, [search]);
+  // Handle input change with debounce
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    debounceRef.current = setTimeout(() => {
+      fetchData(value);
+    }, 500);
+  };
 
   return (
     <>
       {/* Search Bar */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col md:flex-row md:justify-between gap-4">
         <input
           type="text"
-          placeholder="Search..."
+          placeholder="Search songs..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={handleSearchChange}
           className="border p-2 rounded w-full"
         />
+
+                 {/* Favorites Section */}
+        <Link to="/myfavoritesongs"><button>View your Favorites</button></Link>
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-2 flex flex-wrap gap-4 ">
+
         {search === "" ? (
-          // Default components when search is empty
-          <>
-           
-            <MusicRecommendation />
-         
-          </>
-        ) : (
-          // Show search results when search has value
-          <>
+          // Default component when search is empty
           
+          <LoadSongs />
+        ) : (
+          <>
             {loading && <p>Loading...</p>}
             {error && <p className="text-red-500">Error: {error}</p>}
-            {data && data.length === 0 && <p>No results found.</p>}
-            {data && data.length > 0 && (
-              <div>
-                {data.map((item) => (
-                  <LearningSection key={item.id} {...item} />
-                ))}
-              </div>
+            {!loading && !error && data.length === 0 && (
+              <p>No results found.</p>
             )}
+            {data.map(song => (
+                    <SongCard
+                    key={song.id}
+                        song={song}
+                    />
+                ))}
+            
           </>
         )}
       </div>

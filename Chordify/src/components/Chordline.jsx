@@ -1,35 +1,30 @@
-export default function ChordLine({ lyrics, chords }) {
-  let output = [];
-  let lastIndex = 0;
+export default function ChordLine({ content }) {
+  if (!content) return <>No content at the moment</>;
 
-  chords.forEach((c, i) => {
-    output.push(
-      <span key={`text-${i}`}>
-        {lyrics.slice(lastIndex, c.position)}
-      </span>
-    );
+  // Parse JSON if content is a string
+  const parsed = typeof content === "string" ? JSON.parse(content) : content;
 
-    output.push(
-      <span
-        key={`chord-${i}`}
-        className="inline-flex flex-col items-center -mt-5"
-      ><br></br>
-        <span className="text-xs font-semibold text-gray-700">
-          {c.chord}
-        </span>
-      </span>
-    );
+  const lyrics = parsed.lyrics || "";
+  const chords = Array.isArray(parsed.chords) ? parsed.chords : [];
 
-    lastIndex = c.position;
-  });
+  if (!lyrics) return null;
 
-  output.push(
-    <span key="end">{lyrics.slice(lastIndex)}</span>
-  );
+  // Split lyrics into words
+  const words = lyrics.split(" ");
 
   return (
     <div className="whitespace-pre-wrap text-lg leading-7">
-      {output}
+      <div className="flex flex-wrap gap-2 mb-1">
+        {words.map((word, idx) => (
+          <span key={idx} className="flex flex-col items-center">
+            {/* show chord above word if available */}
+            {chords[idx] && (
+              <span className="text-xs font-semibold text-gray-700">{chords[idx]}</span>
+            )}
+            <span>{word}</span>
+          </span>
+        ))}
+      </div>
     </div>
   );
 }

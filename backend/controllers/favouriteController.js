@@ -1,4 +1,4 @@
-import { Favourite } from "../models/association.js"
+import { Favourite } from "../models/association.js";
 import { Products } from "../models/association.js";
 
 export const addToFavourite = async (req, res) => {
@@ -69,5 +69,5 @@ export const getFavourites = async (req, res) => {
     });
   } catch (e) {
     return res.status(500).json({ message: "Server error", error: e.message });
-  }
+  } 
 };

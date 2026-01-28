@@ -35,7 +35,7 @@ export default function PostsPage() {
 
   return (
     <div className="gap-4 m-8 flex flex-col items-center">
-    <div>
+    <div className="flex gap-4">
       <Link to="uploadPage">Try Uploading Some Content</Link>
       <Link to="myUploads">View my Posts</Link>
     </div>
