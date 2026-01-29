@@ -1,30 +1,50 @@
-export default function ChordLine({ content }) {
-  if (!content) return <>No content at the moment</>;
+export default function ChordLine({ lyrics, chords }) {
+  let output = [];
+  let lastIndex = 0;
+  
+  function snapToWord(lyrics, pos) {
+  if (!lyrics || pos >= lyrics.length) return pos;
 
-  // Parse JSON if content is a string
-  const parsed = typeof content === "string" ? JSON.parse(content) : content;
+  // move left until we hit a space
+  while (pos > 0 && lyrics[pos] !== " ") {
+    pos--;
+  }
 
-  const lyrics = parsed.lyrics || "";
-  const chords = Array.isArray(parsed.chords) ? parsed.chords : [];
+  return pos;
+}
 
-  if (!lyrics) return null;
 
-  // Split lyrics into words
-  const words = lyrics.split(" ");
+    chords.forEach((c, i) => {
+    const safePos = snapToWord(lyrics, c.position);
+
+    output.push(
+      <span key={`text-${i}`}>
+        {lyrics.slice(lastIndex, safePos)}
+      </span>
+    );
+
+    output.push(
+      <span
+        key={`chord-${i}`}
+        className="inline-flex flex-col items-center -mt-5"
+      >
+        <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+          {c.chord}
+        </span>
+      </span>
+    );
+
+    lastIndex = safePos;
+  });
+
+  output.push(
+    <span key="end">{lyrics.slice(lastIndex)}</span>
+  );
+
 
   return (
     <div className="whitespace-pre-wrap text-lg leading-7">
-      <div className="flex flex-wrap gap-2 mb-1">
-        {words.map((word, idx) => (
-          <span key={idx} className="flex flex-col items-center">
-            {/* show chord above word if available */}
-            {chords[idx] && (
-              <span className="text-xs font-semibold text-gray-700">{chords[idx]}</span>
-            )}
-            <span>{word}</span>
-          </span>
-        ))}
-      </div>
+      {output}
     </div>
   );
 }

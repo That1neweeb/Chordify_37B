@@ -10,7 +10,7 @@ function LyricsPage() {
   const { loading, error, callApi } = useApi();
 
   useEffect(() => {
-    if (!id) return; // 🛑 guard
+    if (!id) return; // No ID, no fetch
 
     const fetchSong = async () => {
       try {

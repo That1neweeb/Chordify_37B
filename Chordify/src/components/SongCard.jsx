@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import heart from "../assets/images/heart.png";
 import addtoplaylist from "../assets/images/addtoplaylist.png";
 import chatbubble from "../assets/images/chat-bubble.png";
+import filledheart from "../assets/images/filledhheart.png";
 import useApi from "../hooks/useAPI";
 import { toast } from "react-toastify";
 
@@ -17,7 +18,6 @@ function SongCard({ song }) {
     }
     catch(err){
       toast.error("Error adding to favourite: " + err.message);
-
     }
 
     
