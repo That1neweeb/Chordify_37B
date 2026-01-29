@@ -5,16 +5,37 @@ import chatbubble from "../assets/images/chat-bubble.png";
 import filledheart from "../assets/images/filledhheart.png";
 import useApi from "../hooks/useAPI";
 import { toast } from "react-toastify";
-
+import { use, useEffect, useState } from "react";
 function SongCard({ song }) {
+  const [isFavourite, setIsFavourite] = useState(false);
+  const [favChanged, setFavChanged] = useState(false);
 
   const {callApi} = useApi();
+
+  useEffect(() => {
+    const checkFavouriteStatus = async () => {
+      try {
+        const res = await callApi("GET",`/songs/${song.id}/isFavourite`);
+        console.log("Favourite status: ", res.data);
+        console.log(res.message);
+        setIsFavourite(res.data ? true : false);
+        // toast.success(res.message);
+      }
+      catch(err){
+        console.error("Error checking favourite status: ", err);
+      }
+    }
+    
+    checkFavouriteStatus();
+
+  },[favChanged]);
 
   const addToFavourite = async() => {
     try{
       const res = await callApi("POST",`/songs/${song.id}/addFavourite`);
-      console.log("Song added to favourite",res.data)
-      toast.success("Song added to favourite");
+      console.log("Song added to favourite",res.data);
+      setFavChanged(prev => !prev);
+      toast.success(res.message);
     }
     catch(err){
       toast.error("Error adding to favourite: " + err.message);
@@ -40,7 +61,7 @@ function SongCard({ song }) {
 
         {/* Buttons */}
         <div className="buttons bg-[#393328] rounded-2xl h-12 w-[100%] flex gap-4 items-center justify-center">
-          <button onClick={() => addToFavourite()}><img src={heart} className="h-8 w-8"  /></button>
+          <button onClick={() => addToFavourite()}><img src={isFavourite ? filledheart : heart} className="h-8 w-8"  /></button>
           {/* <button><img src={addtoplaylist} className="h-8 w-8" /></button> */}
           {/* <button><img src={chatbubble} className="h-8 w-8" /></button> */}
         </div>
