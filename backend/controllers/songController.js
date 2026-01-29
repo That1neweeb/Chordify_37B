@@ -66,7 +66,8 @@ export const setFavourite = async (req,res) => {
   });
 
   if(alreadyFav){
-    return res.status(400).send({message:"Already in Favourites"});
+    await alreadyFav.destroy();
+    return res.status(200).send({message:"Song removed from favourites"});
   }
 
   await FavouriteSongs.create({
@@ -111,3 +112,24 @@ export const getMyFavourites = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// Checking if a song is favourite
+export const isFavourite = async (req,res) => {
+  try{
+    const user_id = req.user.id;
+    const song_id = req.params.id;
+    const favSong = await FavouriteSongs.findOne({
+      where : {user_id,song_id}
+    }); 
+    if(favSong){
+      return res.status(200).json({data: true, message:"Song is favourite"});
+    }
+    else{
+      return res.status(200).json({data: false, message:"Song is not favourite"});
+    }
+  }
+  catch(err){
+    console.log(err);
+    return res.status(500).json({message: "Server error"});
+  }
+}
