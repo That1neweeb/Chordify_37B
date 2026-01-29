@@ -42,7 +42,7 @@ function Navbar() {
       </Link>
 
       {/* Center: Buy/Sell/Learn (only if logged in) */}
-      <div className="flex gap-8 items-center ml-[800px]">
+      <div className="flex gap-8 items-center ml-[700px]">
         {isAuthenticated && (
           <>
             <Link to="/posts" className="flex items-center gap-1 ">
@@ -61,16 +61,17 @@ function Navbar() {
           <img src={aboutus} alt="" className="size-4 icon" /> Contact Us</Link>
           </>
         )}
-      </div>
-      
-      <button onClick={toggleTheme} className="theme-toggle">
+        <button onClick={toggleTheme} className="theme-toggle">
         {theme === "light" ? "🌙 " : "☀️ "}
         </button>
+      </div>
+      
+      
 
         {/* Auth Buttons or Profile Dropdown */}
         {isAuthenticated ? (
           <div className="relative">
-            <div className="rounded-xl flex items-center  bg-[#1A1A1A] ">
+            <div className="rounded-xl flex items-center  bg-[#1A1A1A] ml-9">
               <button className="size-16 hover:scale-105 transition-all outline-none focus:outline-non  border-transparent hover:border-transparent focus:outline-none focus:ring-0 bg-transparent">
                 <img src={userimg} alt="User" />
               </button>
