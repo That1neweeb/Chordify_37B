@@ -24,6 +24,8 @@ function Navbar() {
   const [selectedItem, setSelectedItem] = useState("");
   const { theme, toggleTheme } = useContext(ThemeContext);
 
+
+
   const toggleDropdown = () => setIsOpen((prev) => !prev);
   const handleMenuSelect = (item) => {
     setSelectedItem(item);

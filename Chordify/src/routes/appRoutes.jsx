@@ -26,6 +26,8 @@ const UploadPage = React.lazy(() => import("../pages/UploadPage"));
 const MyUploads = React.lazy(() => import("../pages/MyUploads"));
 const TabExercisesPage = React.lazy(() => import("../pages/TabExercisesPage"));
 const StrummingPatternPage = React.lazy(() => import("../pages/StrummingPatternPage"));
+const MyFavoriteSongs = React.lazy(() => import("../pages/FavouriteSongs"));
+
 
 import PrivateRoutes from "./PrivateRoutes";
 
@@ -55,6 +57,7 @@ export const AppRoutes = () => (
         <Route path="/posts/uploadPage" element={<UploadPage/>} />
         <Route path="/posts" element={<PostsPage/>}/>
         <Route path="/posts/myUploads" element={<MyUploads/>}/>
+        <Route path="/myfavoritesongs" element={<MyFavoriteSongs/>}></Route>
       </Route>
     </Route>
 

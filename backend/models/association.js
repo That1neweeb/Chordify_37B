@@ -7,6 +7,7 @@ import { Comment } from "./commentModel.js";
 import { Songs } from "./songModel.js";
 import { Favourite } from "./favouriteModel.js";
 import { Rating } from "./ratingModel.js";
+import { FavouriteSongs } from "./FavouriteSong.js";
 
 //Product and GuitarDetails relationship
 Products.hasOne(GuitarDetails, {
@@ -109,7 +110,15 @@ Favourite.belongsTo(Products, {
 });
 
 
+// Favourite songs and user relationship
+// ----- User & FavouriteSongs (Songs) -----
+Users.belongsToMany(Songs, { through: FavouriteSongs, as: "favouriteSongs", foreignKey: "user_id", otherKey: "song_id" });
+Songs.belongsToMany(Users, { through: FavouriteSongs, as: "usersWhoFavourited", foreignKey: "song_id", otherKey: "user_id" });
 
+Users.hasMany(FavouriteSongs, { foreignKey: "user_id" });
+Songs.hasMany(FavouriteSongs, { foreignKey: "song_id" });
+FavouriteSongs.belongsTo(Users, { foreignKey: "user_id" });
+FavouriteSongs.belongsTo(Songs, { foreignKey: "song_id" });
 
 export {
   Products,
@@ -120,5 +129,6 @@ export {
   Comment,
   Songs,
   Favourite,
-  Rating
+  Rating,
+  FavouriteSongs,
 };
