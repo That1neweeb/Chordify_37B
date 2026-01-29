@@ -4,6 +4,7 @@ import LearningSection from "../components/LearningSection";
 import useApi from "../hooks/useAPI";
 import SongCard from "../components/SongCard";
 import { Link } from "react-router-dom";
+
 function Learn() {
   const [data, setData] = useState([]); // fetched songs
   const [search, setSearch] = useState(""); // search input
@@ -62,34 +63,35 @@ function Learn() {
           placeholder="Search songs..."
           value={search}
           onChange={handleSearchChange}
-          className="border p-2 rounded w-full"
+          className="border border-gray-300 border-[var(--border-color)] p-2 rounded w-full bg-[var(--bg-color)]  text-black dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
         />
 
-                 {/* Favorites Section */}
-        <Link to="/myfavoritesongs"><button>View your Favorites</button></Link>
+        {/* Favorites Section */}
+        <Link to="/myfavoritesongs">
+          <button className="bg-[#F2A60D] dark:bg-[#4F3D18] text-black dark:text-white px-4 py-2 rounded hover:opacity-80 transition">
+            View your Favorites
+          </button>
+        </Link>
       </div>
 
       {/* Content */}
       <div className="p-2 flex flex-wrap gap-4 ">
-
         {search === "" ? (
           // Default component when search is empty
-          
           <LoadSongs />
         ) : (
           <>
-            {loading && <p>Loading...</p>}
-            {error && <p className="text-red-500">Error: {error}</p>}
+            {loading && <p className="text-black dark:text-white">Loading...</p>}
+            {error && <p className="text-red-500 dark:text-red-400">Error: {error}</p>}
             {!loading && !error && data.length === 0 && (
-              <p>No results found.</p>
+              <p className="text-black dark:text-white">No results found.</p>
             )}
             {data.map(song => (
-                    <SongCard
-                    key={song.id}
-                        song={song}
-                    />
-                ))}
-            
+              <SongCard
+                key={song.id}
+                song={song}
+              />
+            ))}
           </>
         )}
       </div>
