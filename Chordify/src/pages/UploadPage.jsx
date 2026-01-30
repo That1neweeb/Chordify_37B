@@ -30,33 +30,33 @@ export default function UploadPage() {
   };
 
   return (
-    <div className="h-full flex flex-col gap-4 justify-center items-center">
-      <h1 className="font-bold text-3xl text-white">Upload Video</h1>
+    <div className="h-full flex flex-col gap-4 justify-center items-center bg-[var(--bg-color)] text-[var(--text-color)]">
+      <h1 className="font-bold text-3xl text-[var(--text-color)]">Upload Video</h1>
 
       <VideoUpload video_URL={video_URL} setVideo={setVideo} />
 
-      <div className="bg-[#27231B] w-[90%] h-[300px] border-4 border-[#393328] rounded-3xl flex flex-col justify-center items-center gap-4">
-        <label htmlFor="title" className="mt-2">Title</label>
+      <div className="w-[90%] h-[300px] border-4 rounded-3xl flex flex-col justify-center items-center gap-4 bg-[var(--card-bg)] border-[var(--border-color)]">
+        <label htmlFor="title" className="mt-2 text-[var(--text-color)]">Title</label>
         <input
           name="title"
           type="text"
           placeholder="Title"
-          className="h-10 rounded-xl bg-[#181611] border-4 border-[#393328] mt-4"
+          className="h-10 rounded-xl bg-[var(--bg-color)] border-4 border-[var(--border-color)] mt-4 text-[var(--text-color)]"
           onChange={(e) => setTitle(e.target.value)}
         />
 
-        <label htmlFor="description">Description</label>
+        <label htmlFor="description" className="text-[var(--text-color)]">Description</label>
         <textarea
           name="description"
           placeholder="Description"
-          className="h-40 w-[80%] rounded-xl bg-[#181611] border-4 border-[#393328] my-5"
+          className="h-40 w-[80%] rounded-xl bg-[var(--bg-color)] border-4 border-[var(--border-color)] my-5 text-[var(--text-color)]"
           onChange={(e) => setDesc(e.target.value)}
         />
       </div>
 
       <button
         onClick={handleSubmit}
-        className="w-l bg-[#4F3D18] text-[#F2A60D] px-6 py-2 rounded-2xl mt-10"
+        className="w-l bg-[var(--button-bg)] text-[var(--link-hover)] px-6 py-2 rounded-2xl mt-10"
         disabled={loading} // optional: disable button while loading
       >
         {loading ? "Uploading..." : "Submit Post"}
