@@ -1,28 +1,47 @@
-// models/productModel.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+import { DataTypes } from "sequelize";
+import { sequelize } from "../db.js";
 
-const Product = sequelize.define('Product', {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING, allowNull: false },
-  category: { type: DataTypes.STRING, allowNull: false },
-  price: { type: DataTypes.FLOAT, allowNull: false },
-  stock: { type: DataTypes.INTEGER, allowNull: false },
-  status: { type: DataTypes.STRING, defaultValue: 'pending' },
-  user_id: { type: DataTypes.INTEGER },
-  sold: { type: DataTypes.INTEGER, defaultValue: 0 }
-}, {
-  tableName: 'products'
-});
+export const Products = sequelize.define(
+  "Products",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
+    },
+    name: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    brand: {
+      type: DataTypes.STRING(100),
+      allowNull: false
+    },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    condition: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
+    rating: {
+      type: DataTypes.DECIMAL(3, 1),
+      allowNull: true
+    },
+    category: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    },
+    image_urls: {
+      type: DataTypes.ARRAY(DataTypes.TEXT),
+      allowNull: true
+    },
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    }
+  },
 
-// Auto-create table if not exists
-(async () => {
-  try {
-    await Product.sync({ alter: true }); // This will create the table if not exists or update schema
-    console.log('Products table ready (Sequelize)');
-  } catch (err) {
-    console.error('Failed to sync Products table:', err);
-  }
-})();
-
-module.exports = Product;
+);

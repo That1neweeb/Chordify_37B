@@ -1,96 +1,424 @@
-// controllers/productController.js
-const Product = require('../models/productModel');
+import { Products } from '../models/association.js';
+import { Users } from '../models/association.js';
+import { GuitarDetails } from '../models/association.js';
+import { Op } from 'sequelize';
+import { Comment } from '../models/association.js'
+import jwt from "jsonwebtoken";
+import { error, log } from 'console';
+import * as fs from "fs";
 
-// USER FUNCTIONS
 
-// Get approved products (for user dashboard)
-async function getApprovedProducts(req, res) {
-  try {
-    const products = await Product.findAll({ where: { status: 'approved' } });
-    res.json(products);
-  } catch (err) {
-    console.error("DB Error:", err);
-    res.status(500).send("Database error");
-  }
+//to get all the products
+export const getAllProducts = async (req,res) => {
+    try {
+        const products = await Products.findAll({
+              include: {
+                model: GuitarDetails,
+                as: 'guitarDetails',
+                attributes: ['type']
+            }
+    });
+        res.status(200).send({data: products, message: "Products fetched successfully"})
+    } catch(e) {
+        res.status(500).send(e)
+        
+    }
+}
+export const getProductById = async(req,res) => {
+    try {
+        const { id } = req.params;
+        const product = await Products.findOne({where: {id}});
+        
+        if(!product) {
+            return res.status(404).send({message: "Product not found"})
+        }
+
+        if(product.category === "guitar") {
+            const guitarDetail = await GuitarDetails.findOne({where:{id}});
+            product.dataValues.guitarDetail = guitarDetail;
+        }
+        res.status(200).send({data: product, message: "Product fetched successfully"})
+    } catch(e) {
+        res.status(500).send({message: "Server error", error: e.message});
+    }
+}
+export const getSuggestedProducts = async (req,res) => {
+    try {
+        const products = await Products.findAll({
+            order: [['rating', 'DESC']],
+            limit: 4,
+            include: {
+                GuitarDetails,
+                as: 'guitarDetails',
+                attributes: ['type']
+            }
+        });
+        res.status(200).send({data: products, message: "Suggested products successfully fetched"})
+    } catch(e) {
+        res.status(500).send(e)   
+    }
 }
 
-// Add new product (user submission)
-async function addProduct(req, res) {
+//helper function if the db error or any other error occurs it will delete the uploaded 
+
+const deleteUploadedFiles = (files) => {
+  if (!files || files.length === 0) return;
+
+  files.forEach(file => {
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        console.error("Failed to delete file:", file.path);
+      }
+    });
+  });
+};
+
+export const addProduct = async (req, res) => {
   try {
-    const { name, category, price, stock, user_id } = req.body;
-    if(!name || !category || !price || !stock) {
-      return res.status(400).json({ message: "All fields are required" });
+      console.log("REQ.BODY:", req.body);
+      console.log("REQ.FILES:", req.files);
+
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    const user = jwt.verify(token, process.env.secretkey);
+    console.log(user);
+    
+
+    const { name, brand, price, condition, category, type, description } = req.body;
+
+    // Validate images
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: "No images uploaded" });
     }
 
-    await Product.create({
+    // Validations
+    if (!name || name.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Product name is required" });
+    }
+
+    if (!brand || brand.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Brand is required" });
+    }
+
+    if (!condition || condition.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Condition is required" });
+    }
+
+    if (!category || category.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Category is required" });
+    }
+
+    if (category === "guitar" && (!type || type.trim() === "")) {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Guitar type is required" });
+    }
+
+    if (!description || description.trim() === "") {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Description is required" });
+    }
+
+    if (!price || isNaN(price)) {
+      deleteUploadedFiles(req.files);
+      return res.status(400).json({ message: "Price must be a number" });
+    }
+
+    const image_urls = req.files.map(file => `/uploads/${file.filename}`);
+
+    // Create product
+    const product = await Products.create({
       name,
-      category,
+      brand,
       price,
-      stock,
-      status: 'pending',
-      user_id
+      condition,
+      category,
+      image_urls,
+      description,
+      user_id: user.id
     });
 
-    res.json({ message: "Product submitted for admin approval" });
-  } catch(err) {
-    console.error("DB Error:", err);
-    res.status(500).send("Database error");
+    // Guitar-specific details
+    if (category === "guitar") {
+      await GuitarDetails.create({
+        product_id: product.id,
+        type
+      });
+    }
+
+    res.status(201).json({
+      message: "Product added successfully",
+      product
+    });
+
+  } catch (err) {
+    console.error("Add product error:", err);
+    deleteUploadedFiles(req.files);
+    res.status(500).json({ message: "Server error" });
   }
+};
+
+export const searchProduct = async (req,res) => {
+    try {
+        const { search } = req.query
+
+        if(!search || search.trim() === "") {
+            return res.status(200).json([]);
+        }
+
+        const products = await Products.findAll({
+            where: {
+                [Op.or] : [
+                    {name: {[Op.iLike]: `%${search}%`}},
+                    {brand: {[Op.iLike]: `%${search}%`}},
+                    {category: {[Op.iLike]: `%${search}%`}},
+                ]
+            }
+        })
+        
+        res.status(200).json(products);
+       
+    } catch(e) {
+    console.error("Search error:", error);
+    res.status(500).json({ message: "Search failed" });
+    }
 }
 
-// ADMIN FUNCTIONS
 
-// Get all products (admin)
-async function getAllProducts(req, res) {
+
+
+export const addComment = async (req, res) => {
   try {
-    const products = await Product.findAll();
-    res.json(products);
-  } catch(err) {
-    console.error("DB Error:", err);
-    res.status(500).send("Database error");
-  }
-}
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
 
-// Get pending products (admin approval)
-async function getPendingProducts(req, res) {
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+
+    const { comment_text } = req.body;
+    const product_id = req.params.id;
+
+    if (!product_id) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const comment = await Comment.create({
+      comment_text,
+      user_id: user.id,
+      product_id
+    });
+
+    return res.status(200).json({
+      message: "Comment added successfully",
+      comment
+    });
+
+  } catch (e) {
+    return res.status(500).json({
+      message: "Server error",
+      error: e.message
+    });
+  }
+};
+
+export const fetchComments = async(req,res) => {
   try {
-    const products = await Product.findAll({ where: { status: 'pending' }, order: [['id','DESC']] });
-    res.json(products);
-  } catch(err) {
-    console.error("DB Error:", err);
-    res.status(500).send("Database error");
+    const { id } = req.params
+    const comments = await Comment.findAll({
+      where: { product_id : id },
+      include: [
+        {
+          model: Users,
+          attributes: ["full_name"]
+        }
+      ]
+      
+    });
+
+    res.status(200).json({message:"Comments fetched successfully", data: comments});
+  } catch(e) {
+    return res.status(500).json({message: "Server error : ", error: e.message})
   }
 }
 
-// Approve product
-async function approveProduct(req, res) {
+
+export const giveRating = async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    
+    
+    const user = jwt.verify(token, process.env.JWT_SECRET);
+    
+    const { rating_point } = req.body;
+    const product_id = req.params.id;
+    
+    if (!product_id) return res.status(404).json({ message: "Product not found" });
+    
+    if (!rating_point || rating_point < 1 || rating_point > 5) {
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
+    }
+    
+    const existingRating = await Rating.findOne({
+      where: { user_id: user.id, product_id }
+    });
+    
+    if (existingRating) {
+      existingRating.rating_point = rating_point;
+      await existingRating.save();
+      return res.status(200).json({ message: "Rating updated", rating: existingRating });
+    }
+    
+    console.log({ rating_point, product_id, user_id: user.user_id });
+    
+    
+    const rating = await Rating.create({
+      rating_point,
+      user_id: user.id,
+      product_id
+    });
+    
+    return res.status(200).json({ message: "Rating added successfully", rating });
+    
+  } catch (e) {
+    return res.status(500).json({ message: "Server error", error: e.message });
+  }
+};
+
+
+export const getProductRatings = async (req, res) => {
+  try {
+    const product_id = req.params.id;
+    
+    const ratings = await Rating.findAll({
+      where: { product_id },
+      attributes: ["rating_point"]
+    });
+    
+    if (ratings.length === 0) {
+      return res.status(200).json({ average: 0, totalRatings: 0 });
+    }
+    
+    const total = ratings.reduce((sum, r) => sum + r.rating_point, 0);
+    const average = total / ratings.length;
+    
+    return res.status(200).json({
+      average: parseFloat(average.toFixed(1)), 
+      totalRatings: ratings.length
+    });
+  } catch (e) {
+    console.error("Error fetching ratings:", e);
+    return res.status(500).json({ message: "Server error", error: e.message });
+  }
+};
+
+
+export const getMyProductListings = async (req, res) => {
+    try {
+      
+        // comes from isAuthenticated middleware
+        const user_id = req.user.id;
+
+
+
+        const products = await Products.findAll({
+            where: { user_id }
+        });
+
+        if (!products || products.length === 0) {
+            return res.status(200).json({ message: "No products found", data: [] });
+        }
+
+        return res.status(200).json({
+            message: "Successfully fetched your listings",
+            data: products
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Server error" });
+    }
+};
+
+export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    await Product.update({ status: 'approved' }, { where: { id } });
-    res.json({ message: "Product approved" });
-  } catch(err) {
-    console.error("DB Error:", err);
-    res.status(500).send("Database error");
-  }
-}
+    const user_id = req.user.id;
 
-// Reject product
-async function rejectProduct(req, res) {
+    // Destructure fields from form data
+    const { name, brand, price, description } = req.body;
+
+    // Find the product and make sure it's owned by this user
+    const product = await Products.findOne({ where: { id, user_id } });
+    if (!product) return res.status(404).json({ message: "Product not found or not yours" });
+
+    // Handle uploaded images if any
+    let images = product.images; // existing images
+    if (req.files && req.files.length > 0) {
+      images = req.files.map(file => `/uploads/${file.filename}`); // update with new files
+    }
+
+    // Update product
+    await product.update({ name, brand, price, description, images });
+
+    return res.status(200).json({ message: "Product updated successfully", data: product });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    await Product.update({ status: 'rejected' }, { where: { id } });
-    res.json({ message: "Product rejected" });
-  } catch(err) {
-    console.error("DB Error:", err);
-    res.status(500).send("Database error");
-  }
-}
+    const user_id = req.user.id;
 
-module.exports = {
-  getApprovedProducts,
-  addProduct,
-  getAllProducts,
-  getPendingProducts,
-  approveProduct,
-  rejectProduct
+    const product = await Products.findOne({ where: { id, user_id } });
+    if (!product) return res.status(404).json({ message: "Product not found or not yours" });
+
+    await product.destroy();
+    return res.status(200).json({ message: "Product deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const filterProducts = async (req, res) => {
+  try {
+    const { category, brand, condition, minPrice, maxPrice, minRating, maxRating } = req.query;
+
+    const filter = {};
+
+    if (category) filter.category = category;
+    if (brand) filter.brand = brand;
+    if (condition) filter.condition = condition;
+    if (minPrice || maxPrice) filter.price = {};
+    if (minPrice) filter.price[Op.gte] = Number(minPrice);
+    if (maxPrice) filter.price[Op.lte] = Number(maxPrice);
+    if (minRating || maxRating) filter.rating = {};
+    if (minRating) filter.rating[Op.gte] = Number(minRating);
+    if (maxRating) filter.rating[Op.lte] = Number(maxRating);
+
+    const products = await Products.findAll({
+      where: filter,
+      include: {
+        model: GuitarDetails,
+        as: 'guitarDetails',
+        attributes: ['type']
+      }
+    });
+
+    res.status(200).json({ data: products, message: "Filtered products fetched successfully" });
+  } catch (e) {
+    console.error("Filter products error:", e);
+    res.status(500).json({ message: "Server error" });
+  }
 };

@@ -1,23 +1,61 @@
-// models/userModel.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db'); 
+import { DataTypes } from "sequelize";
+import { sequelize } from "../db.js";
 
-const User = sequelize.define('User', {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING, allowNull: false },
-  email: { type: DataTypes.STRING, allowNull: false, unique: true },
-  password: { type: DataTypes.STRING, allowNull: false },
-  role: { type: DataTypes.STRING, defaultValue: 'Customer' },
-  status: { type: DataTypes.STRING, defaultValue: 'Active' },
-  joined: { type: DataTypes.DATE, defaultValue: DataTypes.NOW }
-}, {
-  tableName: 'users'
-});
-
-// Auto-create table if not exists
-(async () => {
-  await User.sync({ alter: true });
-  console.log('Users table ready (Sequelize)');
-})();
-
-module.exports = User;
+export const Users = sequelize.define(
+  "Users",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      allowNull: false
+    },
+    full_name: {
+      type: DataTypes.STRING(250),
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING(250),
+      allowNull: false,
+      unique: true
+    },
+    password_hash: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    role: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      defaultValue: "learner"
+    },
+    verification_token: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    token_expires: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    is_verified: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    reset_token: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    reset_token_expires: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    bio: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
+    profile_image: {
+      type: DataTypes.STRING(500), // Store the filename
+      allowNull: true
+    }
+  }
+);
