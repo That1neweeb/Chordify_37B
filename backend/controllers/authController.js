@@ -3,8 +3,6 @@ import { Users } from '../models/association.js';
 import { passwordHash } from '../utils/hashPassword.js';
 import { generateToken, generateTokenExpiry } from '../utils/generateTokens.js';
 import { sendEmail } from '../utils/sendEmail.js';
-import multer from 'multer';
-import path from 'path';
 import { generateAccessToken } from '../utils/jwt-util.js';
 
 
@@ -145,7 +143,7 @@ export const login = async (req, res) => {
         const accessToken = generateAccessToken({
             id: user.id,
             email: user.email,
-            role: user.role
+            role: user.role,
         });
 
         return res.status(200).json({
@@ -202,7 +200,10 @@ export const verifyUser = async (req, res) => {
 export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
-    const user = req.user;
+    
+    // Fetch full user from database
+    const user = await Users.findByPk(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({ message: "All fields are required" });
@@ -215,7 +216,7 @@ export const changePassword = async (req, res) => {
     }
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" });
+      return res.status(400).json({ message: "Passwords do not match" }); // ✅ FIXED
     }
 
     // password strength validation (same as register)
@@ -239,37 +240,109 @@ export const changePassword = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
 // Get user profile
 export const getProfile = async (req, res) => {
   try {
-    const user = req.user; // comes from `protect` middleware
-    return res.status(200).json({ user });
+    console.log("🔍 DEBUG - req.user from middleware:", req.user);
+    
+    // Get user ID from middleware
+    const userId = req.user.id;
+    
+    // Fetch FULL user from database
+    const user = await Users.findByPk(userId);
+    
+    if (!user) {
+      console.log("❌ User not found for ID:", userId);
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    console.log("✅ User found in DB:", {
+      id: user.id,
+      full_name: user.full_name,
+      email: user.email,
+      profile_image: user.profile_image
+    });
+    
+    // Build profile image URL
+    let profileImageUrl = null;
+    if (user.profile_image) {
+        profileImageUrl = `http://localhost:5000/uploads/${user.profile_image}`;
+        console.log("✅ Profile image URL:", profileImageUrl);
+    }
+    
+    // Return user data (without .toJSON())
+    const userData = {
+      id: user.id,
+      full_name: user.full_name,
+      email: user.email,
+      role: user.role,
+      bio: user.bio,
+      profile_image: profileImageUrl,
+      is_verified: user.is_verified,
+      created_at: user.createdAt,
+      updated_at: user.updatedAt
+    };
+
+    console.log("✅ Sending profile data:", userData);
+    return res.status(200).json({ 
+      user: userData
+    });
+    
   } catch (err) {
-    console.error("Error fetching profile:", err);
-    return res.status(500).json({ message: "Server error" });
+    console.error("❌ Error in getProfile:", err);
+    console.error("❌ Error stack:", err.stack);
+    return res.status(500).json({ 
+      message: "Server error",
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 };
 
 // Update user profile
 export const updateProfile = async (req, res) => {
-  try {
-    const user = req.user;
-    const { phone, dob } = req.body;
+    try {
+        console.log("📤 UPDATE PROFILE - Request received");
+        
+        const user = await Users.findByPk(req.user.id);
+        if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Handle profile image upload
-    if (req.file) {
-      user.profile_image = req.file.filename;
+        const { full_name, bio } = req.body;
+        console.log("📤 Request body:", { full_name, bio });
+        console.log("📤 File:", req.file);
+
+        if (full_name) user.full_name = full_name;
+        if (bio !== undefined) user.bio = bio;
+
+        if (req.file) {
+            user.profile_image = req.file.filename;
+            console.log("📤 File saved as:", req.file.filename);
+        }
+
+        await user.save();
+        console.log("📤 User saved successfully");
+
+        let profileImageUrl = null;
+        if (user.profile_image) {
+            profileImageUrl = `http://localhost:5000/uploads/${user.profile_image}`;
+        }
+
+        return res.status(200).json({
+            message: "Profile updated successfully",
+            user: {
+                full_name: user.full_name,
+                email: user.email,
+                role: user.role,
+                bio: user.bio,
+                profile_image: profileImageUrl
+            }
+        });
+    } catch (err) {
+        console.error("Update profile error:", err);
+        return res.status(500).json({ message: "Server error" });
     }
-
-    await user.update({ phone, dob });
-
-    return res.status(200).json({ message: "Profile updated", user });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Server error" });
-  }
 };
+
+
 
 // Send reset password email
 export const sendResetPasswordEmail = async (req, res) => {
@@ -381,25 +454,12 @@ export const resetPasswordFromEmail = async (req, res) => {
 
 
 
-// Multer storage config
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'images'); // folder where images are saved
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-export const upload = multer({ storage });
-
 // Delete current user account
 export const deleteAccount = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // ❌ Delete user permanently from DB
+    //  Delete user permanently from DB
     await Users.destroy({
       where: { id: userId },
     });
@@ -414,3 +474,14 @@ export const deleteAccount = async (req, res) => {
     });
   }
 };
+
+export const logout = (req, res) => {
+    try {
+
+        res.status(200).json({ message: "Logged out successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Something went wrong!" });
+    }
+};
+

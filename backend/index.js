@@ -18,7 +18,7 @@ import songRoutes from './routes/songs.js';
 import authRoutes from './routes/authRoutes.js';
 import cartRoutes from './routes/cartRoute.js';
 import favouriteRoutes from './routes/favouriteRoute.js';
-// import './models/association.js'
+import './models/association.js'
 
 
 
@@ -26,13 +26,10 @@ import favouriteRoutes from './routes/favouriteRoute.js';
 
 import postRoutes from './routes/postsRoutes.js';
 import chordsRoutes from './routes/chordsRoutes.js';
-import cartRoutes from './routes/cartRoute.js';
 import strummingPatternRoutes from './routes/strummingpatternRoutes.js';
 import tabExerciseRoutes from './routes/tabExercisesRoute.js';
 import supportRoutes from './routes/supportRoutes.js';
 // import profileRoutes from './routes/profileRoutes.js'; pachi pull hanney
-
-// import './models/association.js'
 
 const app = express();
 
@@ -43,7 +40,7 @@ app.use(cors());
 
 createUploadsFolder(); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/images', express.static(path.join(__dirname,'images')));
 
 //Routes :
 app.use('/products', productRoutes); //to fetch products

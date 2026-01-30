@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import useApi from "../hooks/useAPI";
+import CommonCard from "../components/CommonCard";
 
-export function TabExercisesPage(){
+export default function TabExercisesPage(){
     const [exercises,setExercises] = useState([]);
     const {callApi, error, loading} = useApi();
 
@@ -9,8 +10,9 @@ export function TabExercisesPage(){
     const fetchPatterns = async () => {
       try {
         const res = await callApi("GET", "/tabs/getAllExercises");
-        const data = await res;
-        setExercises(Array.isArray(data) ? data : [] );
+        console.log(res.data);
+        setExercises(Array.isArray(res?.data) ? res.data : [] );
+        console.log(exercises);
       } catch (err) {
         console.error("Failed to load  exercises", err);
       }
@@ -28,10 +30,10 @@ if(exercises.length === 0){
 }
 
   return(
-      <div className="flex flex-wrap justify-center items-center ">
+      <div className="flex flex-wrap justify-center items-center m-4">
                 {
                     exercises.map(exercise =>
-                        <CommonCard img={exercise.image_URL} title={exercise.title} />
+                        <CommonCard img={`http://localhost:5000${exercise.image_URL[0]}`} title={exercise.title} />
                     )
                 }
     

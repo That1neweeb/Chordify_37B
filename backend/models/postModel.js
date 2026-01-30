@@ -25,7 +25,8 @@ export const Posts = sequelize.define(
             allowNull:false
         },
         video_URLS:{
-            type: DataTypes.ARRAY(DataTypes.TEXT),
+            type: DataTypes.STRING,
+            allowNull:false
         },
         user_id: {
             type: DataTypes.INTEGER,

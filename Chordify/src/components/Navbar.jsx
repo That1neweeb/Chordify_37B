@@ -11,11 +11,10 @@ import userok from "../assets/images/userok.png";
 import cart from "../assets/images/cart.png";
 import list from "../assets/images/list.png";
 import love from "../assets/images/favouritered.png"
-
-
+import { ThemeContext } from "./LightDarkTheme"
 import posts from "../assets/images/live-line.png"
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
@@ -23,6 +22,9 @@ function Navbar() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
+  const { theme, toggleTheme } = useContext(ThemeContext);
+
+
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
   const handleMenuSelect = (item) => {
@@ -36,40 +38,40 @@ function Navbar() {
       {/* Left: Logo */}
       <Link to="/" className="flex items-center gap-4">
         <img src={logo} alt="Logo" className="size-16" />
-        <h1 className="text-white text-4xl">Chordify</h1>
+        <h1 className=" text-4xl">Chordify</h1>
       </Link>
 
       {/* Center: Buy/Sell/Learn (only if logged in) */}
-      <div className="flex gap-8 items-center ml-[800px]">
+      <div className="flex gap-8 items-center ml-[700px]">
         {isAuthenticated && (
           <>
-            <Link to="/posts" className="flex items-center gap-1 text-white">
-            <img src={posts} alt="" className="size-4"/> Posts
+            <Link to="/posts" className="flex items-center gap-1 ">
+            <img src={posts} alt="" className="size-4 icon" /> Posts
             </Link>
-            <Link to="/buy" className="flex items-center gap-1 text-white">
-              <img src={shoppingcart} alt="" className="size-4" /> Buy
+            <Link to="/buy" className="flex items-center gap-1 ">
+              <img src={shoppingcart} alt="" className="size-4 icon" /> Buy
             </Link>
-            <Link to="/sell" className="flex items-center gap-1 text-white">
-              <img src={coins} alt="" className="size-4" /> Sell
+            <Link to="/sell" className="flex items-center gap-1 ">
+              <img src={coins} alt="" className="size-4 icon" /> Sell
             </Link>
-            <Link to="/learn" className="flex items-center gap-1 text-white">
-              <img src={guitar} alt="" className="size-4" /> Learn
+            <Link to="/learn" className="flex items-center gap-1 ">
+              <img src={guitar} alt="" className="size-4 icon" /> Learn
             </Link>
+             <Link to="/support" className="flex items-center gap-1 ">
+          <img src={aboutus} alt="" className="size-4 icon" /> Contact Us</Link>
           </>
         )}
+        <button onClick={toggleTheme} className="theme-toggle">
+        {theme === "light" ? "🌙 " : "☀️ "}
+        </button>
       </div>
-
-      {/* Right: Contact Us + Auth */}
-      <div className="flex items-center gap-14">
-
-        <Link to="/aboutus" className="flex items-center gap-1 text-white">
-          <img src={aboutus} alt="" className="size-4" /> Contact Us
-        </Link>
+      
+      
 
         {/* Auth Buttons or Profile Dropdown */}
         {isAuthenticated ? (
           <div className="relative">
-            <div className="rounded-xl flex items-center  bg-[#1A1A1A] ">
+            <div className="rounded-xl flex items-center  bg-[#1A1A1A] ml-9">
               <button className="size-16 hover:scale-105 transition-all outline-none focus:outline-non  border-transparent hover:border-transparent focus:outline-none focus:ring-0 bg-transparent">
                 <img src={userimg} alt="User" />
               </button>
@@ -82,7 +84,7 @@ function Navbar() {
               <div className="absolute right-0 mt-2 w-44 bg-[#282828] rounded-xl p-2 flex flex-col gap-3 z-20">
                 <Link to="/profile" onClick={() => handleMenuSelect("profile")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "profile" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -93,7 +95,7 @@ function Navbar() {
 
                 <Link to="/favourites" onClick={()=>handleMenuSelect("favourites")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "favourites" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -104,7 +106,7 @@ function Navbar() {
 
                 <Link to="/cart" onClick={() => handleMenuSelect("cart")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "cart" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -115,7 +117,7 @@ function Navbar() {
 
                 <Link to="/mylistings" onClick={() => handleMenuSelect("mylistings")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
                       selectedItem === "mylistings" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -126,7 +128,7 @@ function Navbar() {
 
                 <div
                   onClick={logout}
-                  className="flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] cursor-pointer"
+                  className="flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] cursor-pointer text-white"
                 >
                   Logout
                   <img src={logoutIcon} alt="" className="size-5" />
@@ -143,13 +145,13 @@ function Navbar() {
             </Link>
 
             <Link to="/register">
-              <button className="bg-[#393328] hover:scale-105 transition-all duration-300 px-6 py-1.5 rounded">
+              <button className="bg-[#393328] hover:scale-105 transition-all duration-300 px-6 py-1.5 rounded text-white ">
                 Sign up
               </button>
             </Link>
           </div>
         )}
-      </div>
+      
     </div>
   );
 }

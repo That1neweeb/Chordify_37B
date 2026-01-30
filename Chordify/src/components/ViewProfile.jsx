@@ -1,274 +1,282 @@
 import React, { useState, useEffect } from "react";
-import { Camera, Edit3 } from "lucide-react";
 import PasswordReset from "./PasswordReset";
 import ChangePassword from "./ChangePassword";
 import DeleteAccount from "./DeleteAccount";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ViewProfile() {
+  const token = localStorage.getItem("token");
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [isSaving, setIsSaving] = useState(false); // Add loading state
+
   const [showReset, setShowReset] = useState(false);
   const [showChange, setShowChange] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [previewImage, setPreviewImage] = useState(null);
 
   const [user, setUser] = useState({
     full_name: "",
     email: "",
     role: "",
-    phone: "",
-    dob: "",
+    bio: "",
     profile_image: null,
   });
 
-  const token = localStorage.getItem("token");
-
-  // Redirect to login if not logged in
   useEffect(() => {
-    if (!token) {
-      window.location.href = "/login";
-    }
+    if (!token) window.location.href = "/login";
   }, [token]);
 
-  // Fetch user profile
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await fetch("http://localhost:5000/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-
         if (!res.ok) {
-          console.error("Failed to fetch profile:", res.status);
+          toast.error("Failed to fetch profile");
           return;
         }
-
         const data = await res.json();
-        setUser(data.user);
-
-        if (data.user.profile_image) {
-          setPreviewImage(`http://localhost:5000/images/${data.user.profile_image}`);
-        }
+        setUser({
+          full_name: data.user.full_name || "",
+          email: data.user.email || "",
+          role: data.user.role || "",
+          bio: data.user.bio || "",
+          profile_image: data.user.profile_image || null,
+        });
+        if (data.user.profile_image) setPreviewImage(data.user.profile_image);
       } catch (err) {
-        console.error("Error fetching profile:", err);
+        console.error("Fetch profile error:", err);
+        toast.error("Error fetching profile");
       }
     };
-
     fetchProfile();
   }, [token]);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle image change
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setUser((prev) => ({ ...prev, profile_image: file }));
-      setPreviewImage(URL.createObjectURL(file));
-    }
+    if (!file) return;
+    setUser((prev) => ({ ...prev, profile_image: file }));
+    setPreviewImage(URL.createObjectURL(file));
   };
 
-  // Save profile updates
   const handleSave = async () => {
+    setIsSaving(true);
+    
     try {
       const formData = new FormData();
-      formData.append("phone", user.phone || "");
-      formData.append("dob", user.dob || "");
-
+      formData.append("full_name", user.full_name);
+      formData.append("bio", user.bio);
       if (user.profile_image instanceof File) {
         formData.append("profile_image", user.profile_image);
       }
 
+      console.log("📤 Sending form data:");
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+      }
+
       const res = await fetch("http://localhost:5000/auth/profile/update", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
       const data = await res.json();
-
-      if (res.ok) {
-        alert("Profile updated successfully!");
-        setIsEditing(false);
-
-        if (data.user.profile_image) {
-          setPreviewImage(`http://localhost:5000/images/${data.user.profile_image}`);
-        }
-      } else {
-        alert(data.message || "Failed to update profile");
+      console.log("📥 Save response:", data);
+      
+      if (!res.ok) {
+        toast.error(data.message || "Profile update failed");
+        return;
       }
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      alert("Error updating profile");
-    }
-  };
 
-  // Handle account deletion
-  const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete your account?")) return;
-    try {
-      const res = await fetch("http://localhost:5000/auth/delete-acc", {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        alert(data.message);
-        localStorage.removeItem("token");
-        window.location.href = "/login";
-      } else {
-        alert(data.message);
+      toast.success("Profile updated successfully!");
+      
+      // Set editing to false
+      setIsEditing(false);
+      
+      // Update the user state
+      setUser(prev => ({
+        ...prev,
+        full_name: data.user.full_name,
+        bio: data.user.bio,
+        profile_image: data.user.profile_image
+      }));
+      
+      // Update preview image
+      if (data.user.profile_image) {
+        setPreviewImage(data.user.profile_image);
       }
+      
     } catch (err) {
-      console.error(err);
-      alert("Failed to delete account");
+      console.error("Update profile error:", err);
+      toast.error("Something went wrong");
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] text-white">
-      <div className="p-6 max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-[#D4AF37] mb-6">My Profile</h1>
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-color)", color: "var(--text-color)" }}>
+      {/* Fixed ToastContainer with proper configuration */}
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        style={{ zIndex: 9999 }} // Ensure it's on top
+      />
+      
+      <div className="max-w-6xl mx-auto p-6">
+        <h1 className="text-3xl font-bold mb-6" style={{ color: "var(--link-hover)" }}>
+          My Profile
+        </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Panel */}
-          <div>
-            <div className="bg-[#2a2520] border border-[#8B6914] rounded-3xl p-6 flex flex-col items-center">
-              <div className="relative">
-                <div className="w-32 h-32 rounded-full bg-[#3a3a3a] flex items-center justify-center text-4xl font-bold overflow-hidden">
-                  {previewImage ? (
-                    <img
-                      src={previewImage}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    user.full_name?.charAt(0).toUpperCase()
-                  )}
-                </div>
-
-                <label className="absolute bottom-0 right-0 bg-[#D4AF37] p-2 rounded-full cursor-pointer">
-                  <Camera className="w-5 h-5 text-black" />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleImageChange}
+          {/* LEFT */}
+          <div className="rounded-3xl p-6 flex flex-col items-center" style={{ backgroundColor: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full overflow-hidden flex items-center justify-center text-4xl font-bold" style={{ backgroundColor: "var(--hover-bg)", color: "var(--text-color)" }}>
+                {previewImage ? (
+                  <img
+                    src={previewImage}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
                   />
-                </label>
+                ) : (
+                  user.full_name ? user.full_name.charAt(0).toUpperCase() : "U"
+                )}
               </div>
-
-              <h2 className="mt-4 text-2xl font-bold text-[#D4AF37]">
-                {user.full_name}
-              </h2>
-              <p className="text-gray-400">{user.role}</p>
-
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="mt-6 w-full bg-[#D4AF37] text-black py-3 rounded-lg flex justify-center items-center gap-2"
-              >
-                <Edit3 className="w-4 h-4" />
-                {isEditing ? "Cancel Edit" : "Edit Profile"}
-              </button>
 
               {isEditing && (
-                <button
-                  onClick={handleSave}
-                  className="mt-2 w-full bg-[#B8941E] text-black py-3 rounded-lg"
-                >
-                  Save Changes
-                </button>
+                <label className="absolute bottom-1 right-1 p-2 rounded-full cursor-pointer" style={{ backgroundColor: "var(--link-hover)" }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                  </svg>
+                  <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                </label>
               )}
             </div>
+
+            <h2 className="mt-4 text-2xl font-bold" style={{ color: "var(--link-hover)" }}>
+              {user.full_name || "User"}
+            </h2>
+            <p style={{ color: "var(--text-color)" }}>{user.role}</p>
+
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="mt-4 w-full py-3 rounded-lg"
+              style={{ backgroundColor: "var(--button-bg)", color: "var(--text-color)" }}
+              disabled={isSaving}
+            >
+              {isEditing ? "Cancel" : "Edit Profile"}
+            </button>
+
+            {isEditing && (
+              <button
+                onClick={handleSave}
+                className="mt-2 w-full py-3 rounded-lg"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--text-color)" }}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                    </svg>
+                    Saving...
+                  </span>
+                ) : "Save Changes"}
+              </button>
+            )}
           </div>
 
-          {/* Right Panel */}
-          <div className="lg:col-span-2">
-            <div className="bg-[#2a2520] border border-[#8B6914] rounded-3xl p-6">
-              <h3 className="text-xl font-bold text-[#D4AF37] mb-6">
-                Personal Information
-              </h3>
+          {/* RIGHT */}
+          <div className="lg:col-span-2 rounded-3xl p-6" style={{ backgroundColor: "var(--card-bg)", border: "1px solid var(--border-color)" }}>
+            <h3 className="text-xl font-bold mb-6" style={{ color: "var(--link-hover)" }}>
+              Personal Information
+            </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-gray-300 text-sm">Full Name</label>
-                  <input
-                    value={user.full_name}
-                    readOnly
-                    className="w-full bg-[#1a1a1a] border border-[#8B6914] rounded-xl px-4 py-2"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-sm">Email</label>
-                  <input
-                    value={user.email}
-                    readOnly
-                    className="w-full bg-[#1a1a1a] border border-[#8B6914] rounded-xl px-4 py-2"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-sm">Phone</label>
-                  <input
-                    name="phone"
-                    value={user.phone || ""}
-                    onChange={handleChange}
-                    readOnly={!isEditing}
-                    className="w-full bg-[#1a1a1a] border border-[#8B6914] rounded-xl px-4 py-2"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-300 text-sm">Date of Birth</label>
-                  <input
-                    type="date"
-                    name="dob"
-                    value={user.dob || ""}
-                    onChange={handleChange}
-                    readOnly={!isEditing}
-                    className="w-full bg-[#1a1a1a] border border-[#8B6914] rounded-xl px-4 py-2"
-                  />
-                </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm" style={{ color: "var(--text-color)" }}>Full Name</label>
+                <input
+                  name="full_name"
+                  value={user.full_name}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className="w-full rounded-xl px-4 py-2"
+                  style={{ backgroundColor: "var(--bg-color)", border: "1px solid var(--border-color)", color: "var(--text-color)" }}
+                />
               </div>
 
-              {/* Account Actions */}
-              <div className="mt-8 space-y-4">
-                <button
-                  onClick={() => setShowReset(true)}
-                  className="w-full bg-[#3a3a3a] py-3 rounded-xl"
-                >
-                  Reset Password
-                </button>
-                <button
-                  onClick={() => setShowChange(true)}
-                  className="w-full bg-[#3a3a3a] py-3 rounded-xl"
-                >
-                  Change Password
-                </button>
-                <button
-                  onClick={handleDelete}
-                  className="w-full bg-[#3a3a3a] py-3 rounded-xl text-red-500"
-                >
-                  Delete Account
-                </button>
+              <div>
+                <label className="text-sm" style={{ color: "var(--text-color)" }}>Bio</label>
+                <textarea
+                  name="bio"
+                  value={user.bio}
+                  onChange={handleChange}
+                  readOnly={!isEditing}
+                  className="w-full rounded-xl px-4 py-2"
+                  rows="4"
+                  style={{ backgroundColor: "var(--bg-color)", border: "1px solid var(--border-color)", color: "var(--text-color)" }}
+                />
               </div>
+
+              <div>
+                <label className="text-sm" style={{ color: "var(--text-color)" }}>Email</label>
+                <input
+                  value={user.email}
+                  readOnly
+                  className="w-full rounded-xl px-4 py-2"
+                  style={{ backgroundColor: "var(--bg-color)", border: "1px solid var(--border-color)", color: "var(--text-color)" }}
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 space-y-3">
+              <button
+                onClick={() => setShowReset(true)}
+                className="w-full py-3 rounded-xl"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--success-color)" }}
+              >
+                Reset Password
+              </button>
+
+              <button
+                onClick={() => setShowChange(true)}
+                className="w-full py-3 rounded-xl"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--success-color)" }}
+              >
+                Change Password
+              </button>
+
+              <button
+                onClick={() => setShowDelete(true)}
+                className="w-full py-3 rounded-xl"
+                style={{ backgroundColor: "var(--hover-bg)", color: "var(--error-color)" }}
+              >
+                Delete Account
+              </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Modals */}
       {showReset && <PasswordReset onClose={() => setShowReset(false)} />}
       {showChange && <ChangePassword onClose={() => setShowChange(false)} />}
       {showDelete && <DeleteAccount onClose={() => setShowDelete(false)} />}

@@ -13,7 +13,7 @@ export const Chords = sequelize.define("Chords",{
         allowNull: false
     },
     image:{
-        type: DataTypes.ARRAY(DataTypes.TEXT),
+        type: DataTypes.STRING,
         allowNull: true
     }
 })

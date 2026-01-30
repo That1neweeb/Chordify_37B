@@ -7,8 +7,8 @@ export default function LyricsCard({ song }) {
     <div className="max-w-3xl mx-auto bg-white rounded-xl shadow p-6">
       {/* Header */}
       <h1 className="text-2xl font-bold">{song.title}</h1>
-      <p className="text-gray-600 mb-4">{song.artist}</p>
-      <p className="text-gray-600 mb-4">Strumming Pattern:{song.strummingPattern}</p>
+      <p className="text-lg mb-4">{song.artist}</p>
+      <p className="text-lg mb-4">Strumming Pattern:{song.strummingPattern}</p>
 
       {/* Meta */}
       <div className="flex gap-4 text-sm text-gray-500 mb-6">
@@ -17,7 +17,8 @@ export default function LyricsCard({ song }) {
       
         {/* Lyrics */}
         <div className="space-y-6">
-          {song.content.sections.map((section, sIdx) => (
+
+          {song?.content?.sections?.map((section, sIdx) => (
             <div key={sIdx}>
               <p className="uppercase text-xs tracking-widest text-gray-400 mb-2">
                 {section.type}
@@ -32,6 +33,7 @@ export default function LyricsCard({ song }) {
                   />
                 ))}
               </div>
+
             </div>
           ))}
         </div>

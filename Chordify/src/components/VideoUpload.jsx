@@ -29,10 +29,10 @@ export default function VideoUpload({ video_URL, setVideo }) {
   };
 
   return (
-    <div className="bg-[#27231B] border-4 border-[#393328] rounded-2xl mt-4 w-[90%] flex flex-col px-5">
-      <h2 className="font-bold text-xl text-white mt-4">Upload Video</h2>
+    <div className="bg-[var(--card-bg)] border-4 border-[var(--border-color)] rounded-2xl mt-4 w-[90%] flex flex-col px-5">
+      <h2 className="font-bold text-xl text-[var(--text-color)] mt-4">Upload Video</h2>
 
-      <div className="bg-[#181611] w-[98%] h-[300px] mt-4 flex flex-col items-center justify-center border border-dashed border-[#ABA6A6] rounded-xl">
+      <div className="bg-[var(--bg-color)] w-[98%] h-[300px] mt-4 flex flex-col items-center justify-center border-2 border-dashed border-[var(--border-color)] rounded-xl">
         {previewVideo ? (
           <video
             src={previewVideo}
@@ -42,7 +42,7 @@ export default function VideoUpload({ video_URL, setVideo }) {
         ) : (
           <>
             <img src={file} alt="upload" className="size-20" />
-            <h3 className="text-[#ABA6A6] mt-4">
+            <h3 className="text-[var(--text-color)] opacity-70 mt-4">
               Drag and Drop your Video here
             </h3>
           </>
@@ -59,9 +59,9 @@ export default function VideoUpload({ video_URL, setVideo }) {
         />
         <button
           onClick={handleBrowseClick}
-          className="bg-[#4F3D18] rounded-3xl w-40 self-center my-10"
+          className="bg-[var(--button-bg)] rounded-3xl w-40 self-center my-10 border border-[var(--link-hover)]"
         >
-          <h6 className="text-[#F2A60D]">Browse Video</h6>
+          <h6 className="text-[var(--link-hover)]">Browse Video</h6>
         </button>
       </div>
     </div>
