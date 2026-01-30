@@ -1,40 +1,26 @@
-import { useState } from "react";
-import API from "../api";
+import { useState } from "react"
+import { apiRequest } from "../utils/api"
 
-export default function useApi() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+export const useApi = () => {
 
-  const callApi = async (method, url, data = null) => {
+    const[loading, setLoading] = useState(false);
+    const[error, setError] = useState(false);
 
-    setLoading(true);
-    setError("");
+    const callApi = async (method, endpoint, data = null) => {
+        setLoading(true);
+        setError("");
 
-    try {
-      const response = await API({
-        method,
-        url,
-        data,
-      });
+        try {
+            const res = await apiRequest(method, endpoint, data);
+            setLoading(false);
+            return res;
+        } catch(err) {
+            setLoading(false);
+            setError(err.message);
+            throw err;
+        }
+    };
+    return {loading, error, callApi};
+};
 
-      return response.data;
-    } catch (err) {
-      const message =
-        err.response?.data?.message ||
-        err.response?.data ||
-        err.message ||
-        "Something went wrong";
-
-      setError(message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return {
-    loading,
-    error,
-    callApi,
-  };
-}
+export default useApi;
