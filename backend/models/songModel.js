@@ -37,10 +37,10 @@ export const Songs = sequelize.define(
       type: DataTypes.JSONB,
       allowNull: true
     },
+      
     links: {
-      type: DataTypes.JSONB,
-      allowNull: true,
-      defaultValue: []
-    }
+    type: DataTypes.STRING, 
+    allowNull: true,
+  },
   }
 );

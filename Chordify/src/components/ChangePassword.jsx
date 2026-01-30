@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Lock } from "lucide-react";
+import useApi from "../hooks/useAPI";
 
 export default function ChangePassword({ onClose }) {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -10,6 +11,20 @@ export default function ChangePassword({ onClose }) {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const { callApi } = useApi();
+
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+  const handleClose = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setError("");
+    setSuccess("");
+    onClose();
+  };
+
   const handleChange = async () => {
     setError("");
     setSuccess("");
@@ -19,39 +34,32 @@ export default function ChangePassword({ onClose }) {
       return;
     }
 
+    if (!passwordRegex.test(newPassword)) {
+      setError(
+        "Password must be 8+ chars and include uppercase, lowercase, number & special character"
+      );
+      return;
+    }
+
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:5000/auth/change-password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
+      await callApi("PUT", "/auth/change-password", {
+        data: {
           currentPassword,
           newPassword,
-          confirmPassword
-        })
+          confirmPassword,
+        },
       });
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Failed to change password");
-        return;
-      }
-
       setSuccess("Password changed successfully");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
 
-      // close after short delay
-      setTimeout(() => onClose(), 1200);
+      setTimeout(() => {
+        handleClose();
+      }, 1200);
     } catch (err) {
-      setError("Something went wrong");
+      console.error(err);
+      setError(err?.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -59,11 +67,14 @@ export default function ChangePassword({ onClose }) {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="absolute inset-0 bg-black/80" onClick={onClose}></div>
+      <div
+        className="absolute inset-0 bg-black/80"
+        onClick={handleClose}
+      ></div>
 
       <div className="relative bg-[#1a1a1a] border border-[#8B6914] rounded-3xl p-10 max-w-md w-full z-10">
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-4 right-4 text-gray-400 hover:text-[#D4AF37]"
         >
           <X />
@@ -73,13 +84,14 @@ export default function ChangePassword({ onClose }) {
           Change Password
         </h2>
 
-        {/* Status Message */}
+        {/* Error */}
         {error && (
           <div className="mb-4 text-red-400 bg-red-900/20 border border-red-500/30 rounded-lg px-4 py-2 text-sm">
             {error}
           </div>
         )}
 
+        {/* Success */}
         {success && (
           <div className="mb-4 text-green-400 bg-green-900/20 border border-green-500/30 rounded-lg px-4 py-2 text-sm">
             {success}
@@ -91,20 +103,20 @@ export default function ChangePassword({ onClose }) {
             label: "Current Password",
             value: currentPassword,
             setter: setCurrentPassword,
-            placeholder: "Enter current password"
+            placeholder: "Enter current password",
           },
           {
             label: "New Password",
             value: newPassword,
             setter: setNewPassword,
-            placeholder: "Enter new password"
+            placeholder: "Enter new password",
           },
           {
             label: "Confirm Password",
             value: confirmPassword,
             setter: setConfirmPassword,
-            placeholder: "Confirm new password"
-          }
+            placeholder: "Confirm new password",
+          },
         ].map((field, idx) => (
           <div className="mb-5" key={idx}>
             <label className="block text-gray-300 text-sm mb-2">
@@ -125,14 +137,19 @@ export default function ChangePassword({ onClose }) {
 
         <div className="flex gap-4 mt-6">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="flex-1 bg-[#3a3a3a] text-white py-3 rounded-xl"
           >
             Cancel
           </button>
           <button
             onClick={handleChange}
-            disabled={loading || !currentPassword || !newPassword || !confirmPassword}
+            disabled={
+              loading ||
+              !currentPassword ||
+              !newPassword ||
+              !confirmPassword
+            }
             className="flex-1 bg-[#D4AF37] text-black py-3 rounded-xl font-semibold disabled:opacity-50"
           >
             {loading ? "Changing..." : "Change Password"}

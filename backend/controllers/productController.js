@@ -1,29 +1,28 @@
-import { Products } from '../models/association.js';
-import { Users } from '../models/association.js';
-import { GuitarDetails } from '../models/association.js';
-import { Op } from 'sequelize';
-import { Comment } from '../models/association.js'
+import { Products, Rating, Users, GuitarDetails, Comment } from '../models/association.js';
+import { Op, Sequelize } from 'sequelize';
 import jwt from "jsonwebtoken";
-import { error, log } from 'console';
-import * as fs from "fs";
+import fs from "fs";
 
 
-//to get all the products
+//to get all the products which are approved
 export const getAllProducts = async (req,res) => {
     try {
         const products = await Products.findAll({
-              include: {
+            where: { status: "approved" },  // only approved products
+            include: {
                 model: GuitarDetails,
                 as: 'guitarDetails',
                 attributes: ['type']
-            }
-    });
-        res.status(200).send({data: products, message: "Products fetched successfully"})
+            },
+            order: [['createdAt', 'DESC']]
+        });
+
+        res.status(200).send({data: products, message: "Products fetched successfully"});
     } catch(e) {
-        res.status(500).send(e)
-        
+        res.status(500).send({ message: "Server error", error: e.message });
     }
 }
+
 export const getProductById = async(req,res) => {
     try {
         const { id } = req.params;
@@ -42,22 +41,28 @@ export const getProductById = async(req,res) => {
         res.status(500).send({message: "Server error", error: e.message});
     }
 }
-export const getSuggestedProducts = async (req,res) => {
-    try {
-        const products = await Products.findAll({
-            order: [['rating', 'DESC']],
-            limit: 4,
-            include: {
-                GuitarDetails,
-                as: 'guitarDetails',
-                attributes: ['type']
-            }
-        });
-        res.status(200).send({data: products, message: "Suggested products successfully fetched"})
-    } catch(e) {
-        res.status(500).send(e)   
-    }
-}
+
+export const getSuggestedProducts = async (req, res) => {
+  try {
+    const products = await Products.findAll({
+      limit: 4,
+      include: [{
+        model: GuitarDetails,
+        as: 'guitarDetails',
+        attributes: ['type']
+      }],
+      order: [['createdAt', 'DESC']] // latest products
+    });
+
+    res.status(200).send({
+      data: products,
+      message: "Suggested products successfully fetched"
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send({ message: "Server error", error: e.message });
+  }
+};
 
 //helper function if the db error or any other error occurs it will delete the uploaded 
 
@@ -128,7 +133,7 @@ export const addProduct = async (req, res) => {
       return res.status(400).json({ message: "Price must be a number" });
     }
 
-    const image_urls = req.files.map(file => `/uploads/${file.filename}`);
+    const image_urls = req.files.map(file => `/uploads/products/${file.filename}`);
 
     // Create product
     const product = await Products.create({
@@ -139,7 +144,8 @@ export const addProduct = async (req, res) => {
       category,
       image_urls,
       description,
-      user_id: user.id
+      user_id: user.id,
+      status: "pending"
     });
 
     // Guitar-specific details
@@ -151,7 +157,7 @@ export const addProduct = async (req, res) => {
     }
 
     res.status(201).json({
-      message: "Product added successfully",
+      message: "Product submitted successfully and is pending approval",
       product
     });
 
@@ -162,44 +168,43 @@ export const addProduct = async (req, res) => {
   }
 };
 
-export const searchProduct = async (req,res) => {
-    try {
-        const { search } = req.query
+export const searchProduct = async (req, res) => {
+  try {
+    const { search } = req.query;
 
-        if(!search || search.trim() === "") {
-            return res.status(200).json([]);
-        }
-
-        const products = await Products.findAll({
-            where: {
-                [Op.or] : [
-                    {name: {[Op.iLike]: `%${search}%`}},
-                    {brand: {[Op.iLike]: `%${search}%`}},
-                    {category: {[Op.iLike]: `%${search}%`}},
-                ]
-            }
-        })
-        
-        res.status(200).json(products);
-       
-    } catch(e) {
-    console.error("Search error:", error);
-    res.status(500).json({ message: "Search failed" });
+    if (!search || search.trim() === "") {
+      return res.status(200).json({ data: [], message: "No search term provided" });
     }
-}
+
+    const products = await Products.findAll({
+      where: {
+        status: "approved", // <-- Only approved products
+        [Op.or]: [
+          { name: { [Op.iLike]: `%${search}%` } },
+          { brand: { [Op.iLike]: `%${search}%` } },
+          { category: { [Op.iLike]: `%${search}%` } },
+        ],
+      },
+    });
+
+    res.status(200).json({
+      data: products,
+      message: "Search results fetched successfully",
+    });
+  } catch (e) {
+    console.error("Search error:", e);
+    res.status(500).json({ message: "Search failed" });
+  }
+};
 
 
 
 
 export const addComment = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
-    }
+   
 
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-
+    const user_id = req.user.id; 
     const { comment_text } = req.body;
     const product_id = req.params.id;
 
@@ -209,7 +214,7 @@ export const addComment = async (req, res) => {
 
     const comment = await Comment.create({
       comment_text,
-      user_id: user.id,
+      user_id,
       product_id
     });
 
@@ -246,50 +251,41 @@ export const fetchComments = async(req,res) => {
   }
 }
 
-
 export const giveRating = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1];
-    if (!token) return res.status(401).json({ message: "No token provided" });
-
-    
-    
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    
+    const user_id = req.user.id;
     const { rating_point } = req.body;
     const product_id = req.params.id;
-    
+
     if (!product_id) return res.status(404).json({ message: "Product not found" });
-    
     if (!rating_point || rating_point < 1 || rating_point > 5) {
       return res.status(400).json({ message: "Rating must be between 1 and 5" });
     }
-    
-    const existingRating = await Rating.findOne({
-      where: { user_id: user.id, product_id }
-    });
-    
-    if (existingRating) {
-      existingRating.rating_point = rating_point;
-      await existingRating.save();
-      return res.status(200).json({ message: "Rating updated", rating: existingRating });
+
+    let rating = await Rating.findOne({ where: { user_id, product_id } });
+
+    if (rating) {
+      rating.rating_point = rating_point;
+      await rating.save();
+    } else {
+      rating = await Rating.create({ rating_point, user_id, product_id });
     }
-    
-    console.log({ rating_point, product_id, user_id: user.user_id });
-    
-    
-    const rating = await Rating.create({
-      rating_point,
-      user_id: user.id,
-      product_id
+
+    // Calculate average
+    const ratings = await Rating.findAll({ where: { product_id } });
+    const average = ratings.reduce((sum, r) => sum + r.rating_point, 0) / ratings.length;
+
+    return res.status(200).json({
+      message: rating ? "Rating updated" : "Rating added successfully",
+      rating,
+      average: parseFloat(average.toFixed(1)), // rounded 1 decimal
     });
-    
-    return res.status(200).json({ message: "Rating added successfully", rating });
-    
   } catch (e) {
     return res.status(500).json({ message: "Server error", error: e.message });
   }
 };
+
+
 
 
 export const getProductRatings = async (req, res) => {
@@ -326,10 +322,14 @@ export const getMyProductListings = async (req, res) => {
         const user_id = req.user.id;
 
 
-
         const products = await Products.findAll({
-            where: { user_id }
+            where: { 
+                user_id,
+                status: { [Op.in]: ["pending", "approved"] }  // exclude rejected products
+            },
+            order: [["createdAt", "DESC"]]
         });
+
 
         if (!products || products.length === 0) {
             return res.status(200).json({ message: "No products found", data: [] });
@@ -344,81 +344,168 @@ export const getMyProductListings = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 };
-
 export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const user_id = req.user.id;
 
-    // Destructure fields from form data
-    const { name, brand, price, description } = req.body;
+    const { name, brand, price, description, existingImages } = req.body;
 
-    // Find the product and make sure it's owned by this user
+    // Find product owned by user
     const product = await Products.findOne({ where: { id, user_id } });
-    if (!product) return res.status(404).json({ message: "Product not found or not yours" });
-
-    // Handle uploaded images if any
-    let images = product.images; // existing images
-    if (req.files && req.files.length > 0) {
-      images = req.files.map(file => `/uploads/${file.filename}`); // update with new files
+    if (!product) {
+      return res.status(404).json({ message: "Product not found or not yours" });
     }
 
-    // Update product
-    await product.update({ name, brand, price, description, images });
+    // Parse existingImages if sent as JSON string
+    let imagesToKeep = [];
+    if (existingImages) {
+      imagesToKeep = Array.isArray(existingImages)
+        ? existingImages
+        : JSON.parse(existingImages);
+    }
 
-    return res.status(200).json({ message: "Product updated successfully", data: product });
+    // Handle new uploaded files
+    const newImages = req.files
+      ? req.files.map((file) => `/uploads/products/${file.filename}`)
+      : [];
+
+    // Delete only removed images from disk
+    const removedImages = product.image_urls.filter(
+      (img) => !imagesToKeep.includes(img)
+    );
+    deleteProductImages(removedImages);
+
+    // Merge existing images + new uploads
+    const finalImages = [...imagesToKeep, ...newImages];
+
+    // Update product
+    await product.update({
+      name,
+      brand,
+      price,
+      description,
+      image_urls: finalImages,
+    });
+
+    return res.status(200).json({
+      message: "Product updated successfully",
+      data: product,
+    });
   } catch (err) {
-    console.error(err);
+    console.error("Update product error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
 
+
+
+// Helper to delete uploaded images from disk
+const deleteProductImages = (imageUrls) => {
+  if (!imageUrls || !Array.isArray(imageUrls)) return;
+
+  imageUrls.forEach((url) => {
+    const filePath = `./backend${url}`; // adjust if needed
+    if (fs.existsSync(filePath)) {
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Failed to delete image:", filePath, err);
+      });
+    }
+  });
+};
 
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const user_id = req.user.id;
 
+    // Find product owned by user
     const product = await Products.findOne({ where: { id, user_id } });
-    if (!product) return res.status(404).json({ message: "Product not found or not yours" });
+    if (!product)
+      return res.status(404).json({ message: "Product not found or not yours" });
 
+    // Delete dependent rows first
+    await Rating.destroy({ where: { product_id: id } });
+    await Comment.destroy({ where: { product_id: id } });
+    await GuitarDetails.destroy({ where: { product_id: id } });
+
+    // Delete uploaded images from disk
+    deleteProductImages(product.image_urls);
+
+    // Delete product
     await product.destroy();
+
     return res.status(200).json({ message: "Product deleted successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("Delete product error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 export const filterProducts = async (req, res) => {
   try {
     const { category, brand, condition, minPrice, maxPrice, minRating, maxRating } = req.query;
 
-    const filter = {};
+    // Base product filter
+    const productFilter = {
+      status: "approved", // <-- Only approved products
+    };
 
-    if (category) filter.category = category;
-    if (brand) filter.brand = brand;
-    if (condition) filter.condition = condition;
-    if (minPrice || maxPrice) filter.price = {};
-    if (minPrice) filter.price[Op.gte] = Number(minPrice);
-    if (maxPrice) filter.price[Op.lte] = Number(maxPrice);
-    if (minRating || maxRating) filter.rating = {};
-    if (minRating) filter.rating[Op.gte] = Number(minRating);
-    if (maxRating) filter.rating[Op.lte] = Number(maxRating);
+    if (brand) productFilter.brand = { [Op.iLike]: `%${brand}%` };
+    if (condition) productFilter.condition = condition;
+    if (minPrice || maxPrice) {
+      productFilter.price = {
+        ...(minPrice && { [Op.gte]: Number(minPrice) }),
+        ...(maxPrice && { [Op.lte]: Number(maxPrice) }),
+      };
+    }
+    if (category && category !== "guitar") {
+      productFilter.category = category; // filter accessories or other categories
+    }
 
-    const products = await Products.findAll({
-      where: filter,
-      include: {
+    // GuitarDetails include (only join if category is guitar)
+    const include = [];
+    if (category === "guitar" || !category) {
+      include.push({
         model: GuitarDetails,
-        as: 'guitarDetails',
-        attributes: ['type']
-      }
+        as: "guitarDetails",
+        required: category === "guitar",
+      });
+    }
+
+    // Include Ratings for avg calculation
+    include.push({
+      model: Rating,
+      attributes: [],
     });
 
-    res.status(200).json({ data: products, message: "Filtered products fetched successfully" });
+    // Build HAVING clause dynamically
+    const havingConditions = [];
+    if (minRating) havingConditions.push(Sequelize.literal(`AVG("Ratings"."rating_point") >= ${minRating}`));
+    if (maxRating) havingConditions.push(Sequelize.literal(`AVG("Ratings"."rating_point") <= ${maxRating}`));
+
+    const groupBy = ["Products.id"];
+    if (category === "guitar" || !category) groupBy.push("guitarDetails.id");
+
+    const products = await Products.findAll({
+      where: productFilter,
+      include,
+      attributes: {
+        include: [[Sequelize.fn("AVG", Sequelize.col("Ratings.rating_point")), "avgRating"]],
+      },
+      group: groupBy,
+      having: havingConditions.length > 0 ? Sequelize.and(...havingConditions) : undefined,
+      order: [["createdAt", "DESC"]],
+    });
+
+    res.status(200).json({
+      data: products,
+      message: "Filtered products fetched successfully",
+    });
   } catch (e) {
     console.error("Filter products error:", e);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: e.message });
   }
 };

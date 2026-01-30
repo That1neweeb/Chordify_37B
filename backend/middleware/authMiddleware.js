@@ -18,11 +18,12 @@ export const isAuthenticated = (req, res, next) => {
         //verifying the token
         const decoded = jwt.verify(token, process.env.secretkey);
 
-        //attaching the user info
+        //attaching the user ino
         req.user = {
             id: decoded.id,
             email: decoded.email,
             role: decoded.role,
+            full_name: decoded.full_name
         };
 
         next();

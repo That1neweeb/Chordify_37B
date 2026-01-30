@@ -1,15 +1,27 @@
 export default function PostCard({ content }) {
   return (
-    <div className="post-card bg-[var(--card-bg)]  w-[800px] h-[600px] rounded-2xl flex flex-col items-center justify-around border-2 border-[var(--border-color)]">
+    <div className="bg-[#27231B] w-full max-w-3xl rounded-3xl overflow-hidden border border-[#8B6914]/40 shadow-lg">
+
+      {/* Video */}
       <video
-        src={`http://localhost:5000${content.video_URLS}`}
+        src={content.video}
         controls
-        className="border-2xl my-6 w-[700px]"
+        className="w-full max-h-[450px] object-cover bg-black"
       />
-      <div className="w-[500px] my-6 flex flex-col justify-start">
-        <h2 className="font-bold">{content.title}</h2>
-        <h4 className="">{content.description}</h4>
-        <h6 className=" text-sm">Posted By {content.uploadedBy}</h6>
+
+      {/* Content */}
+      <div className="p-6 space-y-2">
+        <h2 className="text-xl font-bold text-[#D4AF37]">
+          {content.title}
+        </h2>
+
+        <p className="text-gray-300 text-sm">
+          {content.desc}
+        </p>
+
+        <p className="text-gray-400 text-xs">
+          Posted by <span className="text-[#D4AF37]">{content.user}</span>
+        </p>
       </div>
     </div>
   );

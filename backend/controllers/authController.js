@@ -3,6 +3,8 @@ import { Users } from '../models/association.js';
 import { passwordHash } from '../utils/hashPassword.js';
 import { generateToken, generateTokenExpiry } from '../utils/generateTokens.js';
 import { sendEmail } from '../utils/sendEmail.js';
+import multer from 'multer';
+import path from 'path';
 import { generateAccessToken } from '../utils/jwt-util.js';
 
 
@@ -73,8 +75,7 @@ export const registerUser = async (req, res) => {
         const verificationURL = `${BACKEND_BASE_URL}/auth/verify/${verification_token}`;
 
         //send email verification
-        try{
-            await sendEmail(
+        await sendEmail(
             newUser.email,
             "Verify your Chordify account",
             `
@@ -84,12 +85,6 @@ export const registerUser = async (req, res) => {
             <p>This link expires in 24 hours.</p>
             `
         );
-        }
-        catch(err){
-            console.log(err);
-
-        }
-        
 
         //send response after email is sent
         return res.status(201).json({
@@ -144,11 +139,12 @@ export const login = async (req, res) => {
             id: user.id,
             email: user.email,
             role: user.role,
+            full_name: user.full_name
         });
 
         return res.status(200).json({
             message: "Login successful",
-            user: { id: user.id, full_name: user.full_name, email: user.email },
+            user: { id: user.id, full_name: user.full_name, email: user.email, role: user.role },
             accessToken: accessToken
         });
         
@@ -196,37 +192,42 @@ export const verifyUser = async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 }
-
 export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = req.body;
-    
-    // Fetch full user from database
-    const user = await Users.findByPk(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
 
     if (!currentPassword || !newPassword || !confirmPassword) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // check current password
-    const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
+    // Fetch user from DB
+    const user = await Users.findByPk(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check current password
+    const isMatch = await bcrypt.compare(
+      currentPassword,
+      user.password_hash
+    );
+
     if (!isMatch) {
       return res.status(400).json({ message: "Current password is incorrect" });
     }
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ message: "Passwords do not match" }); // ✅ FIXED
+      return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    // password strength validation (same as register)
+    // Password strength validation
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!passwordRegex.test(newPassword)) {
       return res.status(400).json({
         message:
-          "Password must be 8+ chars, include uppercase, lowercase, number & special char"
+          "Password must be 8+ chars, include uppercase, lowercase, number & special char",
       });
     }
 
@@ -234,113 +235,16 @@ export const changePassword = async (req, res) => {
 
     await user.update({ password_hash: hashedPassword });
 
-    return res.status(200).json({ message: "Password changed successfully" });
+    return res.status(200).json({
+      message: "Password changed successfully",
+    });
   } catch (err) {
     console.error("Change password error:", err);
     return res.status(500).json({ message: "Server error" });
   }
 };
-// Get user profile
-export const getProfile = async (req, res) => {
-  try {
-    console.log("🔍 DEBUG - req.user from middleware:", req.user);
-    
-    // Get user ID from middleware
-    const userId = req.user.id;
-    
-    // Fetch FULL user from database
-    const user = await Users.findByPk(userId);
-    
-    if (!user) {
-      console.log("❌ User not found for ID:", userId);
-      return res.status(404).json({ message: "User not found" });
-    }
-    
-    console.log("✅ User found in DB:", {
-      id: user.id,
-      full_name: user.full_name,
-      email: user.email,
-      profile_image: user.profile_image
-    });
-    
-    // Build profile image URL
-    let profileImageUrl = null;
-    if (user.profile_image) {
-        profileImageUrl = `http://localhost:5000/uploads/${user.profile_image}`;
-        console.log("✅ Profile image URL:", profileImageUrl);
-    }
-    
-    // Return user data (without .toJSON())
-    const userData = {
-      id: user.id,
-      full_name: user.full_name,
-      email: user.email,
-      role: user.role,
-      bio: user.bio,
-      profile_image: profileImageUrl,
-      is_verified: user.is_verified,
-      created_at: user.createdAt,
-      updated_at: user.updatedAt
-    };
 
-    console.log("✅ Sending profile data:", userData);
-    return res.status(200).json({ 
-      user: userData
-    });
-    
-  } catch (err) {
-    console.error("❌ Error in getProfile:", err);
-    console.error("❌ Error stack:", err.stack);
-    return res.status(500).json({ 
-      message: "Server error",
-      error: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  }
-};
 
-// Update user profile
-export const updateProfile = async (req, res) => {
-    try {
-        console.log("📤 UPDATE PROFILE - Request received");
-        
-        const user = await Users.findByPk(req.user.id);
-        if (!user) return res.status(404).json({ message: "User not found" });
-
-        const { full_name, bio } = req.body;
-        console.log("📤 Request body:", { full_name, bio });
-        console.log("📤 File:", req.file);
-
-        if (full_name) user.full_name = full_name;
-        if (bio !== undefined) user.bio = bio;
-
-        if (req.file) {
-            user.profile_image = req.file.filename;
-            console.log("📤 File saved as:", req.file.filename);
-        }
-
-        await user.save();
-        console.log("📤 User saved successfully");
-
-        let profileImageUrl = null;
-        if (user.profile_image) {
-            profileImageUrl = `http://localhost:5000/uploads/${user.profile_image}`;
-        }
-
-        return res.status(200).json({
-            message: "Profile updated successfully",
-            user: {
-                full_name: user.full_name,
-                email: user.email,
-                role: user.role,
-                bio: user.bio,
-                profile_image: profileImageUrl
-            }
-        });
-    } catch (err) {
-        console.error("Update profile error:", err);
-        return res.status(500).json({ message: "Server error" });
-    }
-};
 
 
 
@@ -371,7 +275,6 @@ export const sendResetPasswordEmail = async (req, res) => {
   }
 };
 
-// Reset password from email
 export const resetPasswordFromEmail = async (req, res) => {
   try {
     const { token } = req.params;
@@ -391,7 +294,6 @@ export const resetPasswordFromEmail = async (req, res) => {
       return res.status(400).json({ message: "Passwords do not match" });
     }
 
-    // Step 2: Find user by token
     let user;
     try {
       user = await Users.findOne({ where: { reset_token: token } });
@@ -405,7 +307,6 @@ export const resetPasswordFromEmail = async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired link" });
     }
 
-    // Step 3: Check token expiry
     if (!user.reset_token_expires) {
       console.log("[RESET PASSWORD] User has no reset_token_expires:", user.email);
       return res.status(400).json({ message: "Invalid or expired link" });
@@ -422,7 +323,6 @@ export const resetPasswordFromEmail = async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired link" });
     }
 
-    // Step 4: Hash the new password
     let hashedPassword;
     try {
       hashedPassword = await passwordHash(newPassword);
@@ -431,7 +331,6 @@ export const resetPasswordFromEmail = async (req, res) => {
       return res.status(500).json({ message: "Password hashing error" });
     }
 
-    // Step 5: Update user
     try {
       await user.update({
         password_hash: hashedPassword,
@@ -454,12 +353,25 @@ export const resetPasswordFromEmail = async (req, res) => {
 
 
 
+// Multer storage config
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'images'); // folder where images are saved
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+export const upload = multer({ storage });
+
 // Delete current user account
 export const deleteAccount = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    //  Delete user permanently from DB
+    // ❌ Delete user permanently from DB
     await Users.destroy({
       where: { id: userId },
     });
@@ -477,11 +389,8 @@ export const deleteAccount = async (req, res) => {
 
 export const logout = (req, res) => {
     try {
-
-        res.status(200).json({ message: "Logged out successfully" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Something went wrong!" });
+        return res.status(200).json({ message: "Logged out successfully" });
+    } catch (e) {
+        res.status(500).json({ message: e.message });
     }
 };
-

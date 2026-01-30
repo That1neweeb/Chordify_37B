@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { useApi } from "../hooks/useAPI";
+import { useApi } from "../hooks/useAPI.js";
+import { toast } from "react-toastify"
 
-const StarRating = ({ product_id }) => {
+const StarRating = ({ product_id, setAverageRating }) => {
   const [selectedRating, setSelectedRating] = useState(0);
   const { callApi, loading, error } = useApi();
 
@@ -12,12 +13,21 @@ const StarRating = ({ product_id }) => {
       const response = await callApi("POST", `/products/${product_id}/rate`, {
         data: { rating_point: value },
       });
+
       console.log("Rating response:", response);
-      alert("Rating submitted!");
+
+      // Update average in parent component (if passed as prop)
+      if (typeof setAverageRating === "function") {
+        setAverageRating(response.average);
+      }
+
+      toast.success("Rating submitted!");
     } catch (err) {
       console.error("Error posting rating:", err);
+      toast.error("Failed to submit rating");
     }
   };
+
 
   return (
     <StyledWrapper>
@@ -31,7 +41,7 @@ const StarRating = ({ product_id }) => {
               value={star}
               checked={selectedRating === star}
               onChange={() => handleRating(star)}
-              disabled={loading} // disable while loading
+              disabled={loading}
             />
             <label htmlFor={`rating-${star}`} title={`${star} star${star > 1 ? "s" : ""}`}>
               <svg viewBox="0 0 576 512" height="1em" xmlns="http://www.w3.org/2000/svg">
@@ -46,6 +56,8 @@ const StarRating = ({ product_id }) => {
     </StyledWrapper>
   );
 };
+
+
 
 const StyledWrapper = styled.div`
   .radio {

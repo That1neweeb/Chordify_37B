@@ -1,7 +1,7 @@
 import file from "../assets/images/file.png";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
-export default function VideoUpload({ video_URL, setVideo }) {
+export default function VideoUpload({ video, setVideo }) {
   const fileInputRef = useRef(null);
   const [previewVideo, setPreviewVideo] = useState(null);
 
@@ -11,28 +11,31 @@ export default function VideoUpload({ video_URL, setVideo }) {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-
     if (!selectedFile) return;
 
-    // Allow only video files
     if (!selectedFile.type.startsWith("video/")) {
       alert("Please upload a valid video file");
       return;
     }
 
-    // Store video file in parent state
     setVideo(selectedFile);
 
-    // Create preview URL
     const videoPreviewURL = URL.createObjectURL(selectedFile);
     setPreviewVideo(videoPreviewURL);
   };
 
-  return (
-    <div className="bg-[var(--card-bg)] border-4 border-[var(--border-color)] rounded-2xl mt-4 w-[90%] flex flex-col px-5">
-      <h2 className="font-bold text-xl text-[var(--text-color)] mt-4">Upload Video</h2>
+  // Cleanup preview URL
+  useEffect(() => {
+    return () => {
+      if (previewVideo) URL.revokeObjectURL(previewVideo);
+    };
+  }, [previewVideo]);
 
-      <div className="bg-[var(--bg-color)] w-[98%] h-[300px] mt-4 flex flex-col items-center justify-center border-2 border-dashed border-[var(--border-color)] rounded-xl">
+  return (
+    <div className="bg-[#27231B] border-4 border-[#393328] rounded-2xl mt-4 w-[90%] flex flex-col px-5">
+      <h2 className="font-bold text-xl text-white mt-4">Upload Video</h2>
+
+      <div className="bg-[#181611] w-[98%] h-[300px] mt-4 flex flex-col items-center justify-center border border-dashed border-[#ABA6A6] rounded-xl">
         {previewVideo ? (
           <video
             src={previewVideo}
@@ -41,10 +44,7 @@ export default function VideoUpload({ video_URL, setVideo }) {
           />
         ) : (
           <>
-            <img src={file} alt="upload" className="size-20" />
-            <h3 className="text-[var(--text-color)] opacity-70 mt-4">
-              Drag and Drop your Video here
-            </h3>
+            <img src={file} alt="Upload Video Icon" className="size-20" />
           </>
         )}
       </div>
@@ -59,9 +59,9 @@ export default function VideoUpload({ video_URL, setVideo }) {
         />
         <button
           onClick={handleBrowseClick}
-          className="bg-[var(--button-bg)] rounded-3xl w-40 self-center my-10 border border-[var(--link-hover)]"
+          className="bg-[#4F3D18] rounded-3xl w-40 self-center my-10 cursor-pointer"
         >
-          <h6 className="text-[var(--link-hover)]">Browse Video</h6>
+          <h6 className="text-[#F2A60D]">Browse Video</h6>
         </button>
       </div>
     </div>

@@ -1,25 +1,20 @@
 import React from "react";
+import { AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../AuthContext"; // AuthContext
-import { AlertCircle } from "lucide-react"; // icon
 
 export default function Logout({ onClose }) {
   const navigate = useNavigate();
-  const { logout } = useAuth(); // get logout function from context
 
-  const handleLogout = async () => {
-    try {
-      // Call context logout: clears token and user state
-      await logout();
+  const handleLogout = () => {
+    // Clear any authentication data (if you're using authentication)
+    // localStorage.removeItem("authToken");
+    // sessionStorage.clear();
 
-      // Close modal
-      if (onClose) onClose();
+    // Close modal
+    if (typeof onClose === "function") onClose();
 
-      // Redirect to login
-      navigate("/login");
-    } catch (err) {
-      console.error("Logout failed: ", err);
-    }
+    // Redirect to login page or home page
+    navigate("/login"); // Change to "/" or wherever you want to redirect
   };
 
   return (

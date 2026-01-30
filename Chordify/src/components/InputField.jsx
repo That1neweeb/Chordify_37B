@@ -1,41 +1,59 @@
-import google from '../assets/images/google.png';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApi } from "../hooks/useAPI.js"; 
 import { toast } from 'react-toastify';
 import { registerSchema, loginSchema } from "../schema/register.schema";
+import { useAuth } from '../context/AuthContext.jsx';
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
+
 
 function InputField({ isRegistration = true }) {
     const navigate = useNavigate();
     const { loading, callApi } = useApi();
+    const {login} = useAuth();
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: zodResolver(isRegistration ? registerSchema : loginSchema)
     });
 
-    const onSubmit = async (formData) => {
-        try {
-            const endpoint = isRegistration ? "/auth/register" : "/auth/login";
+  const onSubmit = async (formData) => {
+  try {
+    const endpoint = isRegistration ? "/auth/register" : "/auth/login";
+    const response = await callApi("POST", endpoint, { data: formData });
 
-            // Ensure callApi always returns response.data
-            const response = await callApi("POST", endpoint, { data: formData });
+    if (isRegistration) {
+      toast.success("Registration successful! Please check your email to verify your account.");
+      navigate("/login");
+      return;
+    }
 
-            if (isRegistration) {
-                toast.success("Registration successful! Please check your email to verify your account.");
-                navigate("/login");
-            } else {
-                localStorage.setItem("token", response?.accessToken); // save JWT
-                toast.success(response.message || "Login successful");
-                navigate("/"); // redirect after login
-                console.log("Stored token:", localStorage.getItem("token"));
-            }
+    localStorage.setItem("token", response.accessToken);
+    localStorage.setItem("role", response.user.role);
 
-        } catch (err) {
-            console.error("API error:", err.response?.data?.message || err.message);
-            toast.error(err.response?.data?.message || "Server error");
-        }
-    };
+    login(response.user); 
+
+    toast.success(response.message || "Login successful");
+
+    if (response.user.role === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/");
+    }
+
+  } catch (err) {
+    console.error("API error:", err.response?.data?.message || err.message);
+    toast.error(err.response?.data?.message || "Server error");
+  }
+};
+
+
 
     return (
         <div className="flex flex-col">
@@ -63,23 +81,43 @@ function InputField({ isRegistration = true }) {
             {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
 
             <label htmlFor="password" className='text-black'>Password</label>
-            <input
-                type="password"
-                placeholder="Password"
-                {...register("password")}
-                className="w-[400px] h-[50px] border border-black rounded-md bg-white text-black text-[20px] my-4 px-2"
-            />
+            <div className="relative">
+                <input
+                    type={showPassword ? "text" : "password"}
+                    {...register("password")}
+                    className="w-[400px] h-[50px] border border-black rounded-md bg-white text-black text-[20px] my-4 px-2 pr-10"
+                />
+
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 bg-transparent  outline-none  border-none hover:border-none focus:outline-none"
+                >
+                    {showPassword ? <EyeOff size={18} className='bg-transparent text-black'/> : <Eye size={18} className='bg-transparent text-black'/>}
+                </button>
+            </div>
+
             {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
 
             {isRegistration && (
                 <>
                     <label htmlFor="c_password" className="text-black">Confirm Password</label>
-                    <input
-                        type="password"
-                        placeholder="Confirm Password"
-                        {...register("c_password")}
-                        className="w-[400px] h-[50px] border border-black rounded-md bg-white text-black text-[20px] my-4 px-2"
-                    />
+                  <div className="my-4 relative">
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            {...register("c_password")}
+                            className="w-[400px] h-[50px] border border-black rounded-md bg-white text-black text-[20px] px-2 pr-10"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 bg-transparent outline-none  border-none hover:border-none focus:outline-none"
+                        >
+                            {showConfirmPassword ? <EyeOff size={18} className='bg-transparent text-black'/> : <Eye size={18} className='bg-transparent text-black'/>}
+                        </button>
+
+                    </div>
+
                     {errors.c_password && <p className="text-red-500 text-sm">{errors.c_password.message}</p>}
                 </>
             )}
@@ -94,19 +132,13 @@ function InputField({ isRegistration = true }) {
 
             {isRegistration && (
                 <>
-                    <div className="flex items-center my-5 mr-20">
-                        <div className="flex-grow border-t border-gray-300"></div>
-                        <span className="mx-3 text-gray-500">or</span>
-                        <div className="flex-grow border-t border-gray-300"></div>
+                    <div className="items-center my-5 mr-20 justify-center flex flex-col">
+                        <h3 className="text-black">Already have an account ? 
+                            <Link to="/login">
+                                <span className="text-[#235EFF] cursor-pointer "> Sign in </span>
+                            </Link> 
+                        </h3>          
                     </div>
-
-                    <button
-                        disabled={loading}
-                        className="flex items-center justify-center w-[400px] h-[50px] gap-2 border border-black rounded-md bg-[#E0E0E0] text-black mt-1"
-                    >
-                        <img src={google} alt="Google" className="h-4" />
-                        Sign up with Google
-                    </button>
                 </>
             )}
 

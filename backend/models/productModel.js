@@ -41,7 +41,18 @@ export const Products = sequelize.define(
     user_id: {
         type: DataTypes.INTEGER,
         allowNull: false
-    }
+    },
+    
+    status: { 
+      type: DataTypes.ENUM("pending", "approved", "rejected"), 
+      defaultValue: "pending",
+      allowNull: false
+    },
+
+      description: {            
+      type: DataTypes.TEXT,
+      allowNull: true           
+    },
   },
 
 );

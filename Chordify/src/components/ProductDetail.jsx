@@ -13,15 +13,8 @@ function ProductDetail({
   errors 
 }) {
     return (
-        <div
-          className="h-[350px] border-4 rounded-2xl mt-4 w-[90%] flex flex-col px-5"
-          style={{
-            backgroundColor: "var(--card-bg)",
-            borderColor: "var(--border-color)",
-            color: "var(--text-color)"
-          }}
-        >
-            <h1 className="font-bold text-2xl mt-8 ml-10">
+        <div className="bg-[#27231B] h-[350px] border-4 border-[#393328] rounded-2xl mt-4 w-[90%] flex flex-col px-5">
+            <h1 className="font-bold text-2xl text-white mt-8 ml-10">
                 {category === "guitar" ? "Guitar Details" : "Accessory Details"}
             </h1>
             <div className="mt-4">

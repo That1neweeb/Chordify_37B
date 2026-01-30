@@ -1,33 +1,41 @@
 import guitarplayingimg from "../assets/images/guitarplaying.png"
 
 function HeroImage() {
-    return(
+  return (
+    <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] p-4 sm:p-10">
 
-        <div className="relative w-[74rem] h-[600px] p-10 px-20">
+      {/* Background Image */}
+      <div
+        className="absolute inset-0 bg-center bg-cover bg-no-repeat"
+        style={{ backgroundImage: `url(${guitarplayingimg})` }}
+      >
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/40"></div>
 
-            {/* Background Image */}
-            <div className="absolute h-[600px] w-[74rem] bg-center bg-cover bg-no-repeat mt-10"
-            style={{backgroundImage: `url(${guitarplayingimg})`}}
-            >
+        {/* Content */}
+        <div className="relative z-10 flex flex-col justify-center items-center h-full px-4 sm:px-10 text-center">
+          <h1 className="text-white font-bold text-3xl sm:text-5xl md:text-7xl">
+            Buy, Learn, Play
+          </h1>
+          <p className="mt-2 text-sm sm:text-base md:text-lg">
+            Everything in one place
+          </p>
 
-                {/* Overlay */}
-            <div className="absolute inset-0 bg-black/40"></div>
-            
-            {/* Content */}
-            <div className="relative z-10 flex flex-col justify-center items-center h-full px-10">
-                <h1 className="text-white font-bold text-7xl">Buy, Learn, Play</h1>
-                <p className="mt-2 text-white">Everything in one place</p>
-
-                <div className="flex gap-14 mt-10">
-                    <button className="text-white bg-[#F2A60D] text-black hover:bg-yellow-500 hover:scale-105 transition-all duration-300">Buy a Guitar</button>
-                    <button className="text-white bg-[#393328] hover:scale-105 transition-all duration-300">Sell your Guitar</button>
-                    <button className="text-white bg-[#393328] hover:scale-105 transition-all duration-300">Find lesson</button>
-                </div>
-            </div>
-       </div>
+          <div className="flex flex-col sm:flex-row gap-4 sm:gap-8 mt-6 sm:mt-10">
+            <button className="bg-[#F2A60D] text-black py-2 px-6 rounded hover:bg-yellow-500 hover:scale-105 transition-all duration-300">
+              Buy a Guitar
+            </button>
+            <button className="bg-[#393328] text-white py-2 px-6 rounded hover:scale-105 transition-all duration-300">
+              Sell your Guitar
+            </button>
+            <button className="bg-[#393328] text-white py-2 px-6 rounded hover:scale-105 transition-all duration-300">
+              Find Lesson
+            </button>
+          </div>
         </div>
-    
-      
-    );
+      </div>
+    </div>
+  )
 }
+
 export default HeroImage;

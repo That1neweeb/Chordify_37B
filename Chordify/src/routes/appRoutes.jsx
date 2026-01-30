@@ -16,20 +16,33 @@ const Sale = React.lazy(() => import("../pages/Sale"));
 const Learn = React.lazy(() => import("../pages/Learn"));
 const CartPage = React.lazy(() => import("../pages/CartPage"));
 const ProductDescriptionPage = React.lazy(() => import("../pages/ProductDescriptionPage"));
-const LyricsPage = React.lazy(() => import("../pages/LyricsPage"));
+const Song = React.lazy(() => import("../pages/Song"));
 const MyListingPage = React.lazy(()=> import("../pages/MyListingPage"));
 const EditProductPage = React.lazy(()=> import("../pages/EditProductPage"));
-const FavouritePage = React.lazy(()=> import("../pages/Favouritepage"));
-const PostsPage = React.lazy(() => import("../pages/PostsPage")); 
-const Chordslibrary = React.lazy(() => import("../pages/ChordLibrary"));
-const UploadPage = React.lazy(() => import("../pages/UploadPage"));
-const MyUploads = React.lazy(() => import("../pages/MyUploads"));
-const TabExercisesPage = React.lazy(() => import("../pages/TabExercisesPage"));
-const StrummingPatternPage = React.lazy(() => import("../pages/StrummingPatternPage"));
-const MyFavoriteSongs = React.lazy(() => import("../pages/FavouriteSongs"));
+const FavouritePage = React.lazy(()=> import("../pages/FavouritePage"));
+const CustomerSupport = React.lazy(()=> import("../pages/CustomerSupport"));
+const ViewProfile = React.lazy(()=> import("../components/ViewProfile"));
+const PostPage = React.lazy(()=> import("../pages/PostsPage"));
+const CheckoutPage = React.lazy(()=> import("../pages/CheckoutPage"));
+const OrderSuccessPage = React.lazy(()=> import("../pages/OrderSuccessPage"));
+const OrderPage = React.lazy(()=> import("../pages/OrderPage"));
+const AdminDashboard = React.lazy(()=> import("../pages/adminpages/AdminDashboard"));
+const ProductListing = React.lazy(()=> import("../pages/adminpages/ProductListing"));
+const UserListing = React.lazy(()=> import("../pages/adminpages/UserListing"));
+const ResetPassword = React.lazy(()=>import ("../components/ResetPassword"));
+const UploadPage = React.lazy(()=>import ("../pages/UploadPage"));
+const SongPage = React.lazy(()=>import ("../pages/Song"));
+const StrummingPatterns = React.lazy(()=>import ("../pages/StrummingPatterns"));
+const Exercises = React.lazy(()=>import ("../pages/TabExercises"));
+const Chords = React.lazy(()=>import ("../pages/ChordsLibrary"));
+
 
 
 import PrivateRoutes from "./PrivateRoutes";
+import AdminRoutes from "./AdminRoutes";
+import AdminLayout from "../layout/AdminLayout";
+
+
 
 export const AppRoutes = () => (
   <Routes>
@@ -38,9 +51,10 @@ export const AppRoutes = () => (
     <Route path="/aboutus" element={<Aboutus />} />
     <Route path="/login" element={<Suspense fallback={<Spinner />}><Login /></Suspense>} />
     <Route path="/register" element={<Suspense fallback={<Spinner />}><Register /></Suspense>} />
-    <Route path="/chords" element={<Suspense fallback={<Spinner/>}> <Chordslibrary /> </Suspense> } />
-    <Route path="/strumming" element={<Suspense fallback={<Spinner/>}> <StrummingPatternPage /> </Suspense> }/>
-    <Route path="/exercise" element={<Suspense fallback={<Spinner/>}> <TabExercisesPage /> </Suspense> } />
+    <Route path="/support" element={<Suspense fallback={<Spinner />}><CustomerSupport /></Suspense>} />
+    <Route path="/learn/strumming-patterns" element={<Suspense fallback={<Spinner />}><StrummingPatterns /></Suspense>} />
+    <Route path="/learn/exercises" element={<Suspense fallback={<Spinner />}><Exercises/></Suspense>} />
+    <Route path="/learn/chords" element={<Suspense fallback={<Spinner />}><Chords/></Suspense>} />
 
     {/* Private routes */}
     <Route element={<PrivateRoutes />}>
@@ -50,16 +64,54 @@ export const AppRoutes = () => (
         <Route path="/learn" element={<Learn />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="products/:id" element={<ProductDescriptionPage />} />
-        <Route path="/lyrics/:id" element={<LyricsPage />} />
+        <Route path="/song" element={<Song />} />
         <Route path="/mylistings" element={<MyListingPage />} />
         <Route path="/products/edit/:id" element={<EditProductPage />} />
         <Route path="/favourites" element={<FavouritePage/>}></Route>
-        <Route path="/posts/uploadPage" element={<UploadPage/>} />
-        <Route path="/posts" element={<PostsPage/>}/>
-        <Route path="/posts/myUploads" element={<MyUploads/>}/>
-        <Route path="/myfavoritesongs" element={<MyFavoriteSongs/>}></Route>
+        <Route path="/profile" element={<ViewProfile/>}></Route>
+        <Route path="/posts" element={<PostPage/>}></Route>
+        <Route path="/checkout" element={<CheckoutPage/>}></Route>
+        <Route path="/orders" element={<OrderPage/>}></Route>
+        <Route path="/order-success" element={<OrderSuccessPage/>}></Route>
+        <Route path="/reset-password/:token" element={<ResetPassword/>}></Route>
+        <Route path="/posts/create" element={<UploadPage/>}></Route>
+        <Route path="/songs/:id" element={<SongPage/>}></Route>
+
       </Route>
     </Route>
+
+      {/* Admin routes */}
+    <Route element={<AdminRoutes/>}>
+      <Route element={<AdminLayout />}>
+          <Route
+            path="/admin/dashboard"
+            element={
+              <Suspense fallback={<div className="text-center">Loading Dashboard...</div>}>
+                <AdminDashboard/>
+              </Suspense>
+            }/>
+
+          <Route
+            path="/admin/userlistings"
+            element={
+              <Suspense fallback={<div className="text-center">Loading User Listings...</div>}>
+                <UserListing />
+              </Suspense>
+            }
+          />
+            <Route
+              path="/admin/productlistings"
+              element={
+                <Suspense fallback={<div className="text-center">Loading Product Listings...</div>}>
+                  <ProductListing />
+                </Suspense>
+              }
+            />
+      </Route>
+    </Route>
+
+    
+
 
     <Route path="*" element={<Navigate to="/" replace />} />
 

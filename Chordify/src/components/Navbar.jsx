@@ -11,10 +11,12 @@ import userok from "../assets/images/userok.png";
 import cart from "../assets/images/cart.png";
 import list from "../assets/images/list.png";
 import love from "../assets/images/favouritered.png"
-import { ThemeContext } from "./LightDarkTheme"
-import posts from "../assets/images/live-line.png"
+import order from "../assets/images/order.png"
+import post from "../assets/images/post.png"
+
+
 import { Link } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
@@ -22,7 +24,8 @@ function Navbar() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("");
-  const { theme, toggleTheme } = useContext(ThemeContext);
+  const [showLogoutModal, setShowLogoutModal] = useState(false); 
+
 
 
 
@@ -32,46 +35,62 @@ function Navbar() {
     setIsOpen(false);
   };
 
+   const handleLogoutClick = () => {
+    setShowLogoutModal(true); // show modal on click
+  };
+
+  const handleConfirmLogout = () => {
+    logout();           // call your existing logout function
+    setShowLogoutModal(false);
+  };
+
+  const handleCancelLogout = () => {
+    setShowLogoutModal(false);
+  };
+
+ 
+
+
   return (
     <div className="flex items-center justify-between w-full mt-5 px-6">
 
       {/* Left: Logo */}
       <Link to="/" className="flex items-center gap-4">
         <img src={logo} alt="Logo" className="size-16" />
-        <h1 className=" text-4xl">Chordify</h1>
+        <h1 className="text-white text-4xl">Chordify</h1>
       </Link>
 
       {/* Center: Buy/Sell/Learn (only if logged in) */}
-      <div className="flex gap-8 items-center ml-[700px]">
+      <div className="flex gap-8 items-center ml-[800px]">
         {isAuthenticated && (
           <>
-            <Link to="/posts" className="flex items-center gap-1 ">
-            <img src={posts} alt="" className="size-4 icon" /> Posts
+           <Link to="/posts" className="flex items-center gap-1 text-white">
+              <img src={post} alt="" className="size-4" /> Posts
             </Link>
-            <Link to="/buy" className="flex items-center gap-1 ">
-              <img src={shoppingcart} alt="" className="size-4 icon" /> Buy
+            <Link to="/buy" className="flex items-center gap-1 text-white">
+              <img src={shoppingcart} alt="" className="size-4" /> Buy
             </Link>
-            <Link to="/sell" className="flex items-center gap-1 ">
-              <img src={coins} alt="" className="size-4 icon" /> Sell
+            <Link to="/sell" className="flex items-center gap-1 text-white">
+              <img src={coins} alt="" className="size-4" /> Sell
             </Link>
-            <Link to="/learn" className="flex items-center gap-1 ">
-              <img src={guitar} alt="" className="size-4 icon" /> Learn
+            <Link to="/learn" className="flex items-center gap-1 text-white">
+              <img src={guitar} alt="" className="size-4" /> Learn
             </Link>
-             <Link to="/support" className="flex items-center gap-1 ">
-          <img src={aboutus} alt="" className="size-4 icon" /> Contact Us</Link>
+            <Link to="/support" className="flex items-center gap-1 text-white">
+              <img src={aboutus} alt="" className="size-4" /> Contact Us
+            </Link>
           </>
         )}
-        <button onClick={toggleTheme} className="theme-toggle">
-        {theme === "light" ? "🌙 " : "☀️ "}
-        </button>
       </div>
-      
-      
+
+      {/* Right: Contact Us + Auth */}
+      <div className="flex items-center gap-14">
+
 
         {/* Auth Buttons or Profile Dropdown */}
         {isAuthenticated ? (
           <div className="relative">
-            <div className="rounded-xl flex items-center  bg-[#1A1A1A] ml-9">
+            <div className="rounded-xl flex items-center  bg-[#1A1A1A] ">
               <button className="size-16 hover:scale-105 transition-all outline-none focus:outline-non  border-transparent hover:border-transparent focus:outline-none focus:ring-0 bg-transparent">
                 <img src={userimg} alt="User" />
               </button>
@@ -84,18 +103,18 @@ function Navbar() {
               <div className="absolute right-0 mt-2 w-44 bg-[#282828] rounded-xl p-2 flex flex-col gap-3 z-20">
                 <Link to="/profile" onClick={() => handleMenuSelect("profile")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
                       selectedItem === "profile" ? "bg-[#3A3939]" : ""
                     }`}
                   >
                     Profile
-                    <img src={userok} alt ="" className="size-5" />
+                    <img src={userok} alt="" className="size-5" />
                   </div>
                 </Link>
 
                 <Link to="/favourites" onClick={()=>handleMenuSelect("favourites")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
                       selectedItem === "favourites" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -106,7 +125,7 @@ function Navbar() {
 
                 <Link to="/cart" onClick={() => handleMenuSelect("cart")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
                       selectedItem === "cart" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -117,7 +136,7 @@ function Navbar() {
 
                 <Link to="/mylistings" onClick={() => handleMenuSelect("mylistings")}>
                   <div
-                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] text-white ${
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
                       selectedItem === "mylistings" ? "bg-[#3A3939]" : ""
                     }`}
                   >
@@ -126,12 +145,56 @@ function Navbar() {
                   </div>
                 </Link>
 
-                <div
-                  onClick={logout}
-                  className="flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] cursor-pointer text-white"
-                >
-                  Logout
-                  <img src={logoutIcon} alt="" className="size-5" />
+                
+                <Link to="/orders" onClick={() => handleMenuSelect("myorders")}>
+                  <div
+                    className={`flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] ${
+                      selectedItem === "myorders" ? "bg-[#3A3939]" : ""
+                    }`}
+                  >
+                    My Orders
+                    <img src={order} alt="" className="size-5" />
+                  </div>
+                </Link>
+
+              
+                {isAuthenticated && isOpen && (
+                  <div
+                    onClick={handleLogoutClick}
+                    className="flex justify-between items-center p-2 rounded-xl hover:bg-[#3A3939] cursor-pointer"
+                  >
+                    Logout
+                    <img src={logoutIcon} alt="" className="size-5" />
+                  </div>
+                )}
+              
+
+                <div className="flex items-center justify-between w-full mt-5 px-6">
+
+                {/* Logout Confirmation Modal */}
+                {showLogoutModal && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+                    <div className="bg-[#282828] p-6 rounded-xl w-80 text-center">
+                      <h2 className="text-lg font-semibold mb-4 text-white">
+                        Are you sure you want to logout?
+                      </h2>
+                      <div className="flex justify-around mt-4">
+                        <button
+                          onClick={handleConfirmLogout}
+                          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          onClick={handleCancelLogout}
+                          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-400 transition"
+                        >
+                          No
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 </div>
               </div>
             )}
@@ -145,13 +208,13 @@ function Navbar() {
             </Link>
 
             <Link to="/register">
-              <button className="bg-[#393328] hover:scale-105 transition-all duration-300 px-6 py-1.5 rounded text-white ">
+              <button className="bg-[#393328] hover:scale-105 transition-all duration-300 px-6 py-1.5 rounded">
                 Sign up
               </button>
             </Link>
           </div>
         )}
-      
+      </div>
     </div>
   );
 }

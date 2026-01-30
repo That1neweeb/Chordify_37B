@@ -1,18 +1,15 @@
 import express from 'express';
 const router = express.Router();
 
-
+import {isAuthenticated} from "../middleware/authMiddleware.js";
 // Controller
-import { getMyFavourites, getRecommendedSongs,getSongContent,isFavourite,searchSongs, setFavourite } from '../controllers/songController.js';
-import { isAuthenticated } from '../middleware/authMiddleware.js';
+import { fetchAllSongs, getSongContent, searchSongs } from '../controllers/songController.js';
 
 
 // Fetch recommended songs
-router.get("/recommended", getRecommendedSongs);
-router.get("/getSongContent/:id",getSongContent);
-router.get("/searchSong",searchSongs);
-router.post("/:id/addFavourite",isAuthenticated,setFavourite);
-router.get("/getFavourites",isAuthenticated,getMyFavourites);
-router.get("/:id/isFavourite",isAuthenticated,isFavourite);
-export default router;  
+router.get("/", isAuthenticated, fetchAllSongs);
+router.get("/songContent/:id", isAuthenticated, getSongContent);
+router.get("/search", isAuthenticated, searchSongs);
+
+export default router;
 

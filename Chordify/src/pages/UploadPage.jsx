@@ -1,68 +1,78 @@
 import VideoUpload from "../components/VideoUpload";
 import { useState } from "react";
-import useApi from "../hooks/useAPI"; // <-- import your hook correctly
-import { toast } from 'react-toastify';
+import { useApi } from "../hooks/useAPI";
+import {toast} from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export default function UploadPage() {
-  const [video_URL, setVideo] = useState();
+  const { callApi, loading } = useApi();
+  const navigate = useNavigate();
+
+  const [video, setVideo] = useState(null);
   const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const { loading, error, callApi } = useApi(); // at the top level
-  const navigate = useNavigate(); 
+  const [description, setDescription] = useState("");
 
-  // handling submit
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append("video_URL", video_URL);
-    formData.append("title", title);
-    formData.append("description", desc);
-    try {
-      const res = await callApi("POST", "/posts/uploadVideo", {data : formData});
-      console.log("Video uploaded:", res.data);
-      toast.success("Video uploaded successfully");
-      navigate("/posts");
+    if (!video || !title) {
+      toast.error("Video and title are required");
+      return;
+    }
 
-    } catch (e) {
-      console.error("Error uploading video:", e.response?.data || e.message);
-      window.alert("Error uploading video");  
+    const formData = new FormData();
+    formData.append("video_URL", video);
+    formData.append("title", title);
+    formData.append("description", description);
+
+    try {
+      await callApi("POST", "/posts/uploadVideo", { data: formData });
+      toast.success("Video uploaded successfully!");
+      navigate("/posts");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Error uploading video");
     }
   };
 
   return (
-    <div className="h-full flex flex-col gap-4 justify-center items-center bg-[var(--bg-color)] text-[var(--text-color)]">
-      <h1 className="font-bold text-3xl text-[var(--text-color)]">Upload Video</h1>
+    <div className="h-full flex flex-col gap-4 justify-center items-center">
+      {/* Back Button */}
+      <button
+        onClick={() => navigate("/posts")}
+        className="self-start ml-10 mt-4 px-4 py-2 bg-gray-700 text-white rounded-xl hover:bg-gray-600"
+      >
+        Back to Posts
+      </button>
 
-      <VideoUpload video_URL={video_URL} setVideo={setVideo} />
+      <h1 className="font-bold text-3xl text-white mt-4">Upload Video</h1>
 
-      <div className="w-[90%] h-[300px] border-4 rounded-3xl flex flex-col justify-center items-center gap-4 bg-[var(--card-bg)] border-[var(--border-color)]">
-        <label htmlFor="title" className="mt-2 text-[var(--text-color)]">Title</label>
+      <VideoUpload video={video} setVideo={setVideo} />
+
+      <div className="bg-[#27231B] p-10 w-[90%] border-4 border-[#393328] rounded-3xl flex flex-col justify-center items-center gap-4">
+        <label className="mt-2 w-full">Title</label>
         <input
-          name="title"
           type="text"
           placeholder="Title"
-          className="h-10 rounded-xl bg-[var(--bg-color)] border-4 border-[var(--border-color)] mt-4 text-[var(--text-color)]"
+          value={title}
           onChange={(e) => setTitle(e.target.value)}
+          className="h-10 w-full rounded-xl bg-[#181611] border-4 border-[#393328] px-3"
         />
 
-        <label htmlFor="description" className="text-[var(--text-color)]">Description</label>
+        <label>Description</label>
         <textarea
-          name="description"
           placeholder="Description"
-          className="h-40 w-[80%] rounded-xl bg-[var(--bg-color)] border-4 border-[var(--border-color)] my-5 text-[var(--text-color)]"
-          onChange={(e) => setDesc(e.target.value)}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="h-40 w-full rounded-xl bg-[#181611] border-4 border-[#393328] px-3 py-2"
         />
       </div>
 
       <button
         onClick={handleSubmit}
-        className="w-l bg-[var(--button-bg)] text-[var(--link-hover)] px-6 py-2 rounded-2xl mt-10"
-        disabled={loading} // optional: disable button while loading
+        disabled={loading}
+        className="bg-[#4F3D18] text-[#F2A60D] px-6 py-2 rounded-2xl mt-10 disabled:opacity-50"
       >
         {loading ? "Uploading..." : "Submit Post"}
       </button>
-
-      {error && <p className="text-red-500 mt-2">{error}</p>}
     </div>
   );
 }

@@ -4,8 +4,14 @@ import guitarplaying from "../assets/images/guitarplaying.png"
 import { useEffect, useState } from "react";
 import CommentCard from "./CommentCard";
 import { useApi } from "../hooks/useAPI.js";
+import { toast } from "react-toastify";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 
-function CommentModal({ product_id, close}) {
+dayjs.extend(relativeTime);
+
+
+function CommentModal({ product_id, productImage, close}) {
 
     const[comment_text, setComment] = useState("");
     const[comments, setComments] = useState([]);
@@ -19,21 +25,21 @@ function CommentModal({ product_id, close}) {
             };
         }, []);
 
-        const {loading, error, callApi} = useApi();
+        const {loading, callApi} = useApi();
      
 
         
         // to fetch the comment posted
-        const fetchComment = async() => {
+         const fetchComment = async () => {
             try {
-                const res = await callApi("GET",`/products/comments/${product_id}`, {})
-                console.log(res);
-                setComments(res.data)
-            } catch(e) {
+                const res = await callApi("GET", `/products/comments/${product_id}`, {});
+                setComments(res.data || []);
+            } catch (e) {
                 console.log("Error fetching comments", e);
-                
+                setComments([]);
             }
         };
+
 
         //fetching the comment 
         useEffect(()=> {
@@ -47,7 +53,7 @@ function CommentModal({ product_id, close}) {
             try {
                 const commentsponse = await callApi("POST", `/products/${product_id}/addcomment`, {data: {comment_text: comment_text}});
                 console.log("Server commentsponse : ", commentsponse);
-                alert("Comment posted");
+                toast.success("Comment posted");
 
                 setComment("");
 
@@ -76,28 +82,30 @@ function CommentModal({ product_id, close}) {
                 
                 {/* image of the product */}
                 <div className="flex-[3]">
-                    <img src={acoustic} alt="" className="w-full h-full object-cover object-center" />
+                    <img src={productImage} alt="" className="w-full h-full object-cover object-center" />
                 </div>
                
                 {/* comment section */}
                 <div className="flex-[3] bg-[#27231B] flex flex-col">
 
                     {/* existing comments */}
-                    <div className="overflow-auto p-4 flex-1 gap-8 flex flex-col">
-                        {
-                            comments.map(comment => {
-                                return ( 
-                                    <CommentCard
-                                        key={comment.id}
-                                        username={comment.User.full_name}
-                                        profile={guitarplaying}
-                                        text={comment.comment_text}
-                                        time="1w"
-                                    />
-                                );
-                            })
-                        }
+                   <div className="overflow-auto p-4 flex-1 gap-8 flex flex-col">
+                        {loading ? (
+                            <p className="text-gray-400 text-center mt-10">Loading comments...</p>
+                        ) : comments.length === 0 ? (
+                            <p className="text-gray-400 text-center mt-10">No comments yet</p>
+                        ) : (
+                            comments.map(comment => (
+                            <CommentCard
+                                key={comment.id}
+                                username={comment.User.full_name}
+                                profile={guitarplaying} // you can replace with product image if needed
+                                text={comment.comment_text}
+                                time={dayjs(comment.createdAt).fromNow()}                            />
+                            ))
+                        )}
                     </div>
+
 
             
                     {/* input field at the bottom */}

@@ -19,45 +19,35 @@ function Buy() {
 
   const debounceRef = useRef(null);
 
-  // Fetch all products
-  const fetchProducts = async () => {
-    try {
-      const req = await callApi("GET", "/products/buy", {});
-      setProducts(req.data);
-    } catch (err) {
-      console.error("Fetch products error:", err.message);
-    }
-  };
+  // apply filters
+  const applyFilters = async (searchValue = searchTerm) => {
+  try {
+    let res;
 
-  // Fetch products by search
-  const fetchSearchResults = async (query) => {
-    if (!query) {
-      fetchProducts();
-      return;
+    if (searchValue && searchValue.trim() !== "") {
+      // Call search endpoint if user typed something
+      const query = new URLSearchParams({ search: searchValue }).toString();
+      res = await callApi("GET", `/products/search?${query}`);
+    } else {
+      // Only call filter endpoint if no search term
+      const activeFilters = Object.fromEntries(
+        Object.entries(filters).filter(([_, value]) => value !== "")
+      );
+      const query = new URLSearchParams(activeFilters).toString();
+      res = await callApi("GET", `/products/filter?${query}`);
     }
 
-    try {
-      const res = await callApi("GET", "/products/search", {
-        params: { search: query },
-      });
-      setProducts(res);
-    } catch (err) {
-      console.error("Search error:", err.message);
-    }
-  };
+    console.log("Products fetched:", res.data);
 
-  // Apply filters
-  const applyFilters = async () => {
-    try {
-      const query = new URLSearchParams(filters).toString();
-      const res = await callApi("GET", `/products/filter?${query}`);
-      setProducts(res.data);
-    } catch (err) {
-      console.error("Filter error:", err.message);
-    }
-  };
+    setProducts(Array.isArray(res.data) ? res.data : []);
+  } catch (err) {
+    console.error("Error fetching products:", err.message);
+    setProducts([]);
+  }
+};
 
-  // Debounced search
+
+  
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -65,66 +55,55 @@ function Buy() {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     debounceRef.current = setTimeout(() => {
-      fetchSearchResults(value);
+      applyFilters(value);
     }, 500);
   };
 
+  const resetFilters = () => {
+    setFilters({
+      category: "",
+      brand: "",
+      condition: "",
+      minPrice: "",
+      maxPrice: "",
+    });
+    setSearchTerm("");
+    applyFilters(""); // fetch all products
+  };
+
+
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    applyFilters();
+  }, [filters]);
 
   return (
-    <div className="pb-10">
-      {/* Search Bar */}
-      <div
-        className="flex items-center m-10 gap-2 rounded-xl border"
-        style={{
-          backgroundColor: "var(--card-bg)",
-          borderColor: "var(--border-color)",
-        }}
-      >
-        <img src={searchIcon} alt="search" className="size-6 ml-4 icon" />
-        <input
-          type="text"
-          placeholder="Search product by name..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          className="w-full m-2 h-10 bg-transparent focus:outline-none"
-          style={{ color: "var(--text-color)" }}
-        />
-      </div>
+    <div>
+    
 
-      <div className="flex justify-around mr-8 mt-20">
-        {/* Filters Sidebar */}
+      <div className="flex ">
+        {/* FILTER SIDEBAR */}
         <div
-          className="w-64 h-[800px] rounded-2xl ml-5 p-4 border"
-          style={{
-            backgroundColor: "var(--card-bg)",
-            borderColor: "var(--border-color)",
-          }}
+          className="w-64 p-4 py-20 sticky top-20 bg-[#27231B] flex flex-col gap-2"
         >
-          <h2 className="text-xl font-bold mb-4">Filters</h2>
+          <h2 className="text-xl font-bold mb-1">Filters</h2>
 
-          {/* Category */}
-          <label className="block mb-2">Category</label>
+          <div className="h-px w-full bg-gray-400"></div>
+
+          {/* CATEGORY */}
+          <label className="block mb-2 mt-4">Category</label>
           <select
             value={filters.category}
             onChange={(e) =>
               setFilters({ ...filters, category: e.target.value })
             }
             className="w-full mb-4 p-2 rounded border"
-            style={{
-              backgroundColor: "var(--button-bg)",
-              color: "var(--text-color)",
-              borderColor: "var(--border-color)",
-            }}
           >
             <option value="">All</option>
             <option value="guitar">Guitar</option>
             <option value="accessories">Accessories</option>
           </select>
 
-          {/* Brand */}
+          {/* BRAND */}
           <label className="block mb-2">Brand</label>
           <input
             type="text"
@@ -134,14 +113,9 @@ function Buy() {
               setFilters({ ...filters, brand: e.target.value })
             }
             className="w-full mb-4 p-2 rounded border"
-            style={{
-              backgroundColor: "var(--button-bg)",
-              color: "var(--text-color)",
-              borderColor: "var(--border-color)",
-            }}
           />
 
-          {/* Condition */}
+          {/* CONDITION */}
           <label className="block mb-2">Condition</label>
           <select
             value={filters.condition}
@@ -149,18 +123,13 @@ function Buy() {
               setFilters({ ...filters, condition: e.target.value })
             }
             className="w-full mb-4 p-2 rounded border"
-            style={{
-              backgroundColor: "var(--button-bg)",
-              color: "var(--text-color)",
-              borderColor: "var(--border-color)",
-            }}
           >
             <option value="">All</option>
             <option value="new">New</option>
             <option value="used">Used</option>
           </select>
 
-          {/* Price */}
+          {/* PRICE */}
           <label className="block mb-2">Price Range</label>
           <div className="flex gap-2 mb-4">
             <input
@@ -171,11 +140,6 @@ function Buy() {
                 setFilters({ ...filters, minPrice: e.target.value })
               }
               className="w-1/2 p-2 rounded border"
-              style={{
-                backgroundColor: "var(--button-bg)",
-                color: "var(--text-color)",
-                borderColor: "var(--border-color)",
-              }}
             />
             <input
               type="number"
@@ -185,45 +149,52 @@ function Buy() {
                 setFilters({ ...filters, maxPrice: e.target.value })
               }
               className="w-1/2 p-2 rounded border"
-              style={{
-                backgroundColor: "var(--button-bg)",
-                color: "var(--text-color)",
-                borderColor: "var(--border-color)",
-              }}
             />
           </div>
 
           <button
-            onClick={applyFilters}
-            className="w-full py-2 rounded font-semibold"
-            style={{
-              color: "var(--link-hover)",
-              borderColor: "var(--link-hover)",
-              backgroundColor: "transparent",
-            }}
+            onClick={resetFilters}
+            className="w-full py-2 rounded font-semibold border"
           >
-            Apply Filters
+            Reset Filters
           </button>
         </div>
 
-        {/* Products */}
-        <div className="ml-12 flex-1">
-          <h1 className="text-4xl font-bold mb-6">Products</h1>
+        {/* PRODUCTS GRID */}
+            <div className="ml-32 pb-10">
+                {/* SEARCH */}
+        <div className="flex items-center m-10 gap-2 bg-[#393328] border border-[#374151] rounded-xl">
+            <img src={searchIcon} alt="search" className="size-6 ml-4" />
+            <input
+            type="text"
+            placeholder="Search product by name..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className="w-full m-2 h-10 focus:outline-none bg-[#393328] text-white"
+            />
+        </div>
+          <h1 className="text-4xl font-bold">Products</h1>
 
-          <div className="grid grid-cols-3 gap-x-20 gap-y-20">
-            {products.map((product) => (
-              <GuitarCard
-                key={product.id}
-                id={product.id}
-                guitarName={product.name}
-                image={`http://localhost:5000${product.image_urls[0]}`}
-                price={product.price}
-                rating={product.rating}
-                brand={product.brand}
-                page="buying"
-              />
-            ))}
-          </div>
+          {loading ? (
+            <p className="mt-10 text-gray-400">Loading...</p>
+          ) : !products || products.length === 0 ? (
+            <p className="mt-10 text-gray-400 text-xl">No products available</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-y-20 gap-x-20 mt-4">
+              {products.map((product) => (
+                <GuitarCard
+                  key={product.id}
+                  id={product.id}
+                  guitarName={product.name}
+                  image={`http://localhost:5000${product.image_urls?.[0]}`}
+                  price={product.price}
+                  rating={product.rating}
+                  brand={product.brand}
+                  page="buying"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
