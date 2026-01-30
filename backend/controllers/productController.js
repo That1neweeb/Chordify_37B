@@ -5,7 +5,7 @@ import { Op } from 'sequelize';
 import { Comment } from '../models/association.js'
 import jwt from "jsonwebtoken";
 import { error, log } from 'console';
-import fs from "fs";
+import * as fs from "fs";
 
 
 //to get all the products

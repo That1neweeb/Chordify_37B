@@ -7,9 +7,6 @@
     "start": "node index.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
-   "jest": {
-    "testEnvironment": "node"
-  },
   "author": "",
   "license": "ISC",
   "description": "",
